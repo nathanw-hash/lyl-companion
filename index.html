@@ -12,6 +12,9 @@
   --text:#1a1815;--text2:#6b6660;--text3:#9e9890;
   --accent:#2d6a4f;--accent-light:#e8f4ee;
   --amber:#b5560a;--amber-light:#fef3e2;
+  --blue:#1d4ed8;--blue-light:#eff6ff;
+  --red:#b91c1c;--red-light:#fef2f2;
+  --gray-light:#f1efe8;
   --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -50,6 +53,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .panel{display:none;}
 .panel.active{display:block;}
 
+/* SEARCH */
 .search-hero{text-align:center;margin-bottom:40px;}
 .search-hero h1{font-family:'DM Serif Display',serif;font-size:36px;margin-bottom:12px;}
 .search-hero p{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 28px;}
@@ -61,7 +65,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .search-examples{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;}
 .example-pill{font-size:12px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text2);transition:all .15s;}
 .example-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
-
 .result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:12px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);}
 .result-card:hover{border-color:var(--accent);box-shadow:0 4px 20px rgba(45,106,79,.1);}
 .result-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:8px;}
@@ -72,6 +75,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .result-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
 .tag{font-size:11px;padding:2px 8px;background:var(--surface2);border-radius:10px;color:var(--text3);}
 
+/* BROWSE */
 .category-section{margin-bottom:36px;}
 .category-title{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:16px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:10px;}
 .entry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
@@ -80,6 +84,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .entry-card-title{font-weight:600;font-size:14px;margin-bottom:4px;color:var(--text);}
 .entry-card-sub{font-size:12px;color:var(--text3);}
 
+/* ENTRY VIEW */
 .entry-back{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2);cursor:pointer;margin-bottom:24px;transition:color .15s;border:none;background:none;font-family:'DM Sans',sans-serif;padding:0;}
 .entry-back:hover{color:var(--accent);}
 .entry-category{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
@@ -100,6 +105,80 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cross-ref-pill{font-size:13px;padding:6px 12px;background:var(--accent-light);color:var(--accent);border-radius:20px;cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif;}
 .cross-ref-pill:hover{background:var(--accent);color:#fff;}
 
+/* PHASE TRACKER */
+.tracker-header{margin-bottom:32px;}
+.tracker-header h1{font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px;}
+.tracker-header p{font-size:14px;color:var(--text2);max-width:580px;}
+.tracker-notice{background:var(--amber-light);border:1px solid #f8c97a;border-radius:10px;padding:12px 16px;font-size:13px;color:#92400e;margin-bottom:28px;line-height:1.6;}
+
+.overall-progress{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:28px;box-shadow:var(--shadow);}
+.overall-progress-label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.progress-bar-wrap{background:var(--surface2);border-radius:20px;height:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--accent);border-radius:20px;transition:width .4s ease;}
+.progress-bar-text{font-size:13px;color:var(--text2);margin-top:8px;}
+
+.phase-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden;}
+.phase-header{display:flex;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;transition:background .15s;}
+.phase-header:hover{background:var(--surface2);}
+.phase-number{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0;}
+.phase-number.not-started{background:var(--surface2);color:var(--text3);}
+.phase-number.in-progress{background:var(--blue-light);color:var(--blue);}
+.phase-number.complete{background:var(--accent-light);color:var(--accent);}
+.phase-number.skipped{background:var(--gray-light);color:var(--text3);}
+.phase-info{flex:1;}
+.phase-title{font-weight:600;font-size:16px;margin-bottom:2px;}
+.phase-subtitle{font-size:13px;color:var(--text3);}
+.phase-mini-progress{display:flex;align-items:center;gap:10px;min-width:120px;}
+.phase-mini-bar{flex:1;height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.phase-mini-fill{height:100%;border-radius:10px;transition:width .3s;}
+.phase-mini-fill.not-started{background:var(--border);}
+.phase-mini-fill.in-progress{background:var(--blue);}
+.phase-mini-fill.complete{background:var(--accent);}
+.phase-mini-fill.skipped{background:var(--text3);}
+.phase-mini-count{font-size:12px;color:var(--text3);white-space:nowrap;}
+.phase-chevron{font-size:18px;color:var(--text3);transition:transform .2s;}
+.phase-chevron.open{transform:rotate(180deg);}
+
+.phase-body{display:none;border-top:1px solid var(--border);}
+.phase-body.open{display:block;}
+.phase-description{padding:16px 24px;background:var(--surface2);font-size:14px;color:var(--text2);line-height:1.6;border-bottom:1px solid var(--border);}
+.phase-kb-links{padding:12px 24px;display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--border);background:var(--surface2);}
+.phase-kb-link{font-size:12px;padding:4px 10px;background:var(--accent-light);color:var(--accent);border-radius:20px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.phase-kb-link:hover{background:var(--accent);color:#fff;}
+
+.phase-actions{display:flex;gap:8px;padding:12px 24px;border-bottom:1px solid var(--border);}
+.btn-phase-action{font-size:13px;padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);transition:all .15s;}
+.btn-phase-action:hover{border-color:var(--accent);color:var(--accent);}
+.btn-phase-action.danger:hover{border-color:var(--red);color:var(--red);}
+
+.steps-list{padding:8px 0;}
+.step-item{padding:14px 24px;border-bottom:1px solid var(--border);transition:background .15s;}
+.step-item:last-child{border-bottom:none;}
+.step-item:hover{background:var(--surface2);}
+.step-row{display:flex;align-items:flex-start;gap:12px;}
+.step-check{width:20px;height:20px;border:2px solid var(--border);border-radius:5px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.step-check.checked{background:var(--accent);border-color:var(--accent);}
+.step-check.checked::after{content:'';width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block;}
+.step-check.skipped{background:var(--gray-light);border-color:var(--text3);}
+.step-check.skipped::after{content:'—';font-size:12px;color:var(--text3);line-height:1;transform:none;}
+.step-content{flex:1;}
+.step-name{font-size:14px;font-weight:500;margin-bottom:2px;}
+.step-name.skipped{color:var(--text3);text-decoration:line-through;}
+.step-name.checked{color:var(--text2);}
+.step-desc{font-size:13px;color:var(--text3);margin-bottom:6px;}
+.step-actions{display:flex;gap:8px;margin-top:6px;}
+.btn-step{font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text3);transition:all .15s;}
+.btn-step:hover{border-color:var(--accent);color:var(--accent);}
+.btn-step.skip:hover{border-color:var(--amber);color:var(--amber);}
+.btn-step.unskip:hover{border-color:var(--accent);color:var(--accent);}
+.step-note-wrap{margin-top:8px;}
+.step-note-input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text2);background:var(--surface);outline:none;resize:vertical;min-height:60px;transition:border-color .15s;}
+.step-note-input:focus{border-color:var(--accent);}
+.step-note-save{margin-top:6px;font-size:12px;padding:4px 10px;background:var(--accent);color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s;}
+.step-note-save:hover{opacity:.88;}
+.step-note-display{font-size:13px;color:var(--text2);background:var(--surface2);border-radius:6px;padding:8px 10px;margin-top:6px;line-height:1.5;}
+.skipped-badge{font-size:11px;font-weight:600;padding:2px 6px;background:var(--gray-light);color:var(--text3);border-radius:4px;margin-left:6px;}
+
 .loading{text-align:center;color:var(--text3);padding:40px;font-size:14px;}
 .empty-state{text-align:center;color:var(--text3);padding:60px 24px;}
 .empty-state h3{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text2);margin-bottom:8px;}
@@ -113,6 +192,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .auth-card{padding:32px 24px;}
   .user-email{display:none;}
   .entry-grid{grid-template-columns:1fr;}
+  .phase-mini-progress{display:none;}
 }
 </style>
 </head>
@@ -146,6 +226,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="topbar-links">
       <button class="topbar-link active" id="tab-search" onclick="showPanel('search')">Search</button>
       <button class="topbar-link" id="tab-browse" onclick="showPanel('browse')">Browse</button>
+      <button class="topbar-link" id="tab-tracker" onclick="showPanel('tracker')">My Progress</button>
     </div>
     <div class="user-menu">
       <span class="user-email" id="user-email-display"></span>
@@ -154,6 +235,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
   </div>
   <div class="main">
+
+    <!-- SEARCH -->
     <div class="panel active" id="panel-search">
       <div class="search-hero">
         <h1>What would you like to know?</h1>
@@ -173,13 +256,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div id="search-results"></div>
     </div>
+
+    <!-- BROWSE -->
     <div class="panel" id="panel-browse">
       <div id="browse-content"><div class="loading">Loading knowledge base...</div></div>
     </div>
+
+    <!-- ENTRY VIEW -->
     <div class="panel" id="panel-entry">
       <button class="entry-back" onclick="goBack()">&#8592; Back</button>
       <div id="entry-content"></div>
     </div>
+
+    <!-- PHASE TRACKER -->
+    <div class="panel" id="panel-tracker">
+      <div class="tracker-header">
+        <h1>My Program Progress</h1>
+        <p>Track your journey through the Order of Adding Stuff — your personal guide to the LYL program.</p>
+      </div>
+      <div class="tracker-notice">
+        <strong>This is a flexible guide, not a rigid sequence.</strong> Everyone responds differently. Feel free to skip steps or phases and return to them later based on your tolerance and what works for your body.
+      </div>
+      <div class="overall-progress" id="overall-progress-wrap">
+        <div class="overall-progress-label">Overall progress</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="overall-bar" style="width:0%"></div></div>
+        <div class="progress-bar-text" id="overall-text">Loading...</div>
+      </div>
+      <div id="phases-list"><div class="loading">Loading your progress...</div></div>
+    </div>
+
   </div>
 </div>
 
@@ -197,12 +302,94 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 let currentUser = null;
 let allEntries = [];
 let previousPanel = 'search';
+let phaseProgress = {};
 
 function getToken() {
   const s = JSON.parse(localStorage.getItem('lyl-companion-auth') || 'null');
   return s ? s.access_token : null;
 }
 
+// OAS PHASE DATA
+const PHASES = [
+  {
+    number: 0,
+    title: 'Phase 0',
+    subtitle: 'Hydration, Breathing, Light, Movement',
+    description: 'The true foundation of the LYL program — before any supplements or dietary changes. These practices support detox gently around the clock without triggering bile-dumping symptoms, making them appropriate even for very sensitive individuals.',
+    kb_links: [{ label: 'Breathwork basics', id: 'life_003' }, { label: 'Big 6 Lymph Drainage', id: 'life_001' }],
+    steps: [
+      { id: 'hydration', name: 'Establish adequate hydration', desc: 'Use filtered, RO, or distilled water. Increase intake gradually.' },
+      { id: 'breathing', name: 'Begin breathwork practice', desc: 'Better breathing increases toxin elimination through breath all day. See breathwork article for protocol.' },
+      { id: 'sunlight', name: 'Daily sunlight / UVB exposure', desc: 'Bare skin exposure — not so much that symptoms worsen. This is your source of vitamin D, not supplements.' },
+      { id: 'big6', name: 'Big 6 Lymph Drainage — daily', desc: 'Gentle massage of neck, armpits, and groin to keep lymph moving. Takes just a few minutes. See article.' },
+      { id: 'movement', name: 'Start easy movement', desc: '10,000 steps/day is a good goal. Never push to the point of feeling worse or depleted — that dumps excess bile.' },
+    ]
+  },
+  {
+    number: 1,
+    title: 'Phase 1',
+    subtitle: 'Bowels, Biome, Bile',
+    description: 'Fix elimination before anything else. Toxins get reabsorbed instead of eliminated when the gut is not working well. Constipation keeps toxins in the gut longer. Dysbiosis means bacteria aren\'t properly processing bile acids. Fix the gut first — everything else depends on it.',
+    kb_links: [{ label: 'Gut biome & dysbiosis', id: 'gut_001' }, { label: 'Activated charcoal', id: 'spc_002' }],
+    steps: [
+      { id: 'constipation', name: 'Address constipation if present', desc: 'Goal: at least 1–2 bowel movements per day before adding charcoal. Options: oral magnesium, potassium, niacin, Sunfiber, prunes, green kiwi.' },
+      { id: 'diarrhea', name: 'Address diarrhea if present', desc: 'Activated charcoal orally and/or topically over gut and liver. Lactospore probiotic.' },
+      { id: 'probiotics', name: 'Add probiotics', desc: 'Women: always start with Lactobacillus first. Men: Lactobacillus usually first. Add Bifidobacterium as second step if needed.' },
+      { id: 'soluble_fiber', name: 'Increase soluble fiber', desc: 'Binds toxic bile in the gut. Start low and increase slowly — too fast causes its own detox reaction. Sources: beans, oats, apple pectin, Sunfiber, psyllium.' },
+      { id: 'insoluble_fiber', name: 'Add insoluble fiber', desc: 'Feeds putrefactive bacteria, improves bulk and motility. Sources: most low-VA vegetables, apple peel, oat fiber.' },
+      { id: 'charcoal', name: 'Add activated charcoal (once regular)', desc: 'Only after achieving 2+ bowel movements per day. Hardwood or bamboo charcoal powder preferred. Start at 1/4 tsp and build slowly.' },
+    ]
+  },
+  {
+    number: 2,
+    title: 'Phase 2',
+    subtitle: 'Electrolytes',
+    description: 'Establish a mineral foundation before adding detox minerals. Electrolytes support nerve, muscle, and cellular function and are depleted by both toxicity and the detox process itself.',
+    kb_links: [{ label: 'Sodium basics', id: 'min_004' }, { label: 'Potassium basics', id: 'min_005' }, { label: 'Topical magnesium', id: 'top_001' }],
+    steps: [
+      { id: 'magnesium', name: 'Magnesium — topical and/or oral', desc: 'Topical magnesium is ~10x more effective than oral. Apply lotion or spray daily. Oral magnesium (citrate or glycinate) also helps with bowel regularity.' },
+      { id: 'potassium', name: 'Potassium — topical and/or dietary', desc: 'Critical for heart rhythm and nerve function. Depleted by vitamin A toxicity. Watch for foot/leg cramps, fatigue after eating, and heart palpitations as deficiency signs.' },
+      { id: 'sodium', name: 'Sodium — salt your food to taste', desc: 'Use bright white single-ingredient sea salt. Salt to taste — your body\'s feedback is reliable. People who avoid salt consistently fail to improve.' },
+    ]
+  },
+  {
+    number: 3,
+    title: 'Phase 3',
+    subtitle: 'Big Minerals',
+    description: 'The three minerals most critical to vitamin A and copper detox pathways. All three support the ALDH enzyme system. All three are anti-fungal. All three follow the same rule: if a dose causes negative reactions within 3–7 days, take less — even down to zero.',
+    kb_links: [{ label: 'Selenium basics', id: 'min_002' }, { label: 'Molybdenum basics', id: 'min_003' }, { label: 'Zinc basics', id: 'min_001' }],
+    steps: [
+      { id: 'selenium', name: 'Selenium (start here)', desc: 'Selenium glycinate 150mcg/day. Protects the liver against vitamin A toxicity, supports ALDH enzyme, antagonizes copper and mercury. Start first among the Big Minerals.' },
+      { id: 'molybdenum', name: 'Molybdenum (second)', desc: 'Molybdenum glycinate 150mcg/day. Required for ALDH and aldehyde oxidase enzymes. Signs of deficiency: sensitivity to alcohol, wine, caffeine, or high-sulfur foods.' },
+      { id: 'zinc', name: 'Zinc (third)', desc: 'Zinc picolinate — dose calculated at 40% of body weight in lbs, capped at 60mg/day. Start at 15–30mg and increase slowly. Strong reactions suggest significant copper toxicity — reduce dose.' },
+    ]
+  },
+  {
+    number: 4,
+    title: 'Phase 4',
+    subtitle: 'Antidotes & B-Vitamins',
+    description: 'These B vitamins are called antidotes because they directly counter the damage caused by vitamin A and copper toxicity — not just replace what was depleted. Use only the correct forms. Do NOT use B-complex supplements.',
+    kb_links: [{ label: 'B vitamins as antidotes', id: 'bvit_001' }],
+    steps: [
+      { id: 'k2', name: 'Vitamin K2 — MK-4 form only', desc: 'NOT MK-7 (inhibits cellular detox). Standard dose 3–5mg/day. Higher experimental dose up to 60mg/day. Helps heavy bleeding, bruising, bone health.' },
+      { id: 'folate', name: 'Folinic acid (calcium folinate)', desc: 'NOT folic acid or methylfolate. Standard 400mcg/day, max 800mcg/day. Binds copper, supports DNA synthesis. Methylfolate can cause overmethylation in copper-toxic individuals.' },
+      { id: 'b1', name: 'Thiamine B1 — thiamine HCl preferred', desc: 'NOT thiamine mononitrate. Start 25–50mg/day, standard 100–300mg/day. Essential for nerve function, gut motility, and ALDH support. Most overlooked B vitamin.' },
+      { id: 'b12', name: 'B12 — adenosylcobalamin or hydroxocobalamin', desc: 'NOT cyanocobalamin or methylcobalamin. Standard 500–1000mcg/day. Hydroxocobalamin also binds copper. Methylcobalamin drives overmethylation in copper-toxic people.' },
+    ]
+  },
+  {
+    number: 5,
+    title: 'Phase 5',
+    subtitle: 'Lactoferrin',
+    description: 'Lactoferrin repairs bile duct cells (cholangiocytes) damaged by vitamin A toxicity. It is introduced last because it requires the foundation of the earlier phases to work effectively. Vitamin A damages the cells that produce lactoferrin, creating a vicious cycle that supplementation can help break.',
+    kb_links: [{ label: 'Lactoferrin FAQ', id: 'spc_001' }],
+    steps: [
+      { id: 'lactoferrin', name: 'Bovine lactoferrin', desc: 'Use purified bovine lactoferrin powder (not dairy colostrum). Recommended brands: Nutrition Detective Lactoferrin, Life Extension, or Jarrow. Must be tolerated — start at a dose that does not cause negative reactions.' },
+    ]
+  }
+];
+
+// AUTH
 function switchAuthTab(tab) {
   document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup')));
   document.getElementById('login-form').style.display = tab === 'login' ? '' : 'none';
@@ -247,9 +434,11 @@ sb.auth.onAuthStateChange(async (event, session) => {
     document.getElementById('app').style.display = 'block';
     document.getElementById('user-email-display').textContent = currentUser.email;
     loadAllEntries();
+    loadPhaseProgress();
   }
 });
 
+// PANELS
 function showPanel(name) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.topbar-link').forEach(t => t.classList.remove('active'));
@@ -258,10 +447,9 @@ function showPanel(name) {
   if (tabEl) tabEl.classList.add('active');
 }
 
-function goBack() {
-  showPanel(previousPanel);
-}
+function goBack() { showPanel(previousPanel); }
 
+// SEARCH
 function setQuery(q) {
   document.getElementById('search-input').value = q;
   doSearch();
@@ -281,19 +469,16 @@ async function doSearch() {
     if (!voyageRes.ok) throw new Error('Embedding service error');
     const voyageData = await voyageRes.json();
     const embedding = voyageData.data[0].embedding;
-
     const searchRes = await fetch(SUPABASE_URL + '/rest/v1/rpc/search_knowledge_base', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({ query_embedding: embedding, match_threshold: 0.25, match_count: 8 }),
     });
     const results = await searchRes.json();
-
     if (!results || results.length === 0) {
       container.innerHTML = '<div class="empty-state"><h3>No results found</h3><p>Try rephrasing your question or browse the knowledge base.</p></div>';
       return;
     }
-
     container.innerHTML = results.map(r => `
       <div class="result-card" data-id="${r.entry_id}" onclick="viewEntry(this.dataset.id,'search')">
         <div class="result-header">
@@ -310,6 +495,7 @@ async function doSearch() {
   }
 }
 
+// BROWSE
 async function loadAllEntries() {
   try {
     const res = await fetch(SUPABASE_URL + '/rest/v1/knowledge_base?select=entry_id,title,category,subcategory,summary,tags&order=category,title', {
@@ -343,6 +529,7 @@ function renderBrowse() {
   `).join('');
 }
 
+// ENTRY VIEW
 async function viewEntry(entryId, from) {
   previousPanel = from || 'search';
   showPanel('entry');
@@ -355,25 +542,23 @@ async function viewEntry(entryId, from) {
     const data = await res.json();
     if (!data || data.length === 0) throw new Error('Entry not found');
     const entry = data[0];
-
     const crossRefsHtml = (entry.cross_refs || []).length > 0 ? `
       <div class="cross-refs">
         <div class="cross-refs-label">Related topics</div>
         <div class="cross-ref-pills">
           ${entry.cross_refs.map(ref => {
             const related = allEntries.find(e => e.entry_id === ref);
-            const id = related ? related.entry_id : '';
-            return id ? `<button class="cross-ref-pill" onclick="viewEntry('${id}','${from}')">${ref}</button>` : `<span class="cross-ref-pill" style="opacity:.5;cursor:default">${ref}</span>`;
+            return related
+              ? `<button class="cross-ref-pill" onclick="viewEntry('${related.entry_id}','${from}')">${ref}</button>`
+              : `<span class="cross-ref-pill" style="opacity:.5;cursor:default">${ref}</span>`;
           }).join('')}
         </div>
       </div>` : '';
-
     const appNoteHtml = entry.app_note ? `
       <div class="app-note">
         <div class="app-note-label">Clinical note</div>
         <div class="app-note-text">${entry.app_note}</div>
       </div>` : '';
-
     container.innerHTML = `
       <div class="entry-category">${entry.category}${entry.subcategory ? ' &rsaquo; ' + entry.subcategory : ''}</div>
       <div class="entry-title">${entry.title}</div>
@@ -390,10 +575,9 @@ function formatContent(content) {
   if (!content) return '';
   if (typeof content === 'string') {
     const lines = content.split('\n').filter(Boolean);
-    let html = '';
-    let inList = false;
+    let html = '', inList = false;
     lines.forEach(line => {
-      if (line.startsWith('# ') || line.startsWith('## ')) {
+      if (line.startsWith('## ') || line.startsWith('# ')) {
         if (inList) { html += '</ul>'; inList = false; }
         html += `<h3>${line.replace(/^#+\s/, '')}</h3>`;
       } else if (line.match(/^[-*]\s/)) {
@@ -411,20 +595,276 @@ function formatContent(content) {
     return Object.entries(content).map(([key, val]) => {
       const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       if (Array.isArray(val) && val.length > 0) {
-        const items = val.map(v => {
-          if (typeof v === 'object' && v !== null) {
-            return '<li>' + Object.entries(v).map(([k2, v2]) => `<strong>${k2.replace(/_/g,' ')}:</strong> ${v2}`).join(' &mdash; ') + '</li>';
-          }
-          return `<li>${v}</li>`;
-        }).join('');
-        return `<h3>${label}</h3><ul>${items}</ul>`;
+        return `<h3>${label}</h3><ul>${val.map(v => `<li>${typeof v === 'object' ? Object.entries(v).map(([k,v2]) => `<strong>${k}:</strong> ${v2}`).join(' — ') : v}</li>`).join('')}</ul>`;
       }
       if (typeof val === 'string' && val.length > 0) return `<h3>${label}</h3><p>${val}</p>`;
-      if (typeof val === 'object' && val !== null && !Array.isArray(val)) return `<h3>${label}</h3>${formatContent(val)}`;
+      if (typeof val === 'object' && val !== null) return `<h3>${label}</h3>${formatContent(val)}`;
       return '';
     }).filter(Boolean).join('');
   }
   return `<p>${String(content)}</p>`;
+}
+
+// PHASE TRACKER
+async function loadPhaseProgress() {
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/phase_progress?user_id=eq.' + currentUser.id + '&select=*', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + getToken() }
+    });
+    const rows = await res.json();
+    phaseProgress = {};
+    rows.forEach(r => { phaseProgress[r.phase_number] = r; });
+    renderPhaseTracker();
+  } catch (err) {
+    document.getElementById('phases-list').innerHTML = '<div class="loading">Error loading progress.</div>';
+  }
+}
+
+async function savePhaseProgress(phaseNum) {
+  const p = phaseProgress[phaseNum] || { phase_number: phaseNum, status: 'not_started', completed_steps: [], notes: '' };
+  const payload = { user_id: currentUser.id, phase_number: p.phase_number, status: p.status, completed_steps: p.completed_steps, notes: p.notes || '', updated_at: new Date().toISOString() };
+  await fetch(SUPABASE_URL + '/rest/v1/phase_progress?on_conflict=user_id,phase_number', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + getToken(), 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify(payload),
+  });
+}
+
+function getPhaseStatus(phaseNum) {
+  const p = phaseProgress[phaseNum];
+  if (!p) return 'not_started';
+  return p.status || 'not_started';
+}
+
+function getCompletedSteps(phaseNum) {
+  const p = phaseProgress[phaseNum];
+  return p ? (p.completed_steps || []) : [];
+}
+
+function getStepNotes(phaseNum) {
+  const p = phaseProgress[phaseNum];
+  if (!p || !p.notes) return {};
+  try { return typeof p.notes === 'string' ? JSON.parse(p.notes) : p.notes; } catch { return {}; }
+}
+
+function calcOverallProgress() {
+  let total = 0, done = 0;
+  PHASES.forEach(ph => {
+    const steps = ph.steps;
+    total += steps.length;
+    const completed = getCompletedSteps(ph.number);
+    steps.forEach(s => {
+      const state = completed.find(c => c.id === s.id);
+      if (state && (state.status === 'done' || state.status === 'skipped')) done++;
+    });
+  });
+  return total > 0 ? Math.round((done / total) * 100) : 0;
+}
+
+function renderPhaseTracker() {
+  const pct = calcOverallProgress();
+  document.getElementById('overall-bar').style.width = pct + '%';
+  const totalSteps = PHASES.reduce((a, p) => a + p.steps.length, 0);
+  const doneSteps = PHASES.reduce((a, ph) => {
+    const completed = getCompletedSteps(ph.number);
+    return a + ph.steps.filter(s => { const c = completed.find(x => x.id === s.id); return c && (c.status === 'done' || c.status === 'skipped'); }).length;
+  }, 0);
+  document.getElementById('overall-text').textContent = `${doneSteps} of ${totalSteps} steps addressed`;
+
+  document.getElementById('phases-list').innerHTML = PHASES.map(ph => renderPhaseCard(ph)).join('');
+}
+
+function renderPhaseCard(ph) {
+  const status = getPhaseStatus(ph.number);
+  const completed = getCompletedSteps(ph.number);
+  const notes = getStepNotes(ph.number);
+  const totalSteps = ph.steps.length;
+  const doneCount = ph.steps.filter(s => { const c = completed.find(x => x.id === s.id); return c && (c.status === 'done' || c.status === 'skipped'); }).length;
+  const pct = totalSteps > 0 ? Math.round((doneCount / totalSteps) * 100) : 0;
+
+  const kbLinks = ph.kb_links.map(l => `<button class="phase-kb-link" onclick="viewEntry('${l.id}','tracker')">${l.label}</button>`).join('');
+
+  const stepsHtml = ph.steps.map(step => {
+    const stepState = completed.find(c => c.id === step.id);
+    const isDone = stepState && stepState.status === 'done';
+    const isSkipped = stepState && stepState.status === 'skipped';
+    const stepNote = notes[step.id] || '';
+
+    return `
+      <div class="step-item" id="step-${ph.number}-${step.id}">
+        <div class="step-row">
+          <div class="step-check ${isDone ? 'checked' : isSkipped ? 'skipped' : ''}" onclick="toggleStep(${ph.number},'${step.id}')"></div>
+          <div class="step-content">
+            <div class="step-name ${isDone ? 'checked' : isSkipped ? 'skipped' : ''}">${step.name}${isSkipped ? '<span class="skipped-badge">skipped</span>' : ''}</div>
+            <div class="step-desc">${step.desc}</div>
+            <div class="step-actions">
+              ${!isSkipped ? `<button class="btn-step skip" onclick="skipStep(${ph.number},'${step.id}')">Skip for now</button>` : `<button class="btn-step unskip" onclick="unskipStep(${ph.number},'${step.id}')">Revisit</button>`}
+              <button class="btn-step" onclick="toggleNote(${ph.number},'${step.id}')">Add note</button>
+            </div>
+            <div class="step-note-wrap" id="note-wrap-${ph.number}-${step.id}" style="display:none">
+              <textarea class="step-note-input" id="note-input-${ph.number}-${step.id}" placeholder="Add a personal note about this step...">${stepNote}</textarea>
+              <button class="step-note-save" onclick="saveStepNote(${ph.number},'${step.id}')">Save note</button>
+            </div>
+            ${stepNote ? `<div class="step-note-display" id="note-display-${ph.number}-${step.id}">${stepNote}</div>` : `<div id="note-display-${ph.number}-${step.id}"></div>`}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const phaseActions = status !== 'skipped' ? `
+    <div class="phase-actions">
+      <button class="btn-phase-action" onclick="markPhaseComplete(${ph.number})">Mark phase complete</button>
+      <button class="btn-phase-action danger" onclick="skipPhase(${ph.number})">Skip this phase</button>
+    </div>
+  ` : `
+    <div class="phase-actions">
+      <button class="btn-phase-action" onclick="unskipPhase(${ph.number})">Revisit this phase</button>
+    </div>
+  `;
+
+  return `
+    <div class="phase-card" id="phase-card-${ph.number}">
+      <div class="phase-header" onclick="togglePhase(${ph.number})">
+        <div class="phase-number ${status}">${ph.number}</div>
+        <div class="phase-info">
+          <div class="phase-title">${ph.title} — ${ph.subtitle}</div>
+          <div class="phase-subtitle">${doneCount}/${totalSteps} steps · ${status.replace('_',' ')}</div>
+        </div>
+        <div class="phase-mini-progress">
+          <div class="phase-mini-bar"><div class="phase-mini-fill ${status}" style="width:${pct}%"></div></div>
+          <div class="phase-mini-count">${pct}%</div>
+        </div>
+        <div class="phase-chevron" id="chevron-${ph.number}">&#8964;</div>
+      </div>
+      <div class="phase-body" id="phase-body-${ph.number}">
+        <div class="phase-description">${ph.description}</div>
+        ${kbLinks ? `<div class="phase-kb-links"><span style="font-size:12px;color:var(--text3);margin-right:4px">Read:</span>${kbLinks}</div>` : ''}
+        ${phaseActions}
+        <div class="steps-list">${stepsHtml}</div>
+      </div>
+    </div>
+  `;
+}
+
+function togglePhase(num) {
+  const body = document.getElementById('phase-body-' + num);
+  const chevron = document.getElementById('chevron-' + num);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+}
+
+async function toggleStep(phaseNum, stepId) {
+  if (!phaseProgress[phaseNum]) phaseProgress[phaseNum] = { phase_number: phaseNum, status: 'not_started', completed_steps: [], notes: '' };
+  const p = phaseProgress[phaseNum];
+  const steps = p.completed_steps || [];
+  const idx = steps.findIndex(s => s.id === stepId);
+  const current = idx >= 0 ? steps[idx] : null;
+  if (current && current.status === 'skipped') return;
+  if (current && current.status === 'done') {
+    steps.splice(idx, 1);
+  } else if (idx >= 0) {
+    steps[idx].status = 'done';
+  } else {
+    steps.push({ id: stepId, status: 'done' });
+  }
+  p.completed_steps = steps;
+  p.status = computePhaseStatus(phaseNum);
+  await savePhaseProgress(phaseNum);
+  renderPhaseTracker();
+  reopenPhase(phaseNum);
+}
+
+async function skipStep(phaseNum, stepId) {
+  if (!phaseProgress[phaseNum]) phaseProgress[phaseNum] = { phase_number: phaseNum, status: 'not_started', completed_steps: [], notes: '' };
+  const p = phaseProgress[phaseNum];
+  const steps = p.completed_steps || [];
+  const idx = steps.findIndex(s => s.id === stepId);
+  if (idx >= 0) steps[idx].status = 'skipped';
+  else steps.push({ id: stepId, status: 'skipped' });
+  p.completed_steps = steps;
+  p.status = computePhaseStatus(phaseNum);
+  await savePhaseProgress(phaseNum);
+  toast('Step skipped — you can revisit it any time');
+  renderPhaseTracker();
+  reopenPhase(phaseNum);
+}
+
+async function unskipStep(phaseNum, stepId) {
+  const p = phaseProgress[phaseNum];
+  if (!p) return;
+  const idx = p.completed_steps.findIndex(s => s.id === stepId);
+  if (idx >= 0) p.completed_steps.splice(idx, 1);
+  p.status = computePhaseStatus(phaseNum);
+  await savePhaseProgress(phaseNum);
+  renderPhaseTracker();
+  reopenPhase(phaseNum);
+}
+
+async function skipPhase(phaseNum) {
+  if (!phaseProgress[phaseNum]) phaseProgress[phaseNum] = { phase_number: phaseNum, status: 'not_started', completed_steps: [], notes: '' };
+  phaseProgress[phaseNum].status = 'skipped';
+  await savePhaseProgress(phaseNum);
+  toast('Phase skipped — you can revisit it any time');
+  renderPhaseTracker();
+}
+
+async function unskipPhase(phaseNum) {
+  if (!phaseProgress[phaseNum]) return;
+  phaseProgress[phaseNum].status = computePhaseStatus(phaseNum);
+  await savePhaseProgress(phaseNum);
+  renderPhaseTracker();
+  reopenPhase(phaseNum);
+}
+
+async function markPhaseComplete(phaseNum) {
+  if (!phaseProgress[phaseNum]) phaseProgress[phaseNum] = { phase_number: phaseNum, status: 'not_started', completed_steps: [], notes: '' };
+  const ph = PHASES.find(p => p.number === phaseNum);
+  const steps = phaseProgress[phaseNum].completed_steps || [];
+  ph.steps.forEach(s => {
+    if (!steps.find(c => c.id === s.id)) steps.push({ id: s.id, status: 'done' });
+  });
+  phaseProgress[phaseNum].completed_steps = steps;
+  phaseProgress[phaseNum].status = 'complete';
+  await savePhaseProgress(phaseNum);
+  toast('Phase marked complete!');
+  renderPhaseTracker();
+}
+
+function computePhaseStatus(phaseNum) {
+  const ph = PHASES.find(p => p.number === phaseNum);
+  const steps = (phaseProgress[phaseNum] || {}).completed_steps || [];
+  const addressed = steps.filter(s => s.status === 'done' || s.status === 'skipped').length;
+  if (addressed === 0) return 'not_started';
+  if (addressed >= ph.steps.length) return 'complete';
+  return 'in_progress';
+}
+
+function toggleNote(phaseNum, stepId) {
+  const wrap = document.getElementById(`note-wrap-${phaseNum}-${stepId}`);
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+}
+
+async function saveStepNote(phaseNum, stepId) {
+  const input = document.getElementById(`note-input-${phaseNum}-${stepId}`);
+  const noteText = input.value.trim();
+  if (!phaseProgress[phaseNum]) phaseProgress[phaseNum] = { phase_number: phaseNum, status: 'not_started', completed_steps: [], notes: '' };
+  let notes = getStepNotes(phaseNum);
+  notes[stepId] = noteText;
+  phaseProgress[phaseNum].notes = JSON.stringify(notes);
+  await savePhaseProgress(phaseNum);
+  const display = document.getElementById(`note-display-${phaseNum}-${stepId}`);
+  display.textContent = noteText;
+  document.getElementById(`note-wrap-${phaseNum}-${stepId}`).style.display = 'none';
+  toast('Note saved');
+}
+
+function reopenPhase(num) {
+  const body = document.getElementById('phase-body-' + num);
+  const chevron = document.getElementById('chevron-' + num);
+  if (body) body.classList.add('open');
+  if (chevron) chevron.classList.add('open');
 }
 
 function toast(msg) {
@@ -436,9 +876,7 @@ function toast(msg) {
 
 (async () => {
   const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    document.getElementById('auth-screen').style.display = 'flex';
-  }
+  if (!session) document.getElementById('auth-screen').style.display = 'flex';
 })();
 </script>
 </body>
