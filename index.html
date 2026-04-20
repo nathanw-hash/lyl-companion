@@ -283,49 +283,49 @@ function setQuery(q) {
   document.getElementById('search-input').value = q;
   doSearch();
 }
-
 async function doSearch() {
   const query = document.getElementById('search-input').value.trim();
   if (!query) return;
   const container = document.getElementById('search-results');
   container.innerHTML = '<div class="loading">Searching...</div>';
-
   try {
-    const token = getToken();
-    const res = await fetch(SUPABASE_URL + '/functions/v1/kb-search', {
+    const voyageRes = await fetch('https://api.voyageai.com/v1/embeddings', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-        'apikey': SUPABASE_KEY,
-      },
-      body: JSON.stringify({ query, match_count: 8, match_threshold: 0.25 }),
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer pa-subXscuX1onmIGPmhWxZ73eMzLK52OHSCefMPAp-g1b' },
+      body: JSON.stringify({ input: [query], model: 'voyage-3' }),
     });
-
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-
-    if (!data.results || data.results.length === 0) {
+    if (!voyageRes.ok) throw new Error('Embedding service error');
+    const voyageData = await voyageRes.json();
+    const embedding = voyageData.data[0].embedding;
+    const searchRes = await fetch(SUPABASE_URL + '/rest/v1/rpc/search_knowledge_base', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ query_embedding: embedding, match_threshold: 0.25, match_count: 8 }),
+    });
+    const results = await searchRes.json();
+    if (!results || results.length === 0) {
       container.innerHTML = '<div class="empty-state"><h3>No results found</h3><p>Try rephrasing your question or browse the knowledge base.</p></div>';
       return;
     }
-
-    container.innerHTML = data.results.map(r => `
-      <div class="result-card" onclick="viewEntry('${r.entry_id}', 'search')">
-        <div class="result-header">
-          <div class="result-title">${r.title}</div>
-          <div class="result-similarity">${Math.round(r.similarity * 100)}% match</div>
-        </div>
+    container.innerHTML = results.map(r => `
+      <div class="result-card" onclick="viewEntry(${JSON.stringify(r.entry_id)}, 'search')">
+        <div class="result-header"><div class="result-title">${r.title}</div><div class="result-similarity">${Math.round(r.similarity * 100)}% match</div></div>
         <div class="result-meta">${r.category}${r.subcategory ? ' · ' + r.subcategory : ''}</div>
         <div class="result-summary">${r.summary || ''}</div>
         <div class="result-tags">${(r.tags || []).slice(0,4).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-      </div>
-    `).join('');
-
+      </div>`).join('');
   } catch (err) {
     container.innerHTML = `<div class="empty-state"><h3>Search error</h3><p>${err.message}</p></div>`;
   }
 }
+
+
+
+
+
+
+
+
 
 // BROWSE
 async function loadAllEntries() {
