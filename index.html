@@ -308,7 +308,7 @@ async function doSearch() {
       return;
     }
     container.innerHTML = results.map(r => `
-      <div class="result-card" onclick="viewEntry(${JSON.stringify(r.entry_id)}, 'search')">
+      <div class="result-card" onclick="viewEntry(this.dataset.id, 'search')" data-id="${r.entry_id}">
         <div class="result-header"><div class="result-title">${r.title}</div><div class="result-similarity">${Math.round(r.similarity * 100)}% match</div></div>
         <div class="result-meta">${r.category}${r.subcategory ? ' · ' + r.subcategory : ''}</div>
         <div class="result-summary">${r.summary || ''}</div>
