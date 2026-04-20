@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love Your Liver — Program Guide</title>
+<title>Love Your Liver</title>
+<meta name="description" content="Love Your Liver lab tracker — enter your results and get personalized recommendations">
+<meta name="theme-color" content="#2d6a4f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LYL Labs">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <meta name="description" content="Love Your Liver companion app — knowledge base, phase tracker, journal, and food guide">
 <meta name="theme-color" content="#2d6a4f">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1016,6 +1023,11 @@ function hideProviderDetail() {
 (async()=>{const{data:{session}}=await sb.auth.getSession();if(!session)document.getElementById('auth-screen').style.display='flex';})();
 
 if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+  if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
