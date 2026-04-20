@@ -435,7 +435,10 @@ function formatContent(content) {
     }).filter(Boolean).join("");
   }
   return `<p>${String(content)}</p>`;
-}
+
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) document.getElementById('auth-screen').style.display = 'flex';
 })();
 </script>
 </body>
