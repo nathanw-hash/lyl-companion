@@ -282,6 +282,52 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 #toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;z-index:999;}
 #toast.show{opacity:1;transform:translateY(0);}
 
+/* PROVIDER */
+.patient-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:12px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);display:flex;align-items:center;gap:20px;}
+.patient-card:hover{border-color:var(--accent);box-shadow:0 4px 20px rgba(45,106,79,.1);}
+.patient-avatar{width:44px;height:44px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:18px;flex-shrink:0;}
+.patient-info{flex:1;}
+.patient-name{font-weight:600;font-size:16px;margin-bottom:2px;}
+.patient-email{font-size:13px;color:var(--text3);margin-bottom:6px;}
+.patient-badges{display:flex;gap:8px;flex-wrap:wrap;}
+.patient-badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.patient-badge.phase{background:var(--accent-light);color:var(--accent);}
+.patient-badge.labs{background:var(--blue-light);color:var(--blue);}
+.patient-badge.journal{background:var(--amber-light);color:var(--amber);}
+.provider-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:20px;}
+.provider-section-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.provider-stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
+.provider-stat{background:var(--surface2);border-radius:8px;padding:14px 16px;}
+.provider-stat-label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
+.provider-stat-value{font-size:22px;font-weight:600;color:var(--text);}
+.provider-stat-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.provider-lab-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.provider-lab-row:last-child{border-bottom:none;}
+.provider-lab-name{color:var(--text2);font-weight:500;}
+.provider-lab-val{font-weight:600;}
+.provider-lab-val.high{color:var(--red);}
+.provider-lab-val.low{color:var(--amber);}
+.provider-lab-val.optimal{color:var(--green);}
+.provider-phase-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.provider-phase-row:last-child{border-bottom:none;}
+.provider-phase-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
+.provider-phase-num.complete{background:var(--accent-light);color:var(--accent);}
+.provider-phase-num.in-progress{background:var(--blue-light);color:var(--blue);}
+.provider-phase-num.not-started{background:var(--surface2);color:var(--text3);}
+.provider-phase-num.skipped{background:var(--gray-light);color:var(--text3);}
+.provider-journal-row{padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);}
+.provider-journal-row:last-child{border-bottom:none;}
+.provider-journal-date{font-weight:600;font-size:14px;margin-bottom:4px;}
+.share-toggle-wrap{background:var(--surface2);border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.share-toggle-label{font-size:14px;color:var(--text2);}
+.share-toggle-label strong{display:block;font-size:15px;color:var(--text);margin-bottom:2px;}
+.toggle-switch{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:24px;transition:.3s;}
+.toggle-slider:before{position:absolute;content:'';height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;}
+.toggle-switch input:checked+.toggle-slider{background:var(--accent);}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(20px);}
+
 @media(max-width:640px){
   .topbar{padding:0 10px;gap:6px;}
   .topbar-logo{font-size:15px;}
@@ -328,6 +374,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <button class="topbar-link" id="tab-tracker" onclick="showPanel('tracker')">My Progress</button>
       <button class="topbar-link" id="tab-journal" onclick="showPanel('journal')">Journal</button>
       <button class="topbar-link" id="tab-foods" onclick="showPanel('foods')">Food Guide</button>
+      <button class="topbar-link" id="tab-provider" onclick="showPanel('provider')" style="display:none">Patients</button>
     </div>
     <div class="user-menu">
       <span class="user-email" id="user-email-display"></span>
@@ -468,6 +515,21 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <button class="food-filter-btn red-filter" id="filter-red" onclick="setFoodFilter('red')">🔴 Avoid</button>
       </div>
       <div id="food-list-content"></div>
+    </div>
+
+    <!-- PROVIDER -->
+    <div class="panel" id="panel-provider">
+      <div id="provider-list-view">
+        <div style="margin-bottom:28px;">
+          <h1 style="font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px;">Patients</h1>
+          <p style="font-size:14px;color:var(--text2);">Patients who have enabled provider sharing. Click a patient to view their full record.</p>
+        </div>
+        <div id="provider-patients-list"><div class="loading">Loading patients...</div></div>
+      </div>
+      <div id="provider-detail-view" style="display:none">
+        <button class="entry-back" onclick="hideProviderDetail()">&#8592; Back to patients</button>
+        <div id="provider-detail-content"></div>
+      </div>
     </div>
 
   </div>
@@ -617,7 +679,7 @@ async function signUp(){const email=document.getElementById('signup-email').valu
 async function signOut(){await sb.auth.signOut();document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';currentUser=null;}
 function showMsg(msg,ok){const el=document.getElementById('auth-msg');el.textContent=msg;el.style.display='block';el.style.background=ok?'var(--accent-light)':'#fef2f2';el.style.color=ok?'var(--accent)':'#b91c1c';}
 
-sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();renderFoodList();}});
+sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();renderFoodList();checkProviderStatus();}});
 
 function showPanel(name){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.topbar-link').forEach(t=>t.classList.remove('active'));document.getElementById('panel-'+name).classList.add('active');const tabEl=document.getElementById('tab-'+name);if(tabEl)tabEl.classList.add('active');}
 function goBack(){showPanel(previousPanel);}
@@ -714,6 +776,235 @@ function renderFoodList(){
 }
 
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
+
+// PROVIDER
+let isProvider = false;
+let currentPatient = null;
+
+async function checkProviderStatus() {
+  try {
+    const res = await fetch(SUPABASE_URL+'/rest/v1/profiles?user_id=eq.'+currentUser.id+'&select=is_provider,share_with_provider,display_name', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
+    const data = await res.json();
+    if (data && data[0]) {
+      isProvider = data[0].is_provider === true;
+      if (isProvider) {
+        document.getElementById('tab-provider').style.display = '';
+        loadPatients();
+      }
+      // Show share toggle in journal or settings area
+      renderShareToggle(data[0].share_with_provider === true);
+    }
+  } catch(err) { console.error('Provider check failed', err); }
+}
+
+function renderShareToggle(isShared) {
+  // Inject a share toggle at top of journal list view
+  const existing = document.getElementById('share-toggle-section');
+  if (existing) { existing.remove(); }
+  const wrap = document.createElement('div');
+  wrap.id = 'share-toggle-section';
+  wrap.className = 'share-toggle-wrap';
+  wrap.innerHTML = `
+    <div class="share-toggle-label">
+      <strong>Share data with my provider</strong>
+      Allow your provider to view your labs, journal, and phase progress
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" id="share-toggle" ${isShared?'checked':''} onchange="toggleProviderSharing(this.checked)">
+      <span class="toggle-slider"></span>
+    </label>`;
+  const journalList = document.getElementById('journal-list-view');
+  journalList.insertBefore(wrap, journalList.firstChild);
+}
+
+async function toggleProviderSharing(enabled) {
+  try {
+    await fetch(SUPABASE_URL+'/rest/v1/profiles?user_id=eq.'+currentUser.id, {
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=minimal'},
+      body:JSON.stringify({share_with_provider: enabled})
+    });
+    toast(enabled ? 'Data sharing enabled — your provider can now view your records' : 'Data sharing disabled');
+  } catch(err) { toast('Error updating sharing preference'); }
+}
+
+async function loadPatients() {
+  try {
+    // Get all profiles with share_with_provider = true
+    const profilesRes = await fetch(SUPABASE_URL+'/rest/v1/profiles?share_with_provider=eq.true&select=*', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
+    const profiles = await profilesRes.json();
+
+    if (!profiles || profiles.length === 0) {
+      document.getElementById('provider-patients-list').innerHTML = '<div class="empty-state"><h3>No patients yet</h3><p>Patients will appear here once they enable provider sharing in their Journal settings.</p></div>';
+      return;
+    }
+
+    // For each patient get their latest lab result and journal entry
+    const patientCards = await Promise.all(profiles.map(async (p) => {
+      const [labRes, journalRes, phaseRes] = await Promise.all([
+        fetch(SUPABASE_URL+'/rest/v1/lab_results?user_id=eq.'+p.user_id+'&select=test_date,ggt,ferritin,serum_retinol&order=test_date.desc&limit=1', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
+        fetch(SUPABASE_URL+'/rest/v1/journal_entries?user_id=eq.'+p.user_id+'&select=entry_date,energy_level,symptom_severity&order=entry_date.desc&limit=1', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
+        fetch(SUPABASE_URL+'/rest/v1/phase_progress?user_id=eq.'+p.user_id+'&select=phase_number,status&order=phase_number', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}})
+      ]);
+      const labs = await labRes.json();
+      const journal = await journalRes.json();
+      const phases = await phaseRes.json();
+      const latestLab = labs[0];
+      const latestJournal = journal[0];
+      const currentPhase = phases.filter(ph=>ph.status==='in_progress')[0] || phases.filter(ph=>ph.status==='complete').slice(-1)[0];
+      const initials = (p.display_name||p.user_id||'?').charAt(0).toUpperCase();
+      const name = p.display_name || 'Patient';
+      return {profile:p, latestLab, latestJournal, currentPhase, initials, name};
+    }));
+
+    document.getElementById('provider-patients-list').innerHTML = patientCards.map(pt => `
+      <div class="patient-card" onclick="viewPatient('${pt.profile.user_id}')">
+        <div class="patient-avatar">${pt.initials}</div>
+        <div class="patient-info">
+          <div class="patient-name">${pt.name}</div>
+          <div class="patient-email">${pt.profile.user_id}</div>
+          <div class="patient-badges">
+            ${pt.currentPhase ? `<span class="patient-badge phase">Phase ${pt.currentPhase.phase_number} — ${pt.currentPhase.status.replace('_',' ')}</span>` : '<span class="patient-badge phase">No phase data</span>'}
+            ${pt.latestLab ? `<span class="patient-badge labs">Labs: ${pt.latestLab.test_date}</span>` : '<span class="patient-badge labs">No labs</span>'}
+            ${pt.latestJournal ? `<span class="patient-badge journal">Journal: ${pt.latestJournal.entry_date} · Energy ${pt.latestJournal.energy_level}/10</span>` : '<span class="patient-badge journal">No journal</span>'}
+          </div>
+        </div>
+        <div style="color:var(--text3);font-size:20px;">&#8250;</div>
+      </div>`).join('');
+  } catch(err) {
+    document.getElementById('provider-patients-list').innerHTML = '<div class="loading">Error loading patients.</div>';
+  }
+}
+
+async function viewPatient(userId) {
+  currentPatient = userId;
+  document.getElementById('provider-list-view').style.display = 'none';
+  document.getElementById('provider-detail-view').style.display = 'block';
+  document.getElementById('provider-detail-content').innerHTML = '<div class="loading">Loading patient data...</div>';
+
+  try {
+    const [profileRes, labsRes, recsRes, phasesRes, journalRes] = await Promise.all([
+      fetch(SUPABASE_URL+'/rest/v1/profiles?user_id=eq.'+userId+'&select=*', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
+      fetch(SUPABASE_URL+'/rest/v1/lab_results?user_id=eq.'+userId+'&select=*&order=test_date.desc&limit=5', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
+      fetch(SUPABASE_URL+'/rest/v1/recommendations?user_id=eq.'+userId+'&select=*&order=created_at.desc&limit=3', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
+      fetch(SUPABASE_URL+'/rest/v1/phase_progress?user_id=eq.'+userId+'&select=*&order=phase_number', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
+      fetch(SUPABASE_URL+'/rest/v1/journal_entries?user_id=eq.'+userId+'&select=*&order=entry_date.desc&limit=10', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}})
+    ]);
+
+    const profiles = await profileRes.json();
+    const labs = await labsRes.json();
+    const recs = await recsRes.json();
+    const phases = await phasesRes.json();
+    const journals = await journalRes.json();
+    const profile = profiles[0] || {};
+    const latestLab = labs[0];
+    const latestRec = recs[0];
+
+    // Build lab summary
+    const labFields = [
+      {key:'serum_retinol',label:'Serum retinol',unit:'mcg/dL',low:0,high:50},
+      {key:'ggt',label:'GGT',unit:'U/L',low:0,high:20},
+      {key:'alt',label:'ALT',unit:'U/L',low:0,high:20},
+      {key:'ast',label:'AST',unit:'U/L',low:0,high:20},
+      {key:'ferritin',label:'Ferritin',unit:'ng/mL',low:profile.sex==='male'?30:50,high:profile.sex==='male'?70:100},
+      {key:'blood_copper',label:'Blood copper',unit:'mcg/dL',low:70,high:120},
+      {key:'blood_zinc',label:'Blood zinc',unit:'mcg/dL',low:80,high:130},
+      {key:'hair_copper',label:'Hair Cu',unit:'',low:1.5,high:2.5},
+      {key:'hair_zinc',label:'Hair Zn',unit:'',low:17,high:20},
+      {key:'hair_selenium',label:'Hair Se',unit:'',low:0.11,high:0.15},
+      {key:'hair_molybdenum',label:'Hair Mo',unit:'',low:0.004,high:999},
+    ];
+
+    const labRowsHtml = labFields.map(f => {
+      if (!latestLab || latestLab[f.key] == null) return '';
+      const val = latestLab[f.key];
+      const status = val < f.low ? 'low' : val > f.high ? 'high' : 'optimal';
+      return `<div class="provider-lab-row"><span class="provider-lab-name">${f.label}</span><span class="provider-lab-val ${status}">${val}${f.unit?' '+f.unit:''} <span style="font-size:11px;font-weight:400">(${status})</span></span></div>`;
+    }).filter(Boolean).join('');
+
+    // Build phase summary
+    const phaseNames = ['Hydration & Movement','Bowels, Biome, Bile','Electrolytes','Big Minerals','B-Vitamins','Lactoferrin'];
+    const phaseRowsHtml = phases.map(p => {
+      const steps = p.completed_steps || [];
+      const done = steps.filter(s=>s.status==='done').length;
+      const skipped = steps.filter(s=>s.status==='skipped').length;
+      return `<div class="provider-phase-row">
+        <div class="provider-phase-num ${p.status}">${p.phase_number}</div>
+        <div style="flex:1"><strong>Phase ${p.phase_number}</strong> — ${phaseNames[p.phase_number]||''}</div>
+        <div style="font-size:12px;color:var(--text3)">${p.status.replace('_',' ')} · ${done} done${skipped?' · '+skipped+' skipped':''}</div>
+      </div>`;
+    }).join('') || '<p style="color:var(--text3);font-size:14px">No phase data recorded yet.</p>';
+
+    // Build journal summary
+    const journalRowsHtml = journals.slice(0,7).map(j => {
+      const symptoms = j.symptoms ? (Array.isArray(j.symptoms)?j.symptoms:Object.keys(j.symptoms).filter(k=>j.symptoms[k])) : [];
+      return `<div class="provider-journal-row">
+        <div class="provider-journal-date">${formatDate(j.entry_date)}</div>
+        <div style="display:flex;gap:8px;margin-bottom:4px;">${energyBadge(j.energy_level||5)}${symptomBadge(j.symptom_severity||3)}</div>
+        ${symptoms.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;">${symptoms.map(s=>`<span class="symptom-chip">${s}</span>`).join('')}</div>`:''}
+        ${j.supplements_taken?`<div style="font-size:12px;color:var(--text3);margin-top:4px"><strong>Supplements:</strong> ${j.supplements_taken}</div>`:''}
+        ${j.notes?`<div style="font-size:13px;color:var(--text2);margin-top:4px">${j.notes}</div>`:''}
+      </div>`;
+    }).join('') || '<p style="color:var(--text3);font-size:14px">No journal entries yet.</p>';
+
+    // Build recommendations summary
+    const recsHtml = latestRec ? `
+      <div style="margin-bottom:12px;font-size:13px;color:var(--text3)">Latest report — ${latestRec.created_at ? new Date(latestRec.created_at).toLocaleDateString() : ''}</div>
+      ${(latestRec.priority_actions||[]).slice(0,5).map(a=>`
+        <div style="padding:10px 14px;background:${a.priority==='urgent'?'var(--red-light)':'var(--surface2)'};border-radius:8px;margin-bottom:8px;">
+          <div style="font-weight:600;font-size:13px;color:${a.priority==='urgent'?'var(--red)':'var(--text)'};margin-bottom:2px;">${a.title}</div>
+          <div style="font-size:13px;color:var(--text2)">${a.body}</div>
+        </div>`).join('')}
+      ${(latestRec.supplement_doses||[]).map(d=>`
+        <div style="padding:8px 14px;background:var(--accent-light);border-radius:8px;margin-bottom:6px;">
+          <strong style="font-size:13px;color:var(--accent)">${d.supplement} — ${d.dose}</strong>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">${d.instructions}</div>
+        </div>`).join('')}
+    ` : '<p style="color:var(--text3);font-size:14px">No lab reports generated yet.</p>';
+
+    const name = profile.display_name || 'Patient';
+    document.getElementById('provider-detail-content').innerHTML = `
+      <div style="margin-bottom:28px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:6px;">${name}</div>
+        <div style="font-size:13px;color:var(--text3)">${profile.sex||'Sex not specified'} · ${profile.weight_lbs?profile.weight_lbs+'lbs':'Weight not specified'}</div>
+      </div>
+
+      ${latestLab ? `
+      <div class="provider-section">
+        <div class="provider-section-title">Latest Lab Results — ${latestLab.test_date}</div>
+        <div class="provider-stat-grid">
+          ${latestLab.ggt!=null?`<div class="provider-stat"><div class="provider-stat-label">GGT</div><div class="provider-stat-value" style="color:${latestLab.ggt>20?'var(--red)':'var(--green)'}">${latestLab.ggt}</div><div class="provider-stat-sub">U/L · optimal &lt;20</div></div>`:''}
+          ${latestLab.serum_retinol!=null?`<div class="provider-stat"><div class="provider-stat-label">Serum Retinol</div><div class="provider-stat-value" style="color:${latestLab.serum_retinol>50?'var(--red)':'var(--green)'}">${latestLab.serum_retinol}</div><div class="provider-stat-sub">mcg/dL · optimal &lt;50</div></div>`:''}
+          ${latestLab.ferritin!=null?`<div class="provider-stat"><div class="provider-stat-label">Ferritin</div><div class="provider-stat-value">${latestLab.ferritin}</div><div class="provider-stat-sub">ng/mL</div></div>`:''}
+          ${latestLab.blood_copper!=null?`<div class="provider-stat"><div class="provider-stat-label">Blood Copper</div><div class="provider-stat-value" style="color:${latestLab.blood_copper>120?'var(--red)':'var(--green)'}">${latestLab.blood_copper}</div><div class="provider-stat-sub">mcg/dL</div></div>`:''}
+        </div>
+        ${labRowsHtml}
+      </div>` : '<div class="provider-section"><div class="provider-section-title">Lab Results</div><p style="color:var(--text3);font-size:14px">No lab results on file.</p></div>'}
+
+      <div class="provider-section">
+        <div class="provider-section-title">Latest Recommendations</div>
+        ${recsHtml}
+      </div>
+
+      <div class="provider-section">
+        <div class="provider-section-title">Program Progress</div>
+        ${phaseRowsHtml}
+      </div>
+
+      <div class="provider-section">
+        <div class="provider-section-title">Journal — Last 7 Entries</div>
+        ${journalRowsHtml}
+      </div>
+    `;
+  } catch(err) {
+    document.getElementById('provider-detail-content').innerHTML = `<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;
+  }
+}
+
+function hideProviderDetail() {
+  document.getElementById('provider-detail-view').style.display = 'none';
+  document.getElementById('provider-list-view').style.display = 'block';
+}
 
 (async()=>{const{data:{session}}=await sb.auth.getSession();if(!session)document.getElementById('auth-screen').style.display='flex';})();
 </script>
