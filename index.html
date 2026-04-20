@@ -412,30 +412,30 @@ async function viewEntry(entryId, from) {
     container.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;
   }
 }
-
 function formatContent(content) {
-  if (!content) return '';
-  if (typeof content === 'string') {
-    return content.split('\n').filter(Boolean).map(line => {
-      if (line.startsWith('# ')) return `<h3>${line.slice(2)}</h3>`;
-      if (line.startsWith('## ')) return `<h3>${line.slice(3)}</h3>`;
-      if (line.startsWith('- ') || line.startsWith('* ')) return `<li>${line.slice(2)}</li>`;
+  if (!content) return "";
+  if (typeof content === "string") {
+    return content.split("\n").filter(Boolean).map(line => {
+      if (line.startsWith("# ")) return `<h3>${line.slice(2)}</h3>`;
+      if (line.startsWith("## ")) return `<h3>${line.slice(3)}</h3>`;
+      if (line.startsWith("- ") || line.startsWith("* ")) return `<li>${line.slice(2)}</li>`;
       return `<p>${line}</p>`;
-    }).join('');
+    }).join("");
   }
-  return `<pre style="white-space:pre-wrap;font-size:14px;color:var(--text2)">${JSON.stringify(content, null, 2)}</pre>`;
+  if (typeof content === "object" && content !== null) {
+    return Object.entries(content).map(([key, val]) => {
+      const label = key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      if (Array.isArray(val)) {
+        if (val.length === 0) return "";
+        return `<h3>${label}</h3><ul>${val.map(v => typeof v === "object" ? Object.entries(v).map(([k2,v2]) => `<li><strong>${k2.replace(/_/g," ")}:</strong> ${v2}</li>`).join("") : `<li>${v}</li>`).join("")}</ul>`;
+      }
+      if (typeof val === "string" && val.length > 0) return `<h3>${label}</h3><p>${val}</p>`;
+      if (typeof val === "object" && val !== null) return `<h3>${label}</h3>` + formatContent(val);
+      return "";
+    }).filter(Boolean).join("");
+  }
+  return `<p>${String(content)}</p>`;
 }
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2800);
-}
-
-(async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) document.getElementById('auth-screen').style.display = 'flex';
 })();
 </script>
 </body>
