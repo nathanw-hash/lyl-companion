@@ -15,6 +15,8 @@
   --blue:#1d4ed8;--blue-light:#eff6ff;
   --red:#b91c1c;--red-light:#fef2f2;
   --gray-light:#f1efe8;
+  --green:#15803d;--green-light:#dcfce7;
+  --yellow:#854d0e;--yellow-light:#fef9c3;
   --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -39,20 +41,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 /* APP */
 #app{display:none;min-height:100vh;}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;position:sticky;top:0;z-index:100;gap:24px;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;position:sticky;top:0;z-index:100;gap:20px;}
 .topbar-logo{font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);padding:16px 0;white-space:nowrap;}
-.topbar-links{display:flex;gap:4px;}
-.topbar-link{padding:8px 12px;border-radius:8px;font-size:14px;font-weight:500;color:var(--text2);cursor:pointer;border:none;background:transparent;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.topbar-links{display:flex;gap:2px;}
+.topbar-link{padding:8px 11px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border:none;background:transparent;transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .topbar-link:hover{background:var(--surface2);color:var(--text);}
 .topbar-link.active{background:var(--accent-light);color:var(--accent);}
 .user-menu{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .user-email{font-size:13px;color:var(--text3);}
-.testing-link{font-size:13px;color:var(--accent);text-decoration:none;padding:6px 12px;border:1.5px solid var(--accent);border-radius:6px;font-weight:500;transition:all .15s;}
+.testing-link{font-size:13px;color:var(--accent);text-decoration:none;padding:6px 12px;border:1.5px solid var(--accent);border-radius:6px;font-weight:500;transition:all .15s;white-space:nowrap;}
 .testing-link:hover{background:var(--accent);color:#fff;}
 .btn-signout{font-size:13px;color:var(--text3);background:none;border:1px solid var(--border);padding:6px 12px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .btn-signout:hover{color:#b91c1c;border-color:#b91c1c;}
 
-.main{max-width:860px;margin:0 auto;padding:40px 24px;}
+.main{max-width:900px;margin:0 auto;padding:40px 24px;}
 .panel{display:none;}
 .panel.active{display:block;}
 
@@ -128,7 +130,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .phase-info{flex:1;}
 .phase-title{font-weight:600;font-size:16px;margin-bottom:2px;}
 .phase-subtitle{font-size:13px;color:var(--text3);}
-.phase-mini-progress{display:flex;align-items:center;gap:10px;min-width:120px;}
+.phase-mini-progress{display:flex;align-items:center;gap:10px;min-width:110px;}
 .phase-mini-bar{flex:1;height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
 .phase-mini-fill{height:100%;border-radius:10px;transition:width .3s;}
 .phase-mini-fill.not-started{background:var(--border);}
@@ -175,11 +177,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .skipped-badge{font-size:11px;font-weight:600;padding:2px 6px;background:var(--gray-light);color:var(--text3);border-radius:4px;margin-left:6px;}
 
 /* JOURNAL */
-.journal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:gap;}
+.journal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
 .journal-header h1{font-family:'DM Serif Display',serif;font-size:32px;}
 .btn-new-entry{padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s;}
 .btn-new-entry:hover{opacity:.88;}
-
 .calendar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:28px;}
 .calendar-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
 .calendar-nav-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text2);transition:all .15s;}
@@ -196,13 +197,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cal-dot.high{background:#16a34a;}
 .cal-dot.mid{background:#ca8a04;}
 .cal-dot.low{background:#dc2626;}
-
 .journal-section-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
 .journal-entry-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:12px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);}
 .journal-entry-card:hover{border-color:var(--accent);box-shadow:0 4px 20px rgba(45,106,79,.1);}
 .journal-entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .journal-entry-date{font-weight:600;font-size:15px;}
-.journal-entry-badges{display:flex;gap:8px;}
+.journal-entry-badges{display:flex;gap:8px;flex-wrap:wrap;}
 .badge{font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500;}
 .badge.energy-high{background:#dcfce7;color:#15803d;}
 .badge.energy-mid{background:#fef9c3;color:#854d0e;}
@@ -213,10 +213,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .journal-entry-symptoms{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
 .symptom-chip{font-size:11px;padding:2px 8px;background:var(--surface2);border-radius:10px;color:var(--text3);}
 .journal-entry-preview{font-size:13px;color:var(--text3);margin-top:8px;line-height:1.5;}
-
-/* JOURNAL FORM */
-.journal-form-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);}
-.journal-form-title{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:24px;}
 .slider-field{margin-bottom:20px;}
 .slider-field label{display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px;}
 .slider-field label span{font-weight:600;color:var(--accent);}
@@ -228,12 +224,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .symptom-cb:hover{border-color:var(--accent);background:var(--accent-light);}
 .symptom-cb input{accent-color:var(--accent);}
 .form-actions{display:flex;gap:12px;margin-top:24px;}
-.btn-save-journal{padding:12px 28px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-save-journal:hover{opacity:.88;}
-.btn-cancel-journal{padding:12px 20px;background:transparent;color:var(--text2);border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;transition:all .15s;}
-.btn-cancel-journal:hover{border-color:var(--accent);color:var(--accent);}
-
-/* JOURNAL DETAIL */
+.btn-save-journal{padding:12px 28px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;}
+.btn-cancel-journal{padding:12px 20px;background:transparent;color:var(--text2);border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;}
+.journal-form-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);}
+.journal-form-title{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:24px;}
 .journal-detail-section{margin-bottom:20px;}
 .journal-detail-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
 .journal-detail-value{font-size:15px;color:var(--text2);line-height:1.6;}
@@ -241,22 +235,63 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .journal-link-pill{font-size:13px;padding:6px 14px;background:var(--accent-light);color:var(--accent);border-radius:20px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .journal-link-pill:hover{background:var(--accent);color:#fff;}
 
+/* FOOD LIST */
+.food-header{margin-bottom:28px;}
+.food-header h1{font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px;}
+.food-header p{font-size:14px;color:var(--text2);max-width:600px;}
+.food-notice{background:var(--amber-light);border:1px solid #f8c97a;border-radius:10px;padding:12px 16px;font-size:13px;color:#92400e;margin-bottom:24px;line-height:1.6;}
+.food-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);}
+.legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.legend-dot.green{background:#16a34a;}
+.legend-dot.yellow{background:#ca8a04;}
+.legend-dot.red{background:#dc2626;}
+
+.food-controls{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+.food-search-input{flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;}
+.food-search-input:focus{border-color:var(--accent);}
+.food-filter-btn{padding:8px 16px;border-radius:8px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.food-filter-btn:hover{border-color:var(--accent);color:var(--accent);}
+.food-filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.food-filter-btn.green-filter.active{background:#16a34a;border-color:#16a34a;}
+.food-filter-btn.yellow-filter.active{background:#ca8a04;border-color:#ca8a04;}
+.food-filter-btn.red-filter.active{background:#dc2626;border-color:#dc2626;}
+
+.food-category-section{margin-bottom:32px;}
+.food-category-title{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;}
+.food-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;}
+.food-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.food-dot.green{background:#16a34a;}
+.food-dot.yellow{background:#ca8a04;}
+.food-dot.red{background:#dc2626;}
+.food-info{flex:1;}
+.food-name{font-weight:600;font-size:14px;margin-bottom:2px;}
+.food-serving{font-size:12px;color:var(--text3);margin-bottom:4px;}
+.food-reason{font-size:12px;color:var(--text2);line-height:1.5;}
+.food-flags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.food-flag{font-size:10px;padding:1px 6px;border-radius:10px;font-weight:500;}
+.food-flag.va{background:#fee2e2;color:#b91c1c;}
+.food-flag.cu{background:#fef9c3;color:#854d0e;}
+.food-flag.ni{background:#eff6ff;color:#1d4ed8;}
+.food-flag.ok{background:#dcfce7;color:#15803d;}
+
 .loading{text-align:center;color:var(--text3);padding:40px;font-size:14px;}
 .empty-state{text-align:center;color:var(--text3);padding:60px 24px;}
 .empty-state h3{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text2);margin-bottom:8px;}
-
 #toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;z-index:999;}
 #toast.show{opacity:1;transform:translateY(0);}
 
 @media(max-width:640px){
-  .topbar{padding:0 12px;gap:8px;}
-  .topbar-logo{font-size:16px;}
+  .topbar{padding:0 10px;gap:6px;}
+  .topbar-logo{font-size:15px;}
+  .topbar-link{padding:7px 8px;font-size:12px;}
   .main{padding:20px 14px;}
   .auth-card{padding:28px 18px;}
   .user-email,.testing-link{display:none;}
-  .entry-grid,.symptom-checkboxes{grid-template-columns:1fr;}
+  .entry-grid,.symptom-checkboxes,.food-grid{grid-template-columns:1fr;}
   .phase-mini-progress{display:none;}
-  .calendar-grid{gap:2px;}
+  .food-controls{flex-direction:column;}
 }
 </style>
 </head>
@@ -292,6 +327,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <button class="topbar-link" id="tab-browse" onclick="showPanel('browse')">Browse</button>
       <button class="topbar-link" id="tab-tracker" onclick="showPanel('tracker')">My Progress</button>
       <button class="topbar-link" id="tab-journal" onclick="showPanel('journal')">Journal</button>
+      <button class="topbar-link" id="tab-foods" onclick="showPanel('foods')">Food Guide</button>
     </div>
     <div class="user-menu">
       <span class="user-email" id="user-email-display"></span>
@@ -339,9 +375,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <h1>My Program Progress</h1>
         <p>Track your journey through the Order of Adding Stuff — your personal guide to the LYL program.</p>
       </div>
-      <div class="tracker-notice">
-        <strong>This is a flexible guide, not a rigid sequence.</strong> Everyone responds differently. Feel free to skip steps or phases and return to them later based on your tolerance and what works for your body.
-      </div>
+      <div class="tracker-notice"><strong>This is a flexible guide, not a rigid sequence.</strong> Everyone responds differently. Feel free to skip steps or phases and return to them later based on your tolerance and what works for your body.</div>
       <div class="overall-progress">
         <div class="overall-progress-label">Overall progress</div>
         <div class="progress-bar-wrap"><div class="progress-bar-fill" id="overall-bar" style="width:0%"></div></div>
@@ -372,10 +406,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <button class="entry-back" onclick="hideJournalForm()">&#8592; Back to journal</button>
         <div class="journal-form-wrap">
           <div class="journal-form-title" id="journal-form-title">New journal entry</div>
-          <div class="field">
-            <label>Date</label>
-            <input type="date" id="journal-date">
-          </div>
+          <div class="field"><label>Date</label><input type="date" id="journal-date"></div>
           <div class="slider-field">
             <label>Energy level <span id="energy-val">5</span>/10</label>
             <input type="range" min="1" max="10" value="5" id="journal-energy" oninput="document.getElementById('energy-val').textContent=this.value">
@@ -386,24 +417,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
             <input type="range" min="1" max="10" value="3" id="journal-severity" oninput="document.getElementById('symptom-val').textContent=this.value">
             <div class="slider-labels"><span>None</span><span>Moderate</span><span>Severe</span></div>
           </div>
-          <div class="field">
-            <label>Symptoms today</label>
-            <div class="symptom-checkboxes" id="symptom-checkboxes"></div>
-          </div>
-          <div class="field">
-            <label>Supplements taken</label>
-            <textarea id="journal-supplements" placeholder="e.g. Zinc 30mg, Selenium 150mcg, Activated charcoal 1/4 tsp..."></textarea>
-          </div>
-          <div class="field">
-            <label>Foods eaten</label>
-            <textarea id="journal-foods" placeholder="e.g. Oatmeal, chicken, rice, apples, beans..."></textarea>
-          </div>
-          <div class="field">
-            <label>Notes</label>
-            <textarea id="journal-notes" placeholder="How are you feeling? Any reactions? Observations?"></textarea>
-          </div>
-          <div class="field">
-            <label>Current phase</label>
+          <div class="field"><label>Symptoms today</label><div class="symptom-checkboxes" id="symptom-checkboxes"></div></div>
+          <div class="field"><label>Supplements taken</label><textarea id="journal-supplements" placeholder="e.g. Zinc 30mg, Selenium 150mcg, Activated charcoal 1/4 tsp..."></textarea></div>
+          <div class="field"><label>Foods eaten</label><textarea id="journal-foods" placeholder="e.g. Oatmeal, chicken, rice, apples, beans..."></textarea></div>
+          <div class="field"><label>Notes</label><textarea id="journal-notes" placeholder="How are you feeling? Any reactions? Observations?"></textarea></div>
+          <div class="field"><label>Current phase</label>
             <select id="journal-phase">
               <option value="">Not specified</option>
               <option value="0">Phase 0 — Hydration, Breathing, Light, Movement</option>
@@ -426,6 +444,32 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       </div>
     </div>
 
+    <!-- FOOD GUIDE -->
+    <div class="panel" id="panel-foods">
+      <div class="food-header">
+        <h1>Food Guide</h1>
+        <p>Traffic light reference for Vitamin A, copper, and nickel content — the three dietary factors most relevant to the LYL program.</p>
+      </div>
+      <div class="food-notice">
+        <strong>The goal is reduction, not perfection.</strong> The LYL program is not an elimination diet. Focus on removing the highest-burden foods and rotating safer options. Individual tolerance varies — use your symptoms as your guide.
+        <br><br>
+        <strong>Nickel note:</strong> Whole grains and beans are high in nickel but also the best sources of soluble fiber for bile binding. If you are not improving after following the program, consider reducing these temporarily while maintaining fiber intake through other means.
+      </div>
+      <div class="food-legend">
+        <div class="legend-item"><div class="legend-dot green"></div><strong>Green</strong> — Safe / encouraged</div>
+        <div class="legend-item"><div class="legend-dot yellow"></div><strong>Yellow</strong> — Use with caution / limit portions</div>
+        <div class="legend-item"><div class="legend-dot red"></div><strong>Red</strong> — Avoid on the LYL program</div>
+      </div>
+      <div class="food-controls">
+        <input type="text" class="food-search-input" id="food-search" placeholder="Search foods..." oninput="renderFoodList()">
+        <button class="food-filter-btn active" id="filter-all" onclick="setFoodFilter('all')">All</button>
+        <button class="food-filter-btn green-filter" id="filter-green" onclick="setFoodFilter('green')">🟢 Safe</button>
+        <button class="food-filter-btn yellow-filter" id="filter-yellow" onclick="setFoodFilter('yellow')">🟡 Caution</button>
+        <button class="food-filter-btn red-filter" id="filter-red" onclick="setFoodFilter('red')">🔴 Avoid</button>
+      </div>
+      <div id="food-list-content"></div>
+    </div>
+
   </div>
 </div>
 
@@ -435,508 +479,243 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 const SUPABASE_URL = 'https://pkootwezezmqwopveigu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrb290d2V6ZXptcXdvcHZlaWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMjAxNTIsImV4cCI6MjA5MTU5NjE1Mn0.OKeSR5NQMON7_hIEqpKtQmUW1jTId3BkOM9hteGhtzY';
 const VOYAGE_KEY = 'pa-subXscuX1onmIGPmhWxZ73eMzLK52OHSCefMPAp-g1b';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{storageKey:'lyl-companion-auth',persistSession:true,detectSessionInUrl:false,lock:async(n,t,fn)=>fn()}});
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { storageKey: 'lyl-companion-auth', persistSession: true, detectSessionInUrl: false, lock: async (n, t, fn) => fn() }
-});
+let currentUser=null,allEntries=[],previousPanel='search',phaseProgress={},journalEntries=[],calendarDate=new Date(),editingJournalId=null,foodFilter='all';
+const SYMPTOM_LIST=['Fatigue','Brain fog','Nausea','Headache','Skin issues','Digestive issues','Joint pain','Mood changes','Sleep issues','Supplement reaction','Bile dumping','Heart palpitations','Foot/leg cramps','Chemical sensitivity'];
 
-let currentUser = null;
-let allEntries = [];
-let previousPanel = 'search';
-let phaseProgress = {};
-let journalEntries = [];
-let calendarDate = new Date();
-let editingJournalId = null;
+// FOOD DATA
+// Traffic: green=safe, yellow=caution, red=avoid
+// Flags: va=high vitamin A, cu=high copper, ni=high nickel
+const FOODS = [
+  // PROTEINS
+  {name:'Chicken (white meat)',category:'Proteins',traffic:'green',serving:'Unlimited',reason:'Low VA, low copper, low nickel. Best everyday protein on LYL.',flags:['ok']},
+  {name:'Chicken (dark meat)',category:'Proteins',traffic:'yellow',serving:'Moderate',reason:'Slightly higher fat and copper than white meat. Fine in rotation.',flags:[]},
+  {name:'Turkey (white meat)',category:'Proteins',traffic:'green',serving:'Unlimited',reason:'Low VA, low copper. Excellent protein choice.',flags:['ok']},
+  {name:'Ground beef (rinsed)',category:'Proteins',traffic:'green',serving:'Daily OK',reason:'Rinse in strainer after browning to reduce fat. Lower fat = higher zinc, lower fat-soluble toxins.',flags:['ok']},
+  {name:'Lamb',category:'Proteins',traffic:'yellow',serving:'Occasional',reason:'Higher copper than beef. Rotate with other proteins.',flags:['cu']},
+  {name:'Pork',category:'Proteins',traffic:'yellow',serving:'Moderate',reason:'Moderate copper. Avoid processed/cured versions.',flags:['cu']},
+  {name:'Eggs',category:'Proteins',traffic:'red',serving:'Avoid',reason:'Very high in vitamin A (retinol). One of the top dietary sources of preformed VA.',flags:['va']},
+  {name:'Liver / organ meats',category:'Proteins',traffic:'red',serving:'Avoid completely',reason:'Extremely high vitamin A and copper. The highest dietary source of both. Non-negotiable elimination.',flags:['va','cu']},
+  {name:'Shellfish (shrimp, crab)',category:'Proteins',traffic:'yellow',serving:'Occasional',reason:'High copper. Zinc-to-copper ratio is poor.',flags:['cu']},
+  {name:'Oysters',category:'Proteins',traffic:'red',serving:'Avoid',reason:'Extremely high copper — among the highest of any food. Also high zinc but the copper burden is too great.',flags:['cu']},
+  {name:'Canned tuna (in water)',category:'Proteins',traffic:'green',serving:'Several times/week',reason:'Low VA, low copper, low nickel. Good affordable protein.',flags:['ok']},
+  {name:'Salmon (wild)',category:'Proteins',traffic:'yellow',serving:'1-2x per week',reason:'Higher in omega-3s but also higher in fat-soluble vitamin A than white fish. Limit frequency.',flags:['va']},
+  {name:'White fish (cod, tilapia, halibut)',category:'Proteins',traffic:'green',serving:'Freely',reason:'Low VA, low copper. Excellent protein on LYL.',flags:['ok']},
+  {name:'Sardines / anchovies',category:'Proteins',traffic:'red',serving:'Avoid',reason:'High vitamin A from fish oils. Eliminate all fish oil products.',flags:['va']},
+  {name:'Whey protein',category:'Proteins',traffic:'red',serving:'Avoid',reason:'Dairy-derived. High in vitamin A and stimulates retinoid signaling.',flags:['va']},
+  {name:'Beans (black, kidney, pinto)',category:'Proteins',traffic:'yellow',serving:'Small portions',reason:'Good soluble fiber for bile binding but significant nickel content. Reduce if not improving.',flags:['ni']},
+  {name:'Lentils',category:'Proteins',traffic:'yellow',serving:'Small portions',reason:'High nickel like other legumes. Valuable fiber source but limit if nickel-sensitive.',flags:['ni']},
+  {name:'Tofu / soy products',category:'Proteins',traffic:'red',serving:'Avoid',reason:'High copper. Soy is also one of the more copper-dense plant proteins.',flags:['cu','ni']},
 
-const SYMPTOM_LIST = ['Fatigue','Brain fog','Nausea','Headache','Skin issues','Digestive issues','Joint pain','Mood changes','Sleep issues','Supplement reaction','Bile dumping','Heart palpitations','Foot/leg cramps','Chemical sensitivity'];
+  // VEGETABLES
+  {name:'White potatoes (peeled)',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low VA, low copper, low nickel when peeled. One of the best starchy vegetables on LYL.',flags:['ok']},
+  {name:'Zucchini',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low across all three factors. Great everyday vegetable.',flags:['ok']},
+  {name:'Cucumber',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Very low VA, copper, and nickel.',flags:['ok']},
+  {name:'Cabbage (green)',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low VA, low copper, low nickel. Excellent fiber source.',flags:['ok']},
+  {name:'Iceberg / romaine lettuce',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low across all factors. Good volume food.',flags:['ok']},
+  {name:'Onion',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low VA, low copper, low nickel.',flags:['ok']},
+  {name:'Garlic',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low VA, low copper, low nickel. Beneficial for bile and gut health.',flags:['ok']},
+  {name:'Celery',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low across all three factors.',flags:['ok']},
+  {name:'Green beans',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low VA, moderate nickel. Generally well tolerated.',flags:[]},
+  {name:'Cauliflower',category:'Vegetables',traffic:'green',serving:'Freely',reason:'Low VA, low copper, low nickel.',flags:['ok']},
+  {name:'Broccoli',category:'Vegetables',traffic:'yellow',serving:'Moderate',reason:'Some nickel content. Also high in sulfur which can be an issue for those with ALDH enzyme problems.',flags:['ni']},
+  {name:'Brussels sprouts',category:'Vegetables',traffic:'yellow',serving:'Moderate',reason:'Similar to broccoli — sulfur-rich and moderate nickel.',flags:['ni']},
+  {name:'Spinach',category:'Vegetables',traffic:'red',serving:'Avoid',reason:'Very high vitamin A (beta-carotene converts poorly but accumulates). Also high nickel.',flags:['va','ni']},
+  {name:'Kale',category:'Vegetables',traffic:'red',serving:'Avoid',reason:'Very high vitamin A. One of the highest VA vegetables.',flags:['va']},
+  {name:'Carrots',category:'Vegetables',traffic:'red',serving:'Avoid',reason:'Extremely high beta-carotene. One of the most vitamin A-dense vegetables.',flags:['va']},
+  {name:'Sweet potato / yam',category:'Vegetables',traffic:'red',serving:'Avoid',reason:'Very high beta-carotene. Even small amounts are significant VA loads.',flags:['va']},
+  {name:'Winter squash (butternut, acorn)',category:'Vegetables',traffic:'red',serving:'Avoid',reason:'High beta-carotene, similar to sweet potato.',flags:['va']},
+  {name:'Tomatoes',category:'Vegetables',traffic:'yellow',serving:'Occasional',reason:'Moderate lycopene (different carotenoid from beta-carotene). Low nickel. Generally OK in small amounts.',flags:[]},
+  {name:'Bell peppers (red/orange)',category:'Vegetables',traffic:'yellow',serving:'Small amounts',reason:'Moderate beta-carotene, especially red and orange varieties. Green peppers are lower in VA.',flags:['va']},
+  {name:'Bell peppers (green)',category:'Vegetables',traffic:'green',serving:'Moderate',reason:'Lower in beta-carotene than colored varieties.',flags:[]},
+  {name:'Mushrooms',category:'Vegetables',traffic:'yellow',serving:'Moderate',reason:'High copper content. Limit to small amounts.',flags:['cu']},
+  {name:'Avocado',category:'Vegetables',traffic:'yellow',serving:'Occasional / small',reason:'High copper. Popular health food but copper load is significant.',flags:['cu']},
 
-function getToken() {
-  const s = JSON.parse(localStorage.getItem('lyl-companion-auth') || 'null');
-  return s ? s.access_token : null;
-}
+  // GRAINS
+  {name:'White rice',category:'Grains',traffic:'green',serving:'Freely',reason:'Refined grain — very low nickel, low copper, no VA. One of the best staple carbs on LYL.',flags:['ok']},
+  {name:'White bread / pasta',category:'Grains',traffic:'green',serving:'Moderate',reason:'Refined grain — low nickel. Check ingredients for fortified VA and avoid those versions.',flags:['ok']},
+  {name:'Oats (rolled / steel cut)',category:'Grains',traffic:'yellow',serving:'Small portions',reason:'Excellent soluble fiber but significant nickel content. A worthwhile tradeoff for most, but reduce if not improving.',flags:['ni']},
+  {name:'Whole wheat bread/pasta',category:'Grains',traffic:'yellow',serving:'Small portions',reason:'High nickel (in the bran). Refined versions are better on LYL.',flags:['ni']},
+  {name:'Quinoa',category:'Grains',traffic:'red',serving:'Avoid',reason:'Very high nickel. Despite being a "superfood," it is one of the worst grains on LYL.',flags:['ni','cu']},
+  {name:'Buckwheat',category:'Grains',traffic:'red',serving:'Avoid',reason:'Very high nickel.',flags:['ni']},
+  {name:'Sunfiber (partially hydrolyzed guar gum)',category:'Grains',traffic:'green',serving:'Recommended',reason:'Very low nickel soluble fiber. The best fiber supplement for LYL — binds toxic bile without significant nickel load.',flags:['ok']},
+  {name:'Psyllium husk',category:'Grains',traffic:'green',serving:'Moderate',reason:'Low nickel soluble fiber. Good alternative to bean/grain fiber.',flags:['ok']},
+  {name:'Apple pectin',category:'Grains',traffic:'green',serving:'Moderate',reason:'Very low nickel soluble fiber supplement. Effective bile binder.',flags:['ok']},
 
-// OAS PHASE DATA
-const PHASES = [
-  { number:0, title:'Phase 0', subtitle:'Hydration, Breathing, Light, Movement', description:'The true foundation of the LYL program — before any supplements or dietary changes. These practices support detox gently around the clock without triggering bile-dumping symptoms, making them appropriate even for very sensitive individuals.', kb_links:[{label:'Breathwork basics',id:'life_003'},{label:'Big 6 Lymph Drainage',id:'life_001'}], steps:[{id:'hydration',name:'Establish adequate hydration',desc:'Use filtered, RO, or distilled water. Increase intake gradually.'},{id:'breathing',name:'Begin breathwork practice',desc:'Better breathing increases toxin elimination through breath all day. See breathwork article for protocol.'},{id:'sunlight',name:'Daily sunlight / UVB exposure',desc:'Bare skin exposure — not so much that symptoms worsen. This is your source of vitamin D, not supplements.'},{id:'big6',name:'Big 6 Lymph Drainage — daily',desc:'Gentle massage of neck, armpits, and groin to keep lymph moving. Takes just a few minutes. See article.'},{id:'movement',name:'Start easy movement',desc:'10,000 steps/day is a good goal. Never push to the point of feeling worse or depleted — that dumps excess bile.'}]},
-  { number:1, title:'Phase 1', subtitle:'Bowels, Biome, Bile', description:'Fix elimination before anything else. Toxins get reabsorbed instead of eliminated when the gut is not working well. Constipation keeps toxins in the gut longer. Dysbiosis means bacteria aren\'t properly processing bile acids. Fix the gut first — everything else depends on it.', kb_links:[{label:'Gut biome & dysbiosis',id:'gut_001'},{label:'Activated charcoal',id:'spc_002'}], steps:[{id:'constipation',name:'Address constipation if present',desc:'Goal: at least 1–2 bowel movements per day before adding charcoal. Options: oral magnesium, potassium, niacin, Sunfiber, prunes, green kiwi.'},{id:'diarrhea',name:'Address diarrhea if present',desc:'Activated charcoal orally and/or topically over gut and liver. Lactospore probiotic.'},{id:'probiotics',name:'Add probiotics',desc:'Women: always start with Lactobacillus first. Men: Lactobacillus usually first. Add Bifidobacterium as second step if needed.'},{id:'soluble_fiber',name:'Increase soluble fiber',desc:'Binds toxic bile in the gut. Start low and increase slowly. Sources: beans, oats, apple pectin, Sunfiber, psyllium.'},{id:'insoluble_fiber',name:'Add insoluble fiber',desc:'Feeds putrefactive bacteria, improves bulk and motility. Sources: most low-VA vegetables, apple peel, oat fiber.'},{id:'charcoal',name:'Add activated charcoal (once regular)',desc:'Only after achieving 2+ bowel movements per day. Hardwood or bamboo charcoal powder. Start at 1/4 tsp and build slowly.'}]},
-  { number:2, title:'Phase 2', subtitle:'Electrolytes', description:'Establish a mineral foundation before adding detox minerals. Electrolytes support nerve, muscle, and cellular function and are depleted by both toxicity and the detox process itself.', kb_links:[{label:'Sodium basics',id:'min_004'},{label:'Potassium basics',id:'min_005'},{label:'Topical magnesium',id:'top_001'}], steps:[{id:'magnesium',name:'Magnesium — topical and/or oral',desc:'Topical magnesium is ~10x more effective than oral. Apply lotion or spray daily. Oral magnesium (citrate or glycinate) also helps with bowel regularity.'},{id:'potassium',name:'Potassium — topical and/or dietary',desc:'Critical for heart rhythm and nerve function. Depleted by vitamin A toxicity. Watch for foot/leg cramps, fatigue after eating, and heart palpitations as deficiency signs.'},{id:'sodium',name:'Sodium — salt your food to taste',desc:'Use bright white single-ingredient sea salt. Salt to taste — your body\'s feedback is reliable. People who avoid salt consistently fail to improve.'}]},
-  { number:3, title:'Phase 3', subtitle:'Big Minerals', description:'The three minerals most critical to vitamin A and copper detox pathways. All three support the ALDH enzyme system. All three are anti-fungal. All three follow the same rule: if a dose causes negative reactions within 3–7 days, take less — even down to zero.', kb_links:[{label:'Selenium basics',id:'min_002'},{label:'Molybdenum basics',id:'min_003'},{label:'Zinc basics',id:'min_001'}], steps:[{id:'selenium',name:'Selenium (start here)',desc:'Selenium glycinate 150mcg/day. Protects the liver against vitamin A toxicity, supports ALDH enzyme, antagonizes copper and mercury.'},{id:'molybdenum',name:'Molybdenum (second)',desc:'Molybdenum glycinate 150mcg/day. Required for ALDH and aldehyde oxidase enzymes. Signs of deficiency: sensitivity to alcohol, wine, caffeine, or high-sulfur foods.'},{id:'zinc',name:'Zinc (third)',desc:'Zinc picolinate — 40% of body weight in lbs, capped at 60mg/day. Start at 15–30mg and increase slowly.'}]},
-  { number:4, title:'Phase 4', subtitle:'Antidotes & B-Vitamins', description:'These B vitamins directly counter the damage caused by vitamin A and copper toxicity. Use only the correct forms. Do NOT use B-complex supplements.', kb_links:[{label:'B vitamins as antidotes',id:'bvit_001'}], steps:[{id:'k2',name:'Vitamin K2 — MK-4 form only',desc:'NOT MK-7. Standard dose 3–5mg/day. Higher experimental dose up to 60mg/day. Helps heavy bleeding, bruising, bone health.'},{id:'folate',name:'Folinic acid (calcium folinate)',desc:'NOT folic acid or methylfolate. Standard 400mcg/day, max 800mcg/day. Binds copper, supports DNA synthesis.'},{id:'b1',name:'Thiamine B1 — thiamine HCl preferred',desc:'NOT thiamine mononitrate. Start 25–50mg/day, standard 100–300mg/day. Essential for nerve function and gut motility.'},{id:'b12',name:'B12 — adenosylcobalamin or hydroxocobalamin',desc:'NOT cyanocobalamin or methylcobalamin. Standard 500–1000mcg/day. Hydroxocobalamin also binds copper.'}]},
-  { number:5, title:'Phase 5', subtitle:'Lactoferrin', description:'Lactoferrin repairs bile duct cells damaged by vitamin A toxicity. Introduced last because it requires the foundation of earlier phases to work effectively.', kb_links:[{label:'Lactoferrin FAQ',id:'spc_001'}], steps:[{id:'lactoferrin',name:'Bovine lactoferrin',desc:'Use purified bovine lactoferrin powder (not dairy colostrum). Start at a dose that does not cause negative reactions.'}]}
+  // FATS & OILS
+  {name:'Coconut oil',category:'Fats & Oils',traffic:'green',serving:'Freely',reason:'No VA, low copper, low nickel. Good cooking fat on LYL.',flags:['ok']},
+  {name:'Olive oil (extra virgin)',category:'Fats & Oils',traffic:'green',serving:'Moderate',reason:'Low VA, low nickel. Small amount of copper but overall a good fat.',flags:[]},
+  {name:'Butter',category:'Fats & Oils',traffic:'red',serving:'Avoid',reason:'Dairy fat — high vitamin A. Even small amounts contribute meaningfully to VA load.',flags:['va']},
+  {name:'Ghee',category:'Fats & Oils',traffic:'red',serving:'Avoid',reason:'Clarified butter — concentrates fat-soluble vitamins including VA.',flags:['va']},
+  {name:'Dairy (milk, cream, cheese)',category:'Fats & Oils',traffic:'red',serving:'Avoid',reason:'High vitamin A, especially full-fat dairy. Fortified dairy adds even more.',flags:['va']},
+  {name:'Cod liver oil / fish oil',category:'Fats & Oils',traffic:'red',serving:'Avoid completely',reason:'Extremely high vitamin A. One of the most concentrated VA sources. Non-negotiable elimination.',flags:['va']},
+  {name:'Lard / tallow',category:'Fats & Oils',traffic:'yellow',serving:'Small amounts',reason:'Animal fat with some VA depending on the animal\'s diet. Lower than butter.',flags:['va']},
+
+  // FRUITS
+  {name:'Apples (peeled)',category:'Fruits',traffic:'green',serving:'Freely',reason:'Low VA, low copper, low nickel when peeled. Apple pectin is valuable for bile binding.',flags:['ok']},
+  {name:'Bananas',category:'Fruits',traffic:'green',serving:'Freely',reason:'Low VA, low copper, low nickel. Good potassium source.',flags:['ok']},
+  {name:'Green kiwi',category:'Fruits',traffic:'green',serving:'1-2 daily',reason:'Low VA, low nickel. Helps with bowel motility. Recommended for constipation.',flags:['ok']},
+  {name:'Blueberries / strawberries',category:'Fruits',traffic:'green',serving:'Moderate',reason:'Low VA and nickel. Higher in antioxidants.',flags:[]},
+  {name:'Grapes',category:'Fruits',traffic:'green',serving:'Moderate',reason:'Low VA, low copper, low nickel.',flags:[]},
+  {name:'Watermelon',category:'Fruits',traffic:'yellow',serving:'Moderate',reason:'Contains some lycopene. Generally low burden but limit large amounts.',flags:[]},
+  {name:'Mango',category:'Fruits',traffic:'red',serving:'Avoid',reason:'Very high beta-carotene.',flags:['va']},
+  {name:'Cantaloupe / papaya',category:'Fruits',traffic:'red',serving:'Avoid',reason:'Very high beta-carotene.',flags:['va']},
+  {name:'Apricots',category:'Fruits',traffic:'red',serving:'Avoid',reason:'Very high beta-carotene, even dried.',flags:['va']},
+  {name:'Prunes / dried plums',category:'Fruits',traffic:'green',serving:'Small amounts',reason:'Low VA and copper. Helpful for constipation. Low nickel.',flags:['ok']},
+
+  // NUTS & SEEDS
+  {name:'Almonds',category:'Nuts & Seeds',traffic:'red',serving:'Avoid',reason:'High copper and high nickel. Very common hidden source of both.',flags:['cu','ni']},
+  {name:'Cashews',category:'Nuts & Seeds',traffic:'red',serving:'Avoid',reason:'One of the highest copper nuts. Also high nickel.',flags:['cu','ni']},
+  {name:'Walnuts',category:'Nuts & Seeds',traffic:'red',serving:'Avoid',reason:'High copper and high nickel.',flags:['cu','ni']},
+  {name:'Brazil nuts',category:'Nuts & Seeds',traffic:'red',serving:'Avoid',reason:'High nickel and copper. Even a few per day is significant.',flags:['cu','ni']},
+  {name:'Sunflower seeds',category:'Nuts & Seeds',traffic:'red',serving:'Avoid',reason:'Very high nickel and copper.',flags:['cu','ni']},
+  {name:'Pumpkin seeds',category:'Nuts & Seeds',traffic:'red',serving:'Avoid',reason:'High nickel and copper.',flags:['cu','ni']},
+  {name:'Flaxseed / chia',category:'Nuts & Seeds',traffic:'red',serving:'Avoid',reason:'High nickel. Also high in omega-3s that can compete with zinc.',flags:['ni']},
+  {name:'Sesame / tahini',category:'Nuts & Seeds',traffic:'red',serving:'Avoid',reason:'Very high copper and significant nickel.',flags:['cu','ni']},
+
+  // SWEETENERS
+  {name:'White sugar',category:'Sweeteners',traffic:'green',serving:'Moderate',reason:'No VA, no copper, no nickel. Pure carbohydrate — acceptable in moderation.',flags:['ok']},
+  {name:'Honey',category:'Sweeteners',traffic:'yellow',serving:'Small amounts',reason:'Small amounts of copper. Better than most sweeteners on LYL but limit quantity.',flags:['cu']},
+  {name:'Maple syrup',category:'Sweeteners',traffic:'yellow',serving:'Small amounts',reason:'Some copper content. Use sparingly.',flags:['cu']},
+  {name:'Molasses',category:'Sweeteners',traffic:'red',serving:'Avoid',reason:'Very high copper.',flags:['cu']},
+  {name:'Chocolate / cocoa',category:'Sweeteners',traffic:'red',serving:'Avoid completely',reason:'Highest nickel food known. Also very high copper. A non-negotiable elimination on LYL — chronic skin issues and bile-dumping symptoms that won\'t resolve often trace back to chocolate.',flags:['cu','ni']},
+
+  // BEVERAGES
+  {name:'Water (filtered / RO)',category:'Beverages',traffic:'green',serving:'Primary beverage',reason:'Essential. Use RO, distilled, or quality filtered water. Check pipes — copper pipes leach into tap water.',flags:['ok']},
+  {name:'Coffee (black)',category:'Beverages',traffic:'yellow',serving:'1-2 cups/day',reason:'Some copper. Can also stress the liver in sensitive individuals. Monitor your response.',flags:['cu']},
+  {name:'Green / black tea',category:'Beverages',traffic:'yellow',serving:'Moderate',reason:'Some nickel content. Generally fine in small amounts but not unlimited.',flags:['ni']},
+  {name:'Alcohol',category:'Beverages',traffic:'red',serving:'Avoid',reason:'Stresses ALDH enzyme (the same pathway impaired by cholestasis). Depletes zinc and B vitamins.',flags:[]},
+  {name:'Fortified juices / drinks',category:'Beverages',traffic:'red',serving:'Avoid',reason:'Often fortified with vitamin A. Read all labels.',flags:['va']},
+  {name:'Carrot juice',category:'Beverages',traffic:'red',serving:'Avoid',reason:'Concentrated beta-carotene. Even small amounts are a significant VA load.',flags:['va']},
+
+  // CONDIMENTS & MISC
+  {name:'Sea salt (plain white)',category:'Condiments',traffic:'green',serving:'Salt to taste',reason:'Use bright white single-ingredient sea salt. Salt your food to taste — your body\'s feedback is reliable.',flags:['ok']},
+  {name:'Apple cider vinegar',category:'Condiments',traffic:'yellow',serving:'Small amounts',reason:'Acetic acid may affect sulfur metabolism. Use cautiously — some individuals react to it.',flags:[]},
+  {name:'Soy sauce / tamari',category:'Condiments',traffic:'red',serving:'Avoid',reason:'High copper from soy base. Also high sodium from non-salt sources.',flags:['cu']},
+  {name:'Nutritional yeast',category:'Condiments',traffic:'red',serving:'Avoid',reason:'High copper. Commonly used as a "superfood" but problematic on LYL.',flags:['cu']},
+  {name:'Multivitamins',category:'Condiments',traffic:'red',serving:'Avoid',reason:'Almost universally contain vitamin A (retinol or beta-carotene) and often copper. Eliminate all multivitamins.',flags:['va','cu']},
+  {name:'Fortified cereals',category:'Condiments',traffic:'red',serving:'Avoid',reason:'Heavily fortified with vitamin A. Read all labels.',flags:['va']},
+];
+
+function getToken(){const s=JSON.parse(localStorage.getItem('lyl-companion-auth')||'null');return s?s.access_token:null;}
+
+// PHASE DATA
+const PHASES=[
+  {number:0,title:'Phase 0',subtitle:'Hydration, Breathing, Light, Movement',description:'The true foundation of the LYL program — before any supplements or dietary changes. These practices support detox gently around the clock without triggering bile-dumping symptoms, making them appropriate even for very sensitive individuals.',kb_links:[{label:'Breathwork basics',id:'life_003'},{label:'Big 6 Lymph Drainage',id:'life_001'}],steps:[{id:'hydration',name:'Establish adequate hydration',desc:'Use filtered, RO, or distilled water. Increase intake gradually.'},{id:'breathing',name:'Begin breathwork practice',desc:'Better breathing increases toxin elimination through breath all day.'},{id:'sunlight',name:'Daily sunlight / UVB exposure',desc:'Bare skin exposure — not so much that symptoms worsen. This is your source of vitamin D.'},{id:'big6',name:'Big 6 Lymph Drainage — daily',desc:'Gentle massage of neck, armpits, and groin to keep lymph moving.'},{id:'movement',name:'Start easy movement',desc:'10,000 steps/day is a good goal. Never push to the point of feeling worse.'}]},
+  {number:1,title:'Phase 1',subtitle:'Bowels, Biome, Bile',description:'Fix elimination before anything else. Toxins get reabsorbed instead of eliminated when the gut is not working well.',kb_links:[{label:'Gut biome & dysbiosis',id:'gut_001'},{label:'Activated charcoal',id:'spc_002'}],steps:[{id:'constipation',name:'Address constipation if present',desc:'Goal: at least 1–2 bowel movements per day before adding charcoal.'},{id:'diarrhea',name:'Address diarrhea if present',desc:'Activated charcoal orally and/or topically over gut and liver. Lactospore probiotic.'},{id:'probiotics',name:'Add probiotics',desc:'Women: always start with Lactobacillus first.'},{id:'soluble_fiber',name:'Increase soluble fiber',desc:'Binds toxic bile in the gut. Start low and increase slowly.'},{id:'insoluble_fiber',name:'Add insoluble fiber',desc:'Feeds putrefactive bacteria, improves bulk and motility.'},{id:'charcoal',name:'Add activated charcoal (once regular)',desc:'Only after achieving 2+ bowel movements per day. Start at 1/4 tsp.'}]},
+  {number:2,title:'Phase 2',subtitle:'Electrolytes',description:'Establish a mineral foundation before adding detox minerals.',kb_links:[{label:'Sodium basics',id:'min_004'},{label:'Potassium basics',id:'min_005'},{label:'Topical magnesium',id:'top_001'}],steps:[{id:'magnesium',name:'Magnesium — topical and/or oral',desc:'Topical magnesium is ~10x more effective than oral.'},{id:'potassium',name:'Potassium — topical and/or dietary',desc:'Watch for foot/leg cramps, fatigue after eating, and heart palpitations as deficiency signs.'},{id:'sodium',name:'Sodium — salt your food to taste',desc:'Use bright white single-ingredient sea salt.'}]},
+  {number:3,title:'Phase 3',subtitle:'Big Minerals',description:'The three minerals most critical to vitamin A and copper detox pathways.',kb_links:[{label:'Selenium basics',id:'min_002'},{label:'Molybdenum basics',id:'min_003'},{label:'Zinc basics',id:'min_001'}],steps:[{id:'selenium',name:'Selenium (start here)',desc:'Selenium glycinate 150mcg/day.'},{id:'molybdenum',name:'Molybdenum (second)',desc:'Molybdenum glycinate 150mcg/day.'},{id:'zinc',name:'Zinc (third)',desc:'Zinc picolinate — 40% of body weight in lbs, capped at 60mg/day.'}]},
+  {number:4,title:'Phase 4',subtitle:'Antidotes & B-Vitamins',description:'These B vitamins directly counter the damage caused by vitamin A and copper toxicity.',kb_links:[{label:'B vitamins as antidotes',id:'bvit_001'}],steps:[{id:'k2',name:'Vitamin K2 — MK-4 form only',desc:'NOT MK-7. Standard dose 3–5mg/day.'},{id:'folate',name:'Folinic acid (calcium folinate)',desc:'NOT folic acid or methylfolate. Standard 400mcg/day.'},{id:'b1',name:'Thiamine B1 — thiamine HCl preferred',desc:'NOT thiamine mononitrate. Start 25–50mg/day.'},{id:'b12',name:'B12 — adenosylcobalamin or hydroxocobalamin',desc:'NOT cyanocobalamin or methylcobalamin. Standard 500–1000mcg/day.'}]},
+  {number:5,title:'Phase 5',subtitle:'Lactoferrin',description:'Lactoferrin repairs bile duct cells damaged by vitamin A toxicity.',kb_links:[{label:'Lactoferrin FAQ',id:'spc_001'}],steps:[{id:'lactoferrin',name:'Bovine lactoferrin',desc:'Use purified bovine lactoferrin powder. Start at a dose that does not cause negative reactions.'}]}
 ];
 
 // AUTH
-function switchAuthTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='signup')));
-  document.getElementById('login-form').style.display = tab==='login'?'':'none';
-  document.getElementById('signup-form').style.display = tab==='signup'?'':'none';
-  document.getElementById('auth-msg').style.display = 'none';
-}
-async function signIn() {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) showMsg(error.message, false);
-}
-async function signUp() {
-  const email = document.getElementById('signup-email').value.trim();
-  const password = document.getElementById('signup-password').value;
-  const { error } = await sb.auth.signUp({ email, password });
-  if (error) showMsg(error.message, false);
-  else showMsg('Check your email to confirm, then sign in.', true);
-}
-async function signOut() {
-  await sb.auth.signOut();
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
-  currentUser = null;
-}
-function showMsg(msg, ok) {
-  const el = document.getElementById('auth-msg');
-  el.textContent = msg; el.style.display = 'block';
-  el.style.background = ok ? 'var(--accent-light)' : '#fef2f2';
-  el.style.color = ok ? 'var(--accent)' : '#b91c1c';
-}
+function switchAuthTab(tab){document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='signup')));document.getElementById('login-form').style.display=tab==='login'?'':'none';document.getElementById('signup-form').style.display=tab==='signup'?'':'none';document.getElementById('auth-msg').style.display='none';}
+async function signIn(){const email=document.getElementById('login-email').value.trim();const password=document.getElementById('login-password').value;const{error}=await sb.auth.signInWithPassword({email,password});if(error)showMsg(error.message,false);}
+async function signUp(){const email=document.getElementById('signup-email').value.trim();const password=document.getElementById('signup-password').value;const{error}=await sb.auth.signUp({email,password});if(error)showMsg(error.message,false);else showMsg('Check your email to confirm, then sign in.',true);}
+async function signOut(){await sb.auth.signOut();document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';currentUser=null;}
+function showMsg(msg,ok){const el=document.getElementById('auth-msg');el.textContent=msg;el.style.display='block';el.style.background=ok?'var(--accent-light)':'#fef2f2';el.style.color=ok?'var(--accent)':'#b91c1c';}
 
-sb.auth.onAuthStateChange(async (event, session) => {
-  if (session && session.user) {
-    currentUser = session.user;
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('user-email-display').textContent = currentUser.email;
-    loadAllEntries();
-    loadPhaseProgress();
-    loadJournalEntries();
-  }
-});
+sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();renderFoodList();}});
 
-// PANELS
-function showPanel(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.topbar-link').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
-  const tabEl = document.getElementById('tab-' + name);
-  if (tabEl) tabEl.classList.add('active');
-}
-function goBack() { showPanel(previousPanel); }
+function showPanel(name){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.topbar-link').forEach(t=>t.classList.remove('active'));document.getElementById('panel-'+name).classList.add('active');const tabEl=document.getElementById('tab-'+name);if(tabEl)tabEl.classList.add('active');}
+function goBack(){showPanel(previousPanel);}
 
 // SEARCH
-function setQuery(q) { document.getElementById('search-input').value = q; doSearch(); }
-async function doSearch() {
-  const query = document.getElementById('search-input').value.trim();
-  if (!query) return;
-  const container = document.getElementById('search-results');
-  container.innerHTML = '<div class="loading">Searching...</div>';
-  try {
-    const voyageRes = await fetch('https://api.voyageai.com/v1/embeddings', {
-      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+VOYAGE_KEY},
-      body:JSON.stringify({input:[query],model:'voyage-3'}),
-    });
-    if (!voyageRes.ok) throw new Error('Embedding service error');
-    const embedding = (await voyageRes.json()).data[0].embedding;
-    const searchRes = await fetch(SUPABASE_URL+'/rest/v1/rpc/search_knowledge_base', {
-      method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()},
-      body:JSON.stringify({query_embedding:embedding,match_threshold:0.25,match_count:8}),
-    });
-    const results = await searchRes.json();
-    if (!results || results.length===0) { container.innerHTML='<div class="empty-state"><h3>No results found</h3><p>Try rephrasing your question or browse the knowledge base.</p></div>'; return; }
-    container.innerHTML = results.map(r=>`
-      <div class="result-card" data-id="${r.entry_id}" onclick="viewEntry(this.dataset.id,'search')">
-        <div class="result-header"><div class="result-title">${r.title}</div><div class="result-similarity">${Math.round(r.similarity*100)}% match</div></div>
-        <div class="result-meta">${r.category}${r.subcategory?' &middot; '+r.subcategory:''}</div>
-        <div class="result-summary">${r.summary||''}</div>
-        <div class="result-tags">${(r.tags||[]).slice(0,4).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-      </div>`).join('');
-  } catch(err) { container.innerHTML=`<div class="empty-state"><h3>Search error</h3><p>${err.message}</p></div>`; }
+function setQuery(q){document.getElementById('search-input').value=q;doSearch();}
+async function doSearch(){
+  const query=document.getElementById('search-input').value.trim();if(!query)return;
+  const container=document.getElementById('search-results');container.innerHTML='<div class="loading">Searching...</div>';
+  try{
+    const voyageRes=await fetch('https://api.voyageai.com/v1/embeddings',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+VOYAGE_KEY},body:JSON.stringify({input:[query],model:'voyage-3'})});
+    if(!voyageRes.ok)throw new Error('Embedding service error');
+    const embedding=(await voyageRes.json()).data[0].embedding;
+    const searchRes=await fetch(SUPABASE_URL+'/rest/v1/rpc/search_knowledge_base',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()},body:JSON.stringify({query_embedding:embedding,match_threshold:0.25,match_count:8})});
+    const results=await searchRes.json();
+    if(!results||results.length===0){container.innerHTML='<div class="empty-state"><h3>No results found</h3><p>Try rephrasing your question or browse the knowledge base.</p></div>';return;}
+    container.innerHTML=results.map(r=>`<div class="result-card" data-id="${r.entry_id}" onclick="viewEntry(this.dataset.id,'search')"><div class="result-header"><div class="result-title">${r.title}</div><div class="result-similarity">${Math.round(r.similarity*100)}% match</div></div><div class="result-meta">${r.category}${r.subcategory?' &middot; '+r.subcategory:''}</div><div class="result-summary">${r.summary||''}</div><div class="result-tags">${(r.tags||[]).slice(0,4).map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`).join('');
+  }catch(err){container.innerHTML=`<div class="empty-state"><h3>Search error</h3><p>${err.message}</p></div>`;}
 }
 
 // BROWSE
-async function loadAllEntries() {
-  try {
-    const res = await fetch(SUPABASE_URL+'/rest/v1/knowledge_base?select=entry_id,title,category,subcategory,summary,tags&order=category,title', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
-    allEntries = await res.json();
-    renderBrowse();
-  } catch(err) { document.getElementById('browse-content').innerHTML='<div class="loading">Error loading entries.</div>'; }
-}
-function renderBrowse() {
-  const grouped = {};
-  allEntries.forEach(e => { if (!grouped[e.category]) grouped[e.category]=[]; grouped[e.category].push(e); });
-  document.getElementById('browse-content').innerHTML = Object.entries(grouped).map(([cat,entries])=>`
-    <div class="category-section">
-      <div class="category-title">${cat}</div>
-      <div class="entry-grid">${entries.map(e=>`<div class="entry-card" data-id="${e.entry_id}" onclick="viewEntry(this.dataset.id,'browse')"><div class="entry-card-title">${e.title}</div><div class="entry-card-sub">${e.subcategory||''}</div></div>`).join('')}</div>
-    </div>`).join('');
-}
+async function loadAllEntries(){try{const res=await fetch(SUPABASE_URL+'/rest/v1/knowledge_base?select=entry_id,title,category,subcategory,summary,tags&order=category,title',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});allEntries=await res.json();renderBrowse();}catch(err){document.getElementById('browse-content').innerHTML='<div class="loading">Error loading entries.</div>';}}
+function renderBrowse(){const grouped={};allEntries.forEach(e=>{if(!grouped[e.category])grouped[e.category]=[];grouped[e.category].push(e);});document.getElementById('browse-content').innerHTML=Object.entries(grouped).map(([cat,entries])=>`<div class="category-section"><div class="category-title">${cat}</div><div class="entry-grid">${entries.map(e=>`<div class="entry-card" data-id="${e.entry_id}" onclick="viewEntry(this.dataset.id,'browse')"><div class="entry-card-title">${e.title}</div><div class="entry-card-sub">${e.subcategory||''}</div></div>`).join('')}</div></div>`).join('');}
 
 // ENTRY VIEW
-async function viewEntry(entryId, from) {
-  previousPanel = from||'search';
-  showPanel('entry');
-  const container = document.getElementById('entry-content');
-  container.innerHTML = '<div class="loading">Loading...</div>';
-  try {
-    const res = await fetch(SUPABASE_URL+'/rest/v1/knowledge_base?entry_id=eq.'+entryId+'&select=*', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
-    const data = await res.json();
-    if (!data||data.length===0) throw new Error('Entry not found');
-    const entry = data[0];
-    const crossRefsHtml = (entry.cross_refs||[]).length>0?`<div class="cross-refs"><div class="cross-refs-label">Related topics</div><div class="cross-ref-pills">${entry.cross_refs.map(ref=>{const related=allEntries.find(e=>e.entry_id===ref);return related?`<button class="cross-ref-pill" onclick="viewEntry('${related.entry_id}','${from}')">${ref}</button>`:`<span class="cross-ref-pill" style="opacity:.5;cursor:default">${ref}</span>`;}).join('')}</div></div>`:'';
-    const appNoteHtml = entry.app_note?`<div class="app-note"><div class="app-note-label">Clinical note</div><div class="app-note-text">${entry.app_note}</div></div>`:'';
-    container.innerHTML = `<div class="entry-category">${entry.category}${entry.subcategory?' &rsaquo; '+entry.subcategory:''}</div><div class="entry-title">${entry.title}</div><div class="entry-content">${formatContent(entry.content)}</div>${appNoteHtml}${crossRefsHtml}`;
-  } catch(err) { container.innerHTML=`<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`; }
-}
+async function viewEntry(entryId,from){previousPanel=from||'search';showPanel('entry');const container=document.getElementById('entry-content');container.innerHTML='<div class="loading">Loading...</div>';try{const res=await fetch(SUPABASE_URL+'/rest/v1/knowledge_base?entry_id=eq.'+entryId+'&select=*',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});const data=await res.json();if(!data||data.length===0)throw new Error('Entry not found');const entry=data[0];const crossRefsHtml=(entry.cross_refs||[]).length>0?`<div class="cross-refs"><div class="cross-refs-label">Related topics</div><div class="cross-ref-pills">${entry.cross_refs.map(ref=>{const related=allEntries.find(e=>e.entry_id===ref);return related?`<button class="cross-ref-pill" onclick="viewEntry('${related.entry_id}','${from}')">${ref}</button>`:`<span class="cross-ref-pill" style="opacity:.5;cursor:default">${ref}</span>`;}).join('')}</div></div>`:'';const appNoteHtml=entry.app_note?`<div class="app-note"><div class="app-note-label">Clinical note</div><div class="app-note-text">${entry.app_note}</div></div>`:'';container.innerHTML=`<div class="entry-category">${entry.category}${entry.subcategory?' &rsaquo; '+entry.subcategory:''}</div><div class="entry-title">${entry.title}</div><div class="entry-content">${formatContent(entry.content)}</div>${appNoteHtml}${crossRefsHtml}`;}catch(err){container.innerHTML=`<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;}}
 
-function formatContent(content) {
-  if (!content) return '';
-  if (typeof content==='string') {
-    const lines = content.split('\n').filter(Boolean);
-    let html='', inList=false;
-    lines.forEach(line=>{
-      if (line.startsWith('## ')||line.startsWith('# ')){if(inList){html+='</ul>';inList=false;}html+=`<h3>${line.replace(/^#+\s/,'')}</h3>`;}
-      else if (line.match(/^[-*]\s/)){if(!inList){html+='<ul>';inList=true;}html+=`<li>${line.slice(2)}</li>`;}
-      else{if(inList){html+='</ul>';inList=false;}html+=`<p>${line}</p>`;}
-    });
-    if(inList) html+='</ul>';
-    return html;
-  }
-  if (typeof content==='object'&&content!==null) {
-    return Object.entries(content).map(([key,val])=>{
-      const label=key.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-      if(Array.isArray(val)&&val.length>0) return `<h3>${label}</h3><ul>${val.map(v=>`<li>${typeof v==='object'?Object.entries(v).map(([k,v2])=>`<strong>${k}:</strong> ${v2}`).join(' — '):v}</li>`).join('')}</ul>`;
-      if(typeof val==='string'&&val.length>0) return `<h3>${label}</h3><p>${val}</p>`;
-      if(typeof val==='object'&&val!==null) return `<h3>${label}</h3>${formatContent(val)}`;
-      return '';
-    }).filter(Boolean).join('');
-  }
-  return `<p>${String(content)}</p>`;
-}
+function formatContent(content){if(!content)return'';if(typeof content==='string'){const lines=content.split('\n').filter(Boolean);let html='',inList=false;lines.forEach(line=>{if(line.startsWith('## ')||line.startsWith('# ')){if(inList){html+='</ul>';inList=false;}html+=`<h3>${line.replace(/^#+\s/,'')}</h3>`;}else if(line.match(/^[-*]\s/)){if(!inList){html+='<ul>';inList=true;}html+=`<li>${line.slice(2)}</li>`;}else{if(inList){html+='</ul>';inList=false;}html+=`<p>${line}</p>`;}}); if(inList)html+='</ul>';return html;}if(typeof content==='object'&&content!==null){return Object.entries(content).map(([key,val])=>{const label=key.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());if(Array.isArray(val)&&val.length>0)return`<h3>${label}</h3><ul>${val.map(v=>`<li>${typeof v==='object'?Object.entries(v).map(([k,v2])=>`<strong>${k}:</strong> ${v2}`).join(' — '):v}</li>`).join('')}</ul>`;if(typeof val==='string'&&val.length>0)return`<h3>${label}</h3><p>${val}</p>`;if(typeof val==='object'&&val!==null)return`<h3>${label}</h3>${formatContent(val)}`;return'';}).filter(Boolean).join('');}return`<p>${String(content)}</p>`;}
 
 // PHASE TRACKER
-async function loadPhaseProgress() {
-  try {
-    const res = await fetch(SUPABASE_URL+'/rest/v1/phase_progress?user_id=eq.'+currentUser.id+'&select=*', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
-    const rows = await res.json();
-    phaseProgress = {};
-    rows.forEach(r=>{ phaseProgress[r.phase_number]=r; });
-    renderPhaseTracker();
-  } catch(err) { document.getElementById('phases-list').innerHTML='<div class="loading">Error loading progress.</div>'; }
-}
-
-async function savePhaseProgress(phaseNum) {
-  const p = phaseProgress[phaseNum]||{phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};
-  const payload = {user_id:currentUser.id,phase_number:p.phase_number,status:p.status,completed_steps:p.completed_steps,notes:p.notes||'',updated_at:new Date().toISOString()};
-  await fetch(SUPABASE_URL+'/rest/v1/phase_progress?on_conflict=user_id,phase_number', {
-    method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'resolution=merge-duplicates,return=minimal'},
-    body:JSON.stringify(payload),
-  });
-}
-
+async function loadPhaseProgress(){try{const res=await fetch(SUPABASE_URL+'/rest/v1/phase_progress?user_id=eq.'+currentUser.id+'&select=*',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});const rows=await res.json();phaseProgress={};rows.forEach(r=>{phaseProgress[r.phase_number]=r;});renderPhaseTracker();}catch(err){document.getElementById('phases-list').innerHTML='<div class="loading">Error loading progress.</div>';}}
+async function savePhaseProgress(phaseNum){const p=phaseProgress[phaseNum]||{phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};const payload={user_id:currentUser.id,phase_number:p.phase_number,status:p.status,completed_steps:p.completed_steps,notes:p.notes||'',updated_at:new Date().toISOString()};await fetch(SUPABASE_URL+'/rest/v1/phase_progress?on_conflict=user_id,phase_number',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(payload)});}
 function getPhaseStatus(n){const p=phaseProgress[n];return p?p.status||'not_started':'not_started';}
 function getCompletedSteps(n){const p=phaseProgress[n];return p?(p.completed_steps||[]):[];}
 function getStepNotes(n){const p=phaseProgress[n];if(!p||!p.notes)return{};try{return typeof p.notes==='string'?JSON.parse(p.notes):p.notes;}catch{return{};}}
-
-function calcOverallProgress() {
-  let total=0,done=0;
-  PHASES.forEach(ph=>{total+=ph.steps.length;const c=getCompletedSteps(ph.number);ph.steps.forEach(s=>{const st=c.find(x=>x.id===s.id);if(st&&(st.status==='done'||st.status==='skipped'))done++;});});
-  return total>0?Math.round((done/total)*100):0;
-}
-
-function renderPhaseTracker() {
-  const pct=calcOverallProgress();
-  document.getElementById('overall-bar').style.width=pct+'%';
-  const totalSteps=PHASES.reduce((a,p)=>a+p.steps.length,0);
-  const doneSteps=PHASES.reduce((a,ph)=>{const c=getCompletedSteps(ph.number);return a+ph.steps.filter(s=>{const x=c.find(y=>y.id===s.id);return x&&(x.status==='done'||x.status==='skipped');}).length;},0);
-  document.getElementById('overall-text').textContent=`${doneSteps} of ${totalSteps} steps addressed`;
-  document.getElementById('phases-list').innerHTML=PHASES.map(ph=>renderPhaseCard(ph)).join('');
-}
-
-function renderPhaseCard(ph) {
-  const status=getPhaseStatus(ph.number);
-  const completed=getCompletedSteps(ph.number);
-  const notes=getStepNotes(ph.number);
-  const doneCount=ph.steps.filter(s=>{const c=completed.find(x=>x.id===s.id);return c&&(c.status==='done'||c.status==='skipped');}).length;
-  const pct=Math.round((doneCount/ph.steps.length)*100);
-  const kbLinks=ph.kb_links.map(l=>`<button class="phase-kb-link" onclick="viewEntry('${l.id}','tracker')">${l.label}</button>`).join('');
-  const stepsHtml=ph.steps.map(step=>{
-    const stepState=completed.find(c=>c.id===step.id);
-    const isDone=stepState&&stepState.status==='done';
-    const isSkipped=stepState&&stepState.status==='skipped';
-    const stepNote=notes[step.id]||'';
-    return `<div class="step-item"><div class="step-row">
-      <div class="step-check ${isDone?'checked':isSkipped?'skipped':''}" onclick="toggleStep(${ph.number},'${step.id}')"></div>
-      <div class="step-content">
-        <div class="step-name ${isDone?'checked':isSkipped?'skipped':''}">${step.name}${isSkipped?'<span class="skipped-badge">skipped</span>':''}</div>
-        <div class="step-desc">${step.desc}</div>
-        <div class="step-actions">
-          ${!isSkipped?`<button class="btn-step skip" onclick="skipStep(${ph.number},'${step.id}')">Skip for now</button>`:`<button class="btn-step unskip" onclick="unskipStep(${ph.number},'${step.id}')">Revisit</button>`}
-          <button class="btn-step" onclick="toggleNote(${ph.number},'${step.id}')">Add note</button>
-        </div>
-        <div class="step-note-wrap" id="note-wrap-${ph.number}-${step.id}" style="display:none">
-          <textarea class="step-note-input" id="note-input-${ph.number}-${step.id}" placeholder="Add a personal note...">${stepNote}</textarea>
-          <button class="step-note-save" onclick="saveStepNote(${ph.number},'${step.id}')">Save note</button>
-        </div>
-        ${stepNote?`<div class="step-note-display" id="note-display-${ph.number}-${step.id}">${stepNote}</div>`:`<div id="note-display-${ph.number}-${step.id}"></div>`}
-      </div></div></div>`;
-  }).join('');
-  const phaseActions=status!=='skipped'?`<div class="phase-actions"><button class="btn-phase-action" onclick="markPhaseComplete(${ph.number})">Mark phase complete</button><button class="btn-phase-action danger" onclick="skipPhase(${ph.number})">Skip this phase</button></div>`:`<div class="phase-actions"><button class="btn-phase-action" onclick="unskipPhase(${ph.number})">Revisit this phase</button></div>`;
-  return `<div class="phase-card" id="phase-card-${ph.number}">
-    <div class="phase-header" onclick="togglePhase(${ph.number})">
-      <div class="phase-number ${status}">${ph.number}</div>
-      <div class="phase-info"><div class="phase-title">${ph.title} — ${ph.subtitle}</div><div class="phase-subtitle">${doneCount}/${ph.steps.length} steps &middot; ${status.replace('_',' ')}</div></div>
-      <div class="phase-mini-progress"><div class="phase-mini-bar"><div class="phase-mini-fill ${status}" style="width:${pct}%"></div></div><div class="phase-mini-count">${pct}%</div></div>
-      <div class="phase-chevron" id="chevron-${ph.number}">&#8964;</div>
-    </div>
-    <div class="phase-body" id="phase-body-${ph.number}">
-      <div class="phase-description">${ph.description}</div>
-      ${kbLinks?`<div class="phase-kb-links"><span style="font-size:12px;color:var(--text3);margin-right:4px">Read:</span>${kbLinks}</div>`:''}
-      ${phaseActions}
-      <div class="steps-list">${stepsHtml}</div>
-    </div></div>`;
-}
-
+function calcOverallProgress(){let total=0,done=0;PHASES.forEach(ph=>{total+=ph.steps.length;const c=getCompletedSteps(ph.number);ph.steps.forEach(s=>{const st=c.find(x=>x.id===s.id);if(st&&(st.status==='done'||st.status==='skipped'))done++;});});return total>0?Math.round((done/total)*100):0;}
+function renderPhaseTracker(){const pct=calcOverallProgress();document.getElementById('overall-bar').style.width=pct+'%';const totalSteps=PHASES.reduce((a,p)=>a+p.steps.length,0);const doneSteps=PHASES.reduce((a,ph)=>{const c=getCompletedSteps(ph.number);return a+ph.steps.filter(s=>{const x=c.find(y=>y.id===s.id);return x&&(x.status==='done'||x.status==='skipped');}).length;},0);document.getElementById('overall-text').textContent=`${doneSteps} of ${totalSteps} steps addressed`;document.getElementById('phases-list').innerHTML=PHASES.map(ph=>renderPhaseCard(ph)).join('');}
+function renderPhaseCard(ph){const status=getPhaseStatus(ph.number);const completed=getCompletedSteps(ph.number);const notes=getStepNotes(ph.number);const doneCount=ph.steps.filter(s=>{const c=completed.find(x=>x.id===s.id);return c&&(c.status==='done'||c.status==='skipped');}).length;const pct=Math.round((doneCount/ph.steps.length)*100);const kbLinks=ph.kb_links.map(l=>`<button class="phase-kb-link" onclick="viewEntry('${l.id}','tracker')">${l.label}</button>`).join('');const stepsHtml=ph.steps.map(step=>{const stepState=completed.find(c=>c.id===step.id);const isDone=stepState&&stepState.status==='done';const isSkipped=stepState&&stepState.status==='skipped';const stepNote=notes[step.id]||'';return`<div class="step-item"><div class="step-row"><div class="step-check ${isDone?'checked':isSkipped?'skipped':''}" onclick="toggleStep(${ph.number},'${step.id}')"></div><div class="step-content"><div class="step-name ${isDone?'checked':isSkipped?'skipped':''}">${step.name}${isSkipped?'<span class="skipped-badge">skipped</span>':''}</div><div class="step-desc">${step.desc}</div><div class="step-actions">${!isSkipped?`<button class="btn-step skip" onclick="skipStep(${ph.number},'${step.id}')">Skip for now</button>`:`<button class="btn-step unskip" onclick="unskipStep(${ph.number},'${step.id}')">Revisit</button>`}<button class="btn-step" onclick="toggleNote(${ph.number},'${step.id}')">Add note</button></div><div class="step-note-wrap" id="note-wrap-${ph.number}-${step.id}" style="display:none"><textarea class="step-note-input" id="note-input-${ph.number}-${step.id}" placeholder="Add a personal note...">${stepNote}</textarea><button class="step-note-save" onclick="saveStepNote(${ph.number},'${step.id}')">Save note</button></div>${stepNote?`<div class="step-note-display" id="note-display-${ph.number}-${step.id}">${stepNote}</div>`:`<div id="note-display-${ph.number}-${step.id}"></div>`}</div></div></div>`;}).join('');const phaseActions=status!=='skipped'?`<div class="phase-actions"><button class="btn-phase-action" onclick="markPhaseComplete(${ph.number})">Mark phase complete</button><button class="btn-phase-action danger" onclick="skipPhase(${ph.number})">Skip this phase</button></div>`:`<div class="phase-actions"><button class="btn-phase-action" onclick="unskipPhase(${ph.number})">Revisit this phase</button></div>`;return`<div class="phase-card" id="phase-card-${ph.number}"><div class="phase-header" onclick="togglePhase(${ph.number})"><div class="phase-number ${status}">${ph.number}</div><div class="phase-info"><div class="phase-title">${ph.title} — ${ph.subtitle}</div><div class="phase-subtitle">${doneCount}/${ph.steps.length} steps &middot; ${status.replace('_',' ')}</div></div><div class="phase-mini-progress"><div class="phase-mini-bar"><div class="phase-mini-fill ${status}" style="width:${pct}%"></div></div><div class="phase-mini-count">${pct}%</div></div><div class="phase-chevron" id="chevron-${ph.number}">&#8964;</div></div><div class="phase-body" id="phase-body-${ph.number}"><div class="phase-description">${ph.description}</div>${kbLinks?`<div class="phase-kb-links"><span style="font-size:12px;color:var(--text3);margin-right:4px">Read:</span>${kbLinks}</div>`:''}${phaseActions}<div class="steps-list">${stepsHtml}</div></div></div>`;}
 function togglePhase(num){const body=document.getElementById('phase-body-'+num);const chevron=document.getElementById('chevron-'+num);const isOpen=body.classList.contains('open');body.classList.toggle('open',!isOpen);chevron.classList.toggle('open',!isOpen);}
-
-async function toggleStep(phaseNum,stepId){
-  if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};
-  const p=phaseProgress[phaseNum];const steps=p.completed_steps||[];
-  const idx=steps.findIndex(s=>s.id===stepId);const current=idx>=0?steps[idx]:null;
-  if(current&&current.status==='skipped')return;
-  if(current&&current.status==='done')steps.splice(idx,1);
-  else if(idx>=0)steps[idx].status='done';
-  else steps.push({id:stepId,status:'done'});
-  p.completed_steps=steps;p.status=computePhaseStatus(phaseNum);
-  await savePhaseProgress(phaseNum);renderPhaseTracker();reopenPhase(phaseNum);
-}
-async function skipStep(phaseNum,stepId){
-  if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};
-  const p=phaseProgress[phaseNum];const steps=p.completed_steps||[];
-  const idx=steps.findIndex(s=>s.id===stepId);
-  if(idx>=0)steps[idx].status='skipped';else steps.push({id:stepId,status:'skipped'});
-  p.completed_steps=steps;p.status=computePhaseStatus(phaseNum);
-  await savePhaseProgress(phaseNum);toast('Step skipped — you can revisit it any time');renderPhaseTracker();reopenPhase(phaseNum);
-}
-async function unskipStep(phaseNum,stepId){
-  const p=phaseProgress[phaseNum];if(!p)return;
-  const idx=p.completed_steps.findIndex(s=>s.id===stepId);if(idx>=0)p.completed_steps.splice(idx,1);
-  p.status=computePhaseStatus(phaseNum);await savePhaseProgress(phaseNum);renderPhaseTracker();reopenPhase(phaseNum);
-}
-async function skipPhase(phaseNum){
-  if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};
-  phaseProgress[phaseNum].status='skipped';await savePhaseProgress(phaseNum);toast('Phase skipped — you can revisit it any time');renderPhaseTracker();
-}
-async function unskipPhase(phaseNum){
-  if(!phaseProgress[phaseNum])return;phaseProgress[phaseNum].status=computePhaseStatus(phaseNum);
-  await savePhaseProgress(phaseNum);renderPhaseTracker();reopenPhase(phaseNum);
-}
-async function markPhaseComplete(phaseNum){
-  if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};
-  const ph=PHASES.find(p=>p.number===phaseNum);const steps=phaseProgress[phaseNum].completed_steps||[];
-  ph.steps.forEach(s=>{if(!steps.find(c=>c.id===s.id))steps.push({id:s.id,status:'done'});});
-  phaseProgress[phaseNum].completed_steps=steps;phaseProgress[phaseNum].status='complete';
-  await savePhaseProgress(phaseNum);toast('Phase marked complete!');renderPhaseTracker();
-}
-function computePhaseStatus(phaseNum){
-  const ph=PHASES.find(p=>p.number===phaseNum);const steps=(phaseProgress[phaseNum]||{}).completed_steps||[];
-  const addressed=steps.filter(s=>s.status==='done'||s.status==='skipped').length;
-  if(addressed===0)return'not_started';if(addressed>=ph.steps.length)return'complete';return'in_progress';
-}
+async function toggleStep(phaseNum,stepId){if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};const p=phaseProgress[phaseNum];const steps=p.completed_steps||[];const idx=steps.findIndex(s=>s.id===stepId);const current=idx>=0?steps[idx]:null;if(current&&current.status==='skipped')return;if(current&&current.status==='done')steps.splice(idx,1);else if(idx>=0)steps[idx].status='done';else steps.push({id:stepId,status:'done'});p.completed_steps=steps;p.status=computePhaseStatus(phaseNum);await savePhaseProgress(phaseNum);renderPhaseTracker();reopenPhase(phaseNum);}
+async function skipStep(phaseNum,stepId){if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};const p=phaseProgress[phaseNum];const steps=p.completed_steps||[];const idx=steps.findIndex(s=>s.id===stepId);if(idx>=0)steps[idx].status='skipped';else steps.push({id:stepId,status:'skipped'});p.completed_steps=steps;p.status=computePhaseStatus(phaseNum);await savePhaseProgress(phaseNum);toast('Step skipped — you can revisit it any time');renderPhaseTracker();reopenPhase(phaseNum);}
+async function unskipStep(phaseNum,stepId){const p=phaseProgress[phaseNum];if(!p)return;const idx=p.completed_steps.findIndex(s=>s.id===stepId);if(idx>=0)p.completed_steps.splice(idx,1);p.status=computePhaseStatus(phaseNum);await savePhaseProgress(phaseNum);renderPhaseTracker();reopenPhase(phaseNum);}
+async function skipPhase(phaseNum){if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};phaseProgress[phaseNum].status='skipped';await savePhaseProgress(phaseNum);toast('Phase skipped — you can revisit it any time');renderPhaseTracker();}
+async function unskipPhase(phaseNum){if(!phaseProgress[phaseNum])return;phaseProgress[phaseNum].status=computePhaseStatus(phaseNum);await savePhaseProgress(phaseNum);renderPhaseTracker();reopenPhase(phaseNum);}
+async function markPhaseComplete(phaseNum){if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};const ph=PHASES.find(p=>p.number===phaseNum);const steps=phaseProgress[phaseNum].completed_steps||[];ph.steps.forEach(s=>{if(!steps.find(c=>c.id===s.id))steps.push({id:s.id,status:'done'});});phaseProgress[phaseNum].completed_steps=steps;phaseProgress[phaseNum].status='complete';await savePhaseProgress(phaseNum);toast('Phase marked complete!');renderPhaseTracker();}
+function computePhaseStatus(phaseNum){const ph=PHASES.find(p=>p.number===phaseNum);const steps=(phaseProgress[phaseNum]||{}).completed_steps||[];const addressed=steps.filter(s=>s.status==='done'||s.status==='skipped').length;if(addressed===0)return'not_started';if(addressed>=ph.steps.length)return'complete';return'in_progress';}
 function toggleNote(phaseNum,stepId){const wrap=document.getElementById(`note-wrap-${phaseNum}-${stepId}`);wrap.style.display=wrap.style.display==='none'?'block':'none';}
-async function saveStepNote(phaseNum,stepId){
-  const input=document.getElementById(`note-input-${phaseNum}-${stepId}`);const noteText=input.value.trim();
-  if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};
-  let notes=getStepNotes(phaseNum);notes[stepId]=noteText;phaseProgress[phaseNum].notes=JSON.stringify(notes);
-  await savePhaseProgress(phaseNum);
-  document.getElementById(`note-display-${phaseNum}-${stepId}`).textContent=noteText;
-  document.getElementById(`note-wrap-${phaseNum}-${stepId}`).style.display='none';
-  toast('Note saved');
-}
+async function saveStepNote(phaseNum,stepId){const input=document.getElementById(`note-input-${phaseNum}-${stepId}`);const noteText=input.value.trim();if(!phaseProgress[phaseNum])phaseProgress[phaseNum]={phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};let notes=getStepNotes(phaseNum);notes[stepId]=noteText;phaseProgress[phaseNum].notes=JSON.stringify(notes);await savePhaseProgress(phaseNum);document.getElementById(`note-display-${phaseNum}-${stepId}`).textContent=noteText;document.getElementById(`note-wrap-${phaseNum}-${stepId}`).style.display='none';toast('Note saved');}
 function reopenPhase(num){const body=document.getElementById('phase-body-'+num);const chevron=document.getElementById('chevron-'+num);if(body)body.classList.add('open');if(chevron)chevron.classList.add('open');}
 
 // JOURNAL
-async function loadJournalEntries() {
-  try {
-    const res = await fetch(SUPABASE_URL+'/rest/v1/journal_entries?user_id=eq.'+currentUser.id+'&select=*&order=entry_date.desc&limit=60', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
-    journalEntries = await res.json();
-    renderJournalList();
-    renderCalendar();
-  } catch(err) { document.getElementById('journal-entries-list').innerHTML='<div class="loading">Error loading journal.</div>'; }
-}
+async function loadJournalEntries(){try{const res=await fetch(SUPABASE_URL+'/rest/v1/journal_entries?user_id=eq.'+currentUser.id+'&select=*&order=entry_date.desc&limit=60',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});journalEntries=await res.json();renderJournalList();renderCalendar();}catch(err){document.getElementById('journal-entries-list').innerHTML='<div class="loading">Error loading journal.</div>';}}
+function renderCalendar(){const year=calendarDate.getFullYear();const month=calendarDate.getMonth();const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];document.getElementById('calendar-month-label').textContent=monthNames[month]+' '+year;const firstDay=new Date(year,month,1).getDay();const daysInMonth=new Date(year,month+1,0).getDate();const today=new Date();const entryMap={};journalEntries.forEach(e=>{if(e.entry_date)entryMap[e.entry_date]=e;});let html=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-day-header">${d}</div>`).join('');for(let i=0;i<firstDay;i++)html+='<div class="cal-day other-month"></div>';for(let d=1;d<=daysInMonth;d++){const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const entry=entryMap[dateStr];const isToday=today.getFullYear()===year&&today.getMonth()===month&&today.getDate()===d;const energy=entry?entry.energy_level:null;const dotClass=energy>=7?'high':energy>=4?'mid':energy?'low':'';html+=`<div class="cal-day${entry?' has-entry':''}${isToday?' today':''}" ${entry?`onclick="viewJournalEntry('${entry.id}')"`:''}>${d}${entry?`<div class="cal-dot ${dotClass}"></div>`:''}</div>`;}document.getElementById('calendar-grid').innerHTML=html;}
+function changeMonth(dir){calendarDate.setMonth(calendarDate.getMonth()+dir);renderCalendar();}
+function energyBadge(v){const cls=v>=7?'high':v>=4?'mid':'low';return`<span class="badge energy-${cls}">Energy ${v}/10</span>`;}
+function symptomBadge(v){const cls=v>=7?'high':v>=4?'mid':'low';return`<span class="badge symptom-${cls}">Symptoms ${v}/10</span>`;}
+function renderJournalList(){if(!journalEntries.length){document.getElementById('journal-entries-list').innerHTML='<div class="empty-state"><h3>No entries yet</h3><p>Start tracking your daily progress with your first journal entry.</p></div>';return;}document.getElementById('journal-entries-list').innerHTML=journalEntries.slice(0,20).map(e=>{const symptoms=e.symptoms?(Array.isArray(e.symptoms)?e.symptoms:Object.keys(e.symptoms).filter(k=>e.symptoms[k])):[];const preview=e.notes?e.notes.substring(0,100)+(e.notes.length>100?'...':''):'';return`<div class="journal-entry-card" onclick="viewJournalEntry('${e.id}')"><div class="journal-entry-header"><div class="journal-entry-date">${formatDate(e.entry_date)}</div><div class="journal-entry-badges">${energyBadge(e.energy_level||5)}${symptomBadge(e.symptom_severity||3)}</div></div>${symptoms.length?`<div class="journal-entry-symptoms">${symptoms.slice(0,5).map(s=>`<span class="symptom-chip">${s}</span>`).join('')}${symptoms.length>5?`<span class="symptom-chip">+${symptoms.length-5} more</span>`:''}</div>`:''}${preview?`<div class="journal-entry-preview">${preview}</div>`:''}</div>`;}).join('');}
+function formatDate(dateStr){if(!dateStr)return'';const d=new Date(dateStr+'T12:00:00');return d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+function showJournalForm(entryId){editingJournalId=entryId||null;document.getElementById('journal-list-view').style.display='none';document.getElementById('journal-detail-view').style.display='none';document.getElementById('journal-form-view').style.display='block';document.getElementById('journal-form-title').textContent=entryId?'Edit journal entry':'New journal entry';document.getElementById('symptom-checkboxes').innerHTML=SYMPTOM_LIST.map(s=>`<label class="symptom-cb"><input type="checkbox" value="${s}" id="sym-${s.replace(/\s/g,'-')}"> ${s}</label>`).join('');if(entryId){const entry=journalEntries.find(e=>e.id===entryId);if(entry){document.getElementById('journal-date').value=entry.entry_date||'';document.getElementById('journal-energy').value=entry.energy_level||5;document.getElementById('energy-val').textContent=entry.energy_level||5;document.getElementById('journal-severity').value=entry.symptom_severity||3;document.getElementById('symptom-val').textContent=entry.symptom_severity||3;document.getElementById('journal-supplements').value=entry.supplements_taken||'';document.getElementById('journal-foods').value=entry.foods_eaten||'';document.getElementById('journal-notes').value=entry.notes||'';document.getElementById('journal-phase').value=entry.current_phase!=null?entry.current_phase:'';const symptoms=entry.symptoms?(Array.isArray(entry.symptoms)?entry.symptoms:Object.keys(entry.symptoms).filter(k=>entry.symptoms[k])):[];symptoms.forEach(s=>{const el=document.getElementById('sym-'+s.replace(/\s/g,'-'));if(el)el.checked=true;});}}else{document.getElementById('journal-date').value=new Date().toISOString().split('T')[0];document.getElementById('journal-energy').value=5;document.getElementById('energy-val').textContent=5;document.getElementById('journal-severity').value=3;document.getElementById('symptom-val').textContent=3;document.getElementById('journal-supplements').value='';document.getElementById('journal-foods').value='';document.getElementById('journal-notes').value='';const activePhase=Object.entries(phaseProgress).find(([n,p])=>p.status==='in_progress');document.getElementById('journal-phase').value=activePhase?activePhase[0]:'';}}
+function hideJournalForm(){document.getElementById('journal-form-view').style.display='none';document.getElementById('journal-list-view').style.display='block';}
+async function saveJournalEntry(){const date=document.getElementById('journal-date').value;if(!date){toast('Please select a date');return;}const energy=parseInt(document.getElementById('journal-energy').value);const severity=parseInt(document.getElementById('journal-severity').value);const symptoms=Array.from(document.querySelectorAll('#symptom-checkboxes input:checked')).map(el=>el.value);const supplements=document.getElementById('journal-supplements').value.trim();const foods=document.getElementById('journal-foods').value.trim();const notes=document.getElementById('journal-notes').value.trim();const phase=document.getElementById('journal-phase').value;const payload={user_id:currentUser.id,entry_date:date,energy_level:energy,symptom_severity:severity,symptoms:symptoms,supplements_taken:supplements,foods_eaten:foods,notes:notes,current_phase:phase!==''?parseInt(phase):null,updated_at:new Date().toISOString()};try{if(editingJournalId){await fetch(SUPABASE_URL+'/rest/v1/journal_entries?id=eq.'+editingJournalId,{method:'PATCH',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=minimal'},body:JSON.stringify(payload)});}else{await fetch(SUPABASE_URL+'/rest/v1/journal_entries',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=minimal'},body:JSON.stringify(payload)});}toast('Journal entry saved');hideJournalForm();await loadJournalEntries();}catch(err){toast('Error saving entry');}}
+function viewJournalEntry(id){const entry=journalEntries.find(e=>e.id===id);if(!entry)return;document.getElementById('journal-list-view').style.display='none';document.getElementById('journal-form-view').style.display='none';document.getElementById('journal-detail-view').style.display='block';const symptoms=entry.symptoms?(Array.isArray(entry.symptoms)?entry.symptoms:Object.keys(entry.symptoms).filter(k=>entry.symptoms[k])):[];const phaseName=entry.current_phase!=null?PHASES.find(p=>p.number===entry.current_phase)?.subtitle:null;document.getElementById('journal-detail-content').innerHTML=`<div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;"><div style="font-family:'DM Serif Display',serif;font-size:26px;">${formatDate(entry.entry_date)}</div><button class="btn-new-entry" onclick="showJournalForm('${entry.id}')">Edit</button></div><div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">${energyBadge(entry.energy_level||5)}${symptomBadge(entry.symptom_severity||3)}${phaseName?`<span class="badge" style="background:var(--accent-light);color:var(--accent)">Phase: ${phaseName}</span>`:''}</div>${symptoms.length?`<div class="journal-detail-section"><div class="journal-detail-label">Symptoms</div><div class="journal-entry-symptoms">${symptoms.map(s=>`<span class="symptom-chip">${s}</span>`).join('')}</div></div>`:''}${entry.supplements_taken?`<div class="journal-detail-section"><div class="journal-detail-label">Supplements taken</div><div class="journal-detail-value">${entry.supplements_taken}</div></div>`:''}${entry.foods_eaten?`<div class="journal-detail-section"><div class="journal-detail-label">Foods eaten</div><div class="journal-detail-value">${entry.foods_eaten}</div></div>`:''}${entry.notes?`<div class="journal-detail-section"><div class="journal-detail-label">Notes</div><div class="journal-detail-value">${entry.notes}</div></div>`:''}<div class="journal-detail-section"><div class="journal-detail-label">Related</div><div class="journal-links"><button class="journal-link-pill" onclick="showPanel('tracker')">View phase progress</button><a class="journal-link-pill" href="https://love-your-liver.vercel.app" target="_blank" style="text-decoration:none">View lab results</a></div></div>`;}
+function hideJournalDetail(){document.getElementById('journal-detail-view').style.display='none';document.getElementById('journal-list-view').style.display='block';}
 
-function renderCalendar() {
-  const year = calendarDate.getFullYear();
-  const month = calendarDate.getMonth();
-  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('calendar-month-label').textContent = monthNames[month] + ' ' + year;
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const today = new Date();
-  const entryMap = {};
-  journalEntries.forEach(e => { if (e.entry_date) entryMap[e.entry_date] = e; });
-  let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-day-header">${d}</div>`).join('');
-  for (let i=0; i<firstDay; i++) html += '<div class="cal-day other-month"></div>';
-  for (let d=1; d<=daysInMonth; d++) {
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const entry = entryMap[dateStr];
-    const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
-    const energy = entry ? entry.energy_level : null;
-    const dotClass = energy >= 7 ? 'high' : energy >= 4 ? 'mid' : energy ? 'low' : '';
-    html += `<div class="cal-day${entry?' has-entry':''}${isToday?' today':''}" ${entry?`onclick="viewJournalEntry('${entry.id}')"`:''}>${d}${entry?`<div class="cal-dot ${dotClass}"></div>`:''}</div>`;
-  }
-  document.getElementById('calendar-grid').innerHTML = html;
-}
+// FOOD LIST
+function setFoodFilter(f){foodFilter=f;document.querySelectorAll('.food-filter-btn').forEach(b=>b.classList.remove('active'));document.getElementById('filter-'+f).classList.add('active');renderFoodList();}
 
-function changeMonth(dir) {
-  calendarDate.setMonth(calendarDate.getMonth() + dir);
-  renderCalendar();
-}
-
-function energyBadge(v) {
-  const cls = v>=7?'high':v>=4?'mid':'low';
-  return `<span class="badge energy-${cls}">Energy ${v}/10</span>`;
-}
-function symptomBadge(v) {
-  const cls = v>=7?'high':v>=4?'mid':'low';
-  return `<span class="badge symptom-${cls}">Symptoms ${v}/10</span>`;
-}
-
-function renderJournalList() {
-  if (!journalEntries.length) {
-    document.getElementById('journal-entries-list').innerHTML = '<div class="empty-state"><h3>No entries yet</h3><p>Start tracking your daily progress with your first journal entry.</p></div>';
-    return;
-  }
-  document.getElementById('journal-entries-list').innerHTML = journalEntries.slice(0,20).map(e => {
-    const symptoms = e.symptoms ? (Array.isArray(e.symptoms) ? e.symptoms : Object.keys(e.symptoms).filter(k=>e.symptoms[k])) : [];
-    const preview = e.notes ? e.notes.substring(0,100)+(e.notes.length>100?'...':'') : '';
-    return `<div class="journal-entry-card" onclick="viewJournalEntry('${e.id}')">
-      <div class="journal-entry-header">
-        <div class="journal-entry-date">${formatDate(e.entry_date)}</div>
-        <div class="journal-entry-badges">${energyBadge(e.energy_level||5)}${symptomBadge(e.symptom_severity||3)}</div>
+function renderFoodList(){
+  const query=(document.getElementById('food-search')?.value||'').toLowerCase();
+  let filtered=FOODS.filter(f=>{
+    if(foodFilter!=='all'&&f.traffic!==foodFilter)return false;
+    if(query&&!f.name.toLowerCase().includes(query)&&!f.category.toLowerCase().includes(query)&&!f.reason.toLowerCase().includes(query))return false;
+    return true;
+  });
+  const grouped={};
+  filtered.forEach(f=>{if(!grouped[f.category])grouped[f.category]=[];grouped[f.category].push(f);});
+  const flagLabels={va:'Vit A',cu:'Copper',ni:'Nickel',ok:'LYL safe'};
+  const html=Object.entries(grouped).map(([cat,foods])=>`
+    <div class="food-category-section">
+      <div class="food-category-title">${cat}</div>
+      <div class="food-grid">${foods.map(f=>`
+        <div class="food-card">
+          <div class="food-dot ${f.traffic}"></div>
+          <div class="food-info">
+            <div class="food-name">${f.name}</div>
+            <div class="food-serving">${f.serving}</div>
+            <div class="food-reason">${f.reason}</div>
+            ${f.flags.length?`<div class="food-flags">${f.flags.map(flag=>`<span class="food-flag ${flag}">${flagLabels[flag]||flag}</span>`).join('')}</div>`:''}
+          </div>
+        </div>`).join('')}
       </div>
-      ${symptoms.length?`<div class="journal-entry-symptoms">${symptoms.slice(0,5).map(s=>`<span class="symptom-chip">${s}</span>`).join('')}${symptoms.length>5?`<span class="symptom-chip">+${symptoms.length-5} more</span>`:''}</div>`:''}
-      ${preview?`<div class="journal-entry-preview">${preview}</div>`:''}
-    </div>`;
-  }).join('');
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr+'T12:00:00');
-  return d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-}
-
-function showJournalForm(entryId) {
-  editingJournalId = entryId || null;
-  document.getElementById('journal-list-view').style.display = 'none';
-  document.getElementById('journal-detail-view').style.display = 'none';
-  document.getElementById('journal-form-view').style.display = 'block';
-  document.getElementById('journal-form-title').textContent = entryId ? 'Edit journal entry' : 'New journal entry';
-  document.getElementById('symptom-checkboxes').innerHTML = SYMPTOM_LIST.map(s=>`
-    <label class="symptom-cb"><input type="checkbox" value="${s}" id="sym-${s.replace(/\s/g,'-')}"> ${s}</label>`).join('');
-  if (entryId) {
-    const entry = journalEntries.find(e=>e.id===entryId);
-    if (entry) {
-      document.getElementById('journal-date').value = entry.entry_date||'';
-      document.getElementById('journal-energy').value = entry.energy_level||5;
-      document.getElementById('energy-val').textContent = entry.energy_level||5;
-      document.getElementById('journal-severity').value = entry.symptom_severity||3;
-      document.getElementById('symptom-val').textContent = entry.symptom_severity||3;
-      document.getElementById('journal-supplements').value = entry.supplements_taken||'';
-      document.getElementById('journal-foods').value = entry.foods_eaten||'';
-      document.getElementById('journal-notes').value = entry.notes||'';
-      document.getElementById('journal-phase').value = entry.current_phase!=null?entry.current_phase:'';
-      const symptoms = entry.symptoms ? (Array.isArray(entry.symptoms)?entry.symptoms:Object.keys(entry.symptoms).filter(k=>entry.symptoms[k])) : [];
-      symptoms.forEach(s=>{const el=document.getElementById('sym-'+s.replace(/\s/g,'-'));if(el)el.checked=true;});
-    }
-  } else {
-    document.getElementById('journal-date').value = new Date().toISOString().split('T')[0];
-    document.getElementById('journal-energy').value = 5;
-    document.getElementById('energy-val').textContent = 5;
-    document.getElementById('journal-severity').value = 3;
-    document.getElementById('symptom-val').textContent = 3;
-    document.getElementById('journal-supplements').value = '';
-    document.getElementById('journal-foods').value = '';
-    document.getElementById('journal-notes').value = '';
-    const activePhase = Object.entries(phaseProgress).find(([n,p])=>p.status==='in_progress');
-    document.getElementById('journal-phase').value = activePhase ? activePhase[0] : '';
-  }
-}
-
-function hideJournalForm() {
-  document.getElementById('journal-form-view').style.display = 'none';
-  document.getElementById('journal-list-view').style.display = 'block';
-}
-
-async function saveJournalEntry() {
-  const date = document.getElementById('journal-date').value;
-  if (!date) { toast('Please select a date'); return; }
-  const energy = parseInt(document.getElementById('journal-energy').value);
-  const severity = parseInt(document.getElementById('journal-severity').value);
-  const symptoms = Array.from(document.querySelectorAll('#symptom-checkboxes input:checked')).map(el=>el.value);
-  const supplements = document.getElementById('journal-supplements').value.trim();
-  const foods = document.getElementById('journal-foods').value.trim();
-  const notes = document.getElementById('journal-notes').value.trim();
-  const phase = document.getElementById('journal-phase').value;
-  const payload = {
-    user_id: currentUser.id, entry_date: date, energy_level: energy, symptom_severity: severity,
-    symptoms: symptoms, supplements_taken: supplements, foods_eaten: foods, notes: notes,
-    current_phase: phase !== '' ? parseInt(phase) : null, updated_at: new Date().toISOString()
-  };
-  try {
-    if (editingJournalId) {
-      await fetch(SUPABASE_URL+'/rest/v1/journal_entries?id=eq.'+editingJournalId, {
-        method:'PATCH', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=minimal'},
-        body:JSON.stringify(payload),
-      });
-    } else {
-      await fetch(SUPABASE_URL+'/rest/v1/journal_entries', {
-        method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=minimal'},
-        body:JSON.stringify(payload),
-      });
-    }
-    toast('Journal entry saved');
-    hideJournalForm();
-    await loadJournalEntries();
-  } catch(err) { toast('Error saving entry'); }
-}
-
-function viewJournalEntry(id) {
-  const entry = journalEntries.find(e=>e.id===id);
-  if (!entry) return;
-  document.getElementById('journal-list-view').style.display = 'none';
-  document.getElementById('journal-form-view').style.display = 'none';
-  document.getElementById('journal-detail-view').style.display = 'block';
-  const symptoms = entry.symptoms ? (Array.isArray(entry.symptoms)?entry.symptoms:Object.keys(entry.symptoms).filter(k=>entry.symptoms[k])) : [];
-  const phaseName = entry.current_phase!=null ? PHASES.find(p=>p.number===entry.current_phase)?.subtitle : null;
-  document.getElementById('journal-detail-content').innerHTML = `
-    <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-      <div style="font-family:'DM Serif Display',serif;font-size:26px;">${formatDate(entry.entry_date)}</div>
-      <button class="btn-new-entry" onclick="showJournalForm('${entry.id}')">Edit</button>
-    </div>
-    <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">${energyBadge(entry.energy_level||5)}${symptomBadge(entry.symptom_severity||3)}${phaseName?`<span class="badge" style="background:var(--accent-light);color:var(--accent)">Phase: ${phaseName}</span>`:''}</div>
-    ${symptoms.length?`<div class="journal-detail-section"><div class="journal-detail-label">Symptoms</div><div class="journal-entry-symptoms">${symptoms.map(s=>`<span class="symptom-chip">${s}</span>`).join('')}</div></div>`:''}
-    ${entry.supplements_taken?`<div class="journal-detail-section"><div class="journal-detail-label">Supplements taken</div><div class="journal-detail-value">${entry.supplements_taken}</div></div>`:''}
-    ${entry.foods_eaten?`<div class="journal-detail-section"><div class="journal-detail-label">Foods eaten</div><div class="journal-detail-value">${entry.foods_eaten}</div></div>`:''}
-    ${entry.notes?`<div class="journal-detail-section"><div class="journal-detail-label">Notes</div><div class="journal-detail-value">${entry.notes}</div></div>`:''}
-    <div class="journal-detail-section">
-      <div class="journal-detail-label">Related</div>
-      <div class="journal-links">
-        <button class="journal-link-pill" onclick="showPanel('tracker')">View phase progress</button>
-        <a class="journal-link-pill" href="https://love-your-liver.vercel.app" target="_blank" style="text-decoration:none">View lab results</a>
-      </div>
-    </div>
-  `;
-}
-
-function hideJournalDetail() {
-  document.getElementById('journal-detail-view').style.display = 'none';
-  document.getElementById('journal-list-view').style.display = 'block';
+    </div>`).join('');
+  document.getElementById('food-list-content').innerHTML=html||'<div class="empty-state"><h3>No foods found</h3><p>Try adjusting your search or filter.</p></div>';
 }
 
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
 
-(async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) document.getElementById('auth-screen').style.display = 'flex';
-})();
+(async()=>{const{data:{session}}=await sb.auth.getSession();if(!session)document.getElementById('auth-screen').style.display='flex';})();
 </script>
 </body>
 </html>
