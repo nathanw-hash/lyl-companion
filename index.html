@@ -297,7 +297,7 @@ async function doSearch() {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
-        'apikey': 'sb_publishable_nrdRf543xZ6PB93rctCEgA_MZ2OEjNM',
+        'apikey': SUPABASE_KEY,
       },
       body: JSON.stringify({ query, match_count: 8, match_threshold: 0.25 }),
     });
