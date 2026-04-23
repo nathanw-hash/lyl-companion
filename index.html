@@ -3,14 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love Your Liver</title>
-<meta name="description" content="Love Your Liver lab tracker — enter your results and get personalized recommendations">
-<meta name="theme-color" content="#2d6a4f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="LYL Labs">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<title>Love Your Liver — Program Guide</title>
 <meta name="description" content="Love Your Liver companion app — knowledge base, phase tracker, journal, and food guide">
 <meta name="theme-color" content="#2d6a4f">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -343,16 +336,23 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .toggle-switch input:checked+.toggle-slider:before{transform:translateX(20px);}
 
 @media(max-width:640px){
-  .topbar{padding:0 10px;gap:6px;}
-  .topbar-logo{font-size:15px;}
-  .topbar-link{padding:7px 8px;font-size:12px;}
-  .main{padding:20px 14px;}
+  .topbar{padding:0 16px;gap:6px;}
+  .topbar-logo{font-size:16px;}
+  .topbar-links{display:none;}
+  .main{padding:20px 14px;padding-bottom:80px;}
   .auth-card{padding:28px 18px;}
   .user-email,.testing-link{display:none;}
   .entry-grid,.symptom-checkboxes,.food-grid{grid-template-columns:1fr;}
   .phase-mini-progress{display:none;}
   .food-controls{flex-direction:column;}
+  .bottom-nav{display:flex;}
 }
+
+/* BOTTOM NAV — mobile only */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:200;padding:0;height:62px;align-items:stretch;}
+.bottom-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;color:var(--text3);padding:8px 4px;transition:color .15s;}
+.bottom-nav-btn.active{color:var(--accent);}
+.bottom-nav-btn svg{width:22px;height:22px;stroke-width:1.8;}
 </style>
 </head>
 <body>
@@ -546,10 +546,37 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- end .main -->
 
-<div id="toast"></div>
+  <!-- BOTTOM NAV — mobile only -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bottom-nav-btn active" id="bnav-search" onclick="showPanel('search')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search
+    </button>
+    <button class="bottom-nav-btn" id="bnav-browse" onclick="showPanel('browse')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      Browse
+    </button>
+    <button class="bottom-nav-btn" id="bnav-tracker" onclick="showPanel('tracker')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Progress
+    </button>
+    <button class="bottom-nav-btn" id="bnav-journal" onclick="showPanel('journal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Journal
+    </button>
+    <button class="bottom-nav-btn" id="bnav-foods" onclick="showPanel('foods')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      Foods
+    </button>
+    <button class="bottom-nav-btn" id="bnav-provider" style="display:none" onclick="showPanel('provider')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Clients
+    </button>
+  </nav>
+
+</div><!-- end #app -->
 
 <script>
 const SUPABASE_URL = 'https://pkootwezezmqwopveigu.supabase.co';
@@ -695,7 +722,14 @@ function showMsg(msg,ok){const el=document.getElementById('auth-msg');el.textCon
 
 sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();renderFoodList();checkProviderStatus();}});
 
-function showPanel(name){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.topbar-link').forEach(t=>t.classList.remove('active'));document.getElementById('panel-'+name).classList.add('active');const tabEl=document.getElementById('tab-'+name);if(tabEl)tabEl.classList.add('active');}
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.topbar-link').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-btn').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  const tabEl=document.getElementById('tab-'+name);if(tabEl)tabEl.classList.add('active');
+  const bnavEl=document.getElementById('bnav-'+name);if(bnavEl)bnavEl.classList.add('active');
+}
 function goBack(){showPanel(previousPanel);}
 
 // SEARCH
@@ -803,6 +837,7 @@ async function checkProviderStatus() {
       isProvider = data[0].is_provider === true;
       if (isProvider) {
         document.getElementById('tab-provider').style.display = '';
+        document.getElementById('bnav-provider').style.display = '';
         loadClients();
       }
       // Show share toggle in journal or settings area
@@ -1023,11 +1058,6 @@ function hideProviderDetail() {
 (async()=>{const{data:{session}}=await sb.auth.getSession();if(!session)document.getElementById('auth-screen').style.display='flex';})();
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
-}
-  if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
