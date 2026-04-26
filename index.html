@@ -387,7 +387,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <div class="topbar-logo">Love Your Liver</div>
     <div class="topbar-links">
       <button class="topbar-link active" id="tab-search" onclick="showPanel('search')">Search</button>
-      <button class="topbar-link" id="tab-browse" onclick="showPanel('browse')">Browse</button>
       <button class="topbar-link" id="tab-tracker" onclick="showPanel('tracker')">My Progress</button>
       <button class="topbar-link" id="tab-journal" onclick="showPanel('journal')">Journal</button>
       <button class="topbar-link" id="tab-foods" onclick="showPanel('foods')">Food Guide</button>
@@ -407,7 +406,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <h1>What would you like to know?</h1>
         <p>Search the Love Your Liver knowledge base by asking a question in plain language.</p>
         <div class="search-box">
-          <input type="text" id="search-input" placeholder="e.g. why do I feel worse when I exercise?" onkeydown="if(event.key==='Enter')doSearch()">
+          <input type="text" id="search-input" placeholder="e.g. why do I feel worse when I exercise?" onkeydown="if(event.key==='Enter')doSearch()" oninput="if(!this.value.trim()){document.getElementById('search-results').innerHTML='';document.getElementById('browse-content').style.display='';}">
           <button class="search-btn" onclick="doSearch()">Search</button>
         </div>
         <div class="search-examples">
@@ -420,10 +419,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         </div>
       </div>
       <div id="search-results"></div>
-    </div>
-
-    <!-- BROWSE -->
-    <div class="panel" id="panel-browse">
       <div id="browse-content"><div class="loading">Loading knowledge base...</div></div>
     </div>
 
@@ -557,10 +552,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       Search
     </button>
-    <button class="bottom-nav-btn" id="bnav-browse" onclick="showPanel('browse')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-      Browse
-    </button>
+    
     <button class="bottom-nav-btn" id="bnav-tracker" onclick="showPanel('tracker')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
       Progress
@@ -738,8 +730,11 @@ function goBack(){showPanel(previousPanel);}
 // SEARCH
 function setQuery(q){document.getElementById('search-input').value=q;doSearch();}
 async function doSearch(){
-  const query=document.getElementById('search-input').value.trim();if(!query)return;
-  const container=document.getElementById('search-results');container.innerHTML='<div class="loading">Searching...</div>';
+  const query=document.getElementById('search-input').value.trim();
+  if(!query){document.getElementById('search-results').innerHTML='';document.getElementById('browse-content').style.display='';return;}
+  const container=document.getElementById('search-results');
+  document.getElementById('browse-content').style.display='none';
+  container.innerHTML='<div class="loading">Searching...</div>';
   try{
     const voyageRes=await fetch('https://api.voyageai.com/v1/embeddings',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+VOYAGE_KEY},body:JSON.stringify({input:[query],model:'voyage-3'})});
     if(!voyageRes.ok)throw new Error('Embedding service error');
