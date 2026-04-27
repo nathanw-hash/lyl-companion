@@ -49,7 +49,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 /* APP */
 #app{display:none;min-height:100vh;}
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;position:sticky;top:0;z-index:100;gap:20px;}
-.topbar-logo{font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);padding:16px 0;white-space:nowrap;}
+.topbar-logo{font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);padding:16px 0;white-space:nowrap;display:flex;align-items:center;gap:10px;}
+.topbar-logo-img{height:32px;width:auto;display:block;}
+.auth-logo-img{display:block;width:120px;height:auto;margin:0 auto 16px;}
 .topbar-links{display:flex;gap:2px;}
 .topbar-link{padding:8px 11px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border:none;background:transparent;transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .topbar-link:hover{background:var(--surface2);color:var(--text);}
@@ -371,7 +373,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 }
 @media(max-width:640px){
   .topbar{padding:0 16px;gap:6px;}
-  .topbar-logo{font-size:16px;}
+  .topbar-logo{font-size:16px;gap:8px;}
+  .topbar-logo-img{height:24px;}
   .topbar-links{display:none;}
   .main{padding:20px 14px;padding-bottom:80px;}
   .auth-card{padding:28px 18px;}
@@ -386,6 +389,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 <div id="auth-screen">
   <div class="auth-card">
+    <img src="/Nutrition_Detective_Green_Logo_New.png" alt="Nutrition Detective" class="auth-logo-img">
     <div class="auth-logo">Love Your Liver</div>
     <div class="auth-tagline">Program guide &amp; knowledge base</div>
     <div class="auth-tabs">
@@ -408,7 +412,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 <div id="app">
   <div class="topbar">
-    <div class="topbar-logo">Love Your Liver</div>
+    <div class="topbar-logo"><img src="/nd-icon.png" alt="Nutrition Detective" class="topbar-logo-img">Love Your Liver</div>
     <div class="topbar-links">
       <button class="topbar-link active" id="tab-search" onclick="showPanel('search')">Search</button>
       <button class="topbar-link" id="tab-tracker" onclick="showPanel('tracker')">My Progress</button>
