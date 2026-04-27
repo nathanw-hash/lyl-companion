@@ -930,7 +930,7 @@ function generateRecommendations(labs, profile) {
   }
 
   if (labs.serum_retinol !== null && labs.serum_retinol !== undefined) {
-    const s = status(labs.serum_retinol, 0, 50);
+    const s = status(labs.serum_retinol, 0, 20);
     findings.push({ marker:'Serum retinol', value: labs.serum_retinol, unit:'mcg/dL', status: s==='high'?'high': s==='low'?'low':'optimal' });
     if (s === 'high') actions.push({ priority:'urgent', title:'Reduce vitamin A intake', body:'Eliminate liver, organ meats, cod liver oil, dairy, and fortified foods. Avoid all vitamin A and fish oil supplements. High retinol is the primary driver of cholestasis.' });
   }
@@ -945,12 +945,12 @@ function generateRecommendations(labs, profile) {
   }
 
   if (labs.blood_copper !== null && labs.blood_copper !== undefined) {
-    findings.push({ marker:'Blood copper', value: labs.blood_copper, unit:'mcg/dL', status: labs.blood_copper > 120 ? 'high' : 'optimal' });
-    if (labs.blood_copper > 120) actions.push({ priority:'urgent', title:'Address copper toxicity', body:'Remove copper sources: eliminate chocolate, nuts, seeds, soy. Check water pipes (copper pipes leach into water — use RO filtration). Avoid copper cookware.' });
+    findings.push({ marker:'Blood copper', value: labs.blood_copper, unit:'mcg/dL', status: labs.blood_copper >= 90 ? 'high' : 'optimal' });
+    if (labs.blood_copper >= 90) actions.push({ priority:'urgent', title:'Address copper toxicity', body:'Remove copper sources: eliminate chocolate, nuts, seeds, soy. Check water pipes (copper pipes leach into water — use RO filtration). Avoid copper cookware.' });
   }
 
   if (labs.blood_zinc !== null && labs.blood_zinc !== undefined) {
-    const s = status(labs.blood_zinc, 80, 130);
+    const s = status(labs.blood_zinc, 100, 135);
     findings.push({ marker:'Blood zinc', value: labs.blood_zinc, unit:'mcg/dL', status: s==='low'?'low': s==='high'?'high':'optimal' });
     if (s==='low') {
       const maxDose = Math.min(Math.round(weight * 0.40 / 15) * 15, 60);
@@ -965,19 +965,31 @@ function generateRecommendations(labs, profile) {
     if (s==='high') actions.push({ priority:'watch', title:'High hair calcium - biounavailability', body:'Address with topical magnesium, reduce vitamin A, get vitamin D from sunlight not supplements, and consider vitamin K2 MK-4. Do not supplement calcium.' });
   }
 
+  if (labs.hair_phosphorus !== null && labs.hair_phosphorus !== undefined) {
+    var sP = labs.hair_phosphorus < 15 ? 'low' : 'optimal';
+    findings.push({ marker:'Hair P', value: labs.hair_phosphorus, unit:'', status: sP });
+  }
+
+  if (labs.hair_magnesium !== null && labs.hair_magnesium !== undefined && labs.hair_calcium !== null && labs.hair_calcium !== undefined && labs.hair_magnesium > 0) {
+    var caMgRatio = labs.hair_calcium / labs.hair_magnesium;
+    var sMg = caMgRatio < 3 ? 'high' : caMgRatio > 11 ? 'low' : 'optimal';
+    findings.push({ marker:'Hair Mg', value: labs.hair_magnesium, unit:'', status: sMg });
+  }
+
   if (labs.hair_copper !== null && labs.hair_copper !== undefined) {
-    const s = status(labs.hair_copper, 1.5, 2.5);
+    const s = status(labs.hair_copper, 0.5, 1.5);
     findings.push({ marker:'Hair Cu', value: labs.hair_copper, unit:'', status: s==='high'?'high': s==='low'?'low':'optimal' });
     if (s==='high') actions.push({ priority:'action', title:'Elevated hair copper', body:'Work the copper detox protocol: zinc picolinate, selenium, molybdenum, flush niacin, and soluble fiber. Eliminate high-copper foods.' });
   }
 
-  if (labs.hair_zinc !== null && labs.hair_zinc !== undefined) {
-    const s = status(labs.hair_zinc, 17, 20);
-    findings.push({ marker:'Hair Zn', value: labs.hair_zinc, unit:'', status: s==='low'?'low': s==='high'?'high':'optimal' });
+  if (labs.hair_zinc !== null && labs.hair_zinc !== undefined && labs.hair_copper !== null && labs.hair_copper !== undefined && labs.hair_copper > 0) {
+    var znCuRatio = labs.hair_zinc / labs.hair_copper;
+    var znS = znCuRatio < 18 ? 'low' : znCuRatio > 22 ? 'high' : 'optimal';
+    findings.push({ marker:'Hair Zn', value: labs.hair_zinc, unit:'', status: znS });
   }
 
   if (labs.hair_selenium !== null && labs.hair_selenium !== undefined) {
-    const s = status(labs.hair_selenium, 0.11, 0.15);
+    const s = status(labs.hair_selenium, 0.10, 0.15);
     findings.push({ marker:'Hair Se', value: labs.hair_selenium, unit:'', status: s==='low'?'low': s==='high'?'high':'optimal' });
     if (s==='low') {
       doses.push({ supplement:'Selenium glycinate', dose:'150mcg/day', instructions:'If it causes negative reactions within 3-7 days, reduce dose or stop temporarily.' });
@@ -986,8 +998,8 @@ function generateRecommendations(labs, profile) {
   }
 
   if (labs.hair_molybdenum !== null && labs.hair_molybdenum !== undefined) {
-    const s = status(labs.hair_molybdenum, 0.004, 999);
-    findings.push({ marker:'Hair Mo', value: labs.hair_molybdenum, unit:'', status: s==='low'?'low':'optimal' });
+    const s = status(labs.hair_molybdenum, 0.004, 0.008);
+    findings.push({ marker:'Hair Mo', value: labs.hair_molybdenum, unit:'', status: s==='low'?'low': s==='high'?'high':'optimal' });
     if (s==='low') {
       doses.push({ supplement:'Molybdenum glycinate', dose:'150mcg/day', instructions:'If it causes negative reactions within 3-7 days, reduce dose or stop temporarily.' });
       actions.push({ priority:'action', title:'Address molybdenum deficiency', body:'Molybdenum is required for ALDH enzyme pathway needed to process and eliminate vitamin A.' });
