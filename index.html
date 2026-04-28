@@ -118,6 +118,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cross-ref-pill{font-size:13px;padding:6px 12px;background:var(--accent-light);color:var(--accent);border-radius:20px;cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif;}
 .cross-ref-pill:hover{background:var(--accent);color:#fff;}
 
+.buffer-calc-wrap{margin:16px 0 24px;}
+.buffer-calc-toggle{display:flex;align-items:center;gap:10px;width:100%;padding:14px 18px;background:var(--accent-light);color:var(--accent);border:1.5px solid var(--accent);border-radius:var(--radius);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;transition:all .15s;}
+.buffer-calc-toggle:hover{background:var(--accent);color:#fff;}
+.buffer-calc-icon{font-size:18px;}
+.buffer-calc-chevron{margin-left:auto;font-size:14px;}
+.buffer-calc-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-top:8px;box-shadow:var(--shadow);}
+.buffer-calc-row{margin-bottom:14px;}
+.buffer-calc-row label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.buffer-calc-unit{color:var(--text3);font-weight:400;}
+.buffer-calc-row input,.buffer-calc-row select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;}
+.buffer-calc-row input:focus,.buffer-calc-row select:focus{border-color:var(--accent);}
+.buffer-calc-result{margin-top:14px;}
+.buffer-calc-output{background:var(--accent-light);border-radius:8px;padding:14px 16px;margin-bottom:12px;}
+.buffer-calc-output-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;}
+.buffer-calc-output-row+.buffer-calc-output-row{border-top:1px solid rgba(45,106,79,0.15);}
+.buffer-calc-output-label{font-size:13px;color:var(--text2);}
+.buffer-calc-output-value{font-size:22px;font-weight:700;color:var(--accent);font-family:'DM Serif Display',serif;}
+.buffer-calc-output-value-sub{font-size:15px;font-weight:600;color:var(--text);}
+.buffer-calc-output-main{padding-bottom:10px;}
+.buffer-calc-note{font-size:13px;line-height:1.5;padding:10px 14px;border-radius:8px;margin-top:8px;background:#f8f4ec;color:var(--text2);}
+.buffer-calc-note-warn{background:#fef3e2;color:#9a3a0a;border-left:3px solid #f8c97a;}
+.buffer-calc-note-mild{background:transparent;padding:6px 0;color:var(--text3);font-size:12px;}
+
 /* PHASE TRACKER */
 .tracker-header{margin-bottom:32px;}
 .tracker-header h1{font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px;}
@@ -793,10 +816,104 @@ async function doSearch(){
 async function loadAllEntries(){try{const res=await fetch(SUPABASE_URL+'/rest/v1/knowledge_base?select=entry_id,title,category,subcategory,summary,tags&order=category,title',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});allEntries=await res.json();renderBrowse();}catch(err){document.getElementById('browse-content').innerHTML='<div class="loading">Error loading entries.</div>';}}
 const ACRONYMS=['HDT','MSG','MMS','HTMA','LYL','ND','ALDH','ADH','RO','VA','IUD','SNP','SNPs','PMS','GERD','LDL','HDL','TSH','ALT','AST','GGT','BUN','CBC','OTC','ICU','ER','GP','RX'];
 function prettify(s){let out=String(s||'').replace(/_/g,' ');ACRONYMS.forEach(a=>{out=out.replace(new RegExp('\\b'+a+'\\b','gi'),a);});return out.replace(/\b\w/g,(c,i,str)=>{const slice=str.slice(i,i+10);if(ACRONYMS.some(a=>slice.toUpperCase().startsWith(a)&&(slice.length===a.length||/\W/.test(slice[a.length]))))return c;return c.toUpperCase();});}
+
+const BUFFER_OPTIONS = {
+  sodium_bicarb:    { name: 'Sodium bicarbonate (baking soda)', multiplier: 0.682, mineral: 'sodium',    mineralPercent: 0.274 },
+  potassium_bicarb: { name: 'Potassium bicarbonate',            multiplier: 0.813, mineral: 'potassium', mineralPercent: 0.391, warning: 'potassium' },
+  magnesium_carb:   { name: 'Magnesium carbonate',              multiplier: 0.342, mineral: 'magnesium', mineralPercent: 0.288, warning: 'mg_water' },
+  magnesium_hydrox: { name: 'Magnesium hydroxide',              multiplier: 0.192, mineral: 'magnesium', mineralPercent: 0.417, warning: 'mg_hydrox' }
+};
+
+function renderBufferCalculator() {
+  return '<div class="buffer-calc-wrap">' +
+    '<button type="button" class="buffer-calc-toggle" onclick="toggleBufferCalculator()">' +
+      '<span class="buffer-calc-icon">⚖</span>' +
+      '<span>Buffer Calculator</span>' +
+      '<span class="buffer-calc-chevron" id="buffer-calc-chevron">▾</span>' +
+    '</button>' +
+    '<div class="buffer-calc-panel" id="buffer-calc-panel" style="display:none">' +
+      '<div class="buffer-calc-row">' +
+        '<label>Nicotinic acid dose <span class="buffer-calc-unit">(mg)</span></label>' +
+        '<input type="number" id="buffer-calc-dose" min="25" max="2000" step="25" placeholder="e.g. 500" oninput="calculateBuffer()">' +
+      '</div>' +
+      '<div class="buffer-calc-row">' +
+        '<label>Buffer type</label>' +
+        '<select id="buffer-calc-type" onchange="calculateBuffer()">' +
+          '<option value="sodium_bicarb">Sodium bicarbonate (baking soda)</option>' +
+          '<option value="potassium_bicarb">Potassium bicarbonate</option>' +
+          '<option value="magnesium_carb">Magnesium carbonate</option>' +
+          '<option value="magnesium_hydrox">Magnesium hydroxide</option>' +
+        '</select>' +
+      '</div>' +
+      '<div id="buffer-calc-result" class="buffer-calc-result"></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function toggleBufferCalculator() {
+  var panel = document.getElementById('buffer-calc-panel');
+  var chev = document.getElementById('buffer-calc-chevron');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    chev.textContent = '▴';
+  } else {
+    panel.style.display = 'none';
+    chev.textContent = '▾';
+  }
+}
+
+function calculateBuffer() {
+  var doseEl = document.getElementById('buffer-calc-dose');
+  var typeEl = document.getElementById('buffer-calc-type');
+  var resultEl = document.getElementById('buffer-calc-result');
+  var dose = parseFloat(doseEl.value);
+  if (!dose || dose <= 0) { resultEl.innerHTML = ''; return; }
+  var opt = BUFFER_OPTIONS[typeEl.value];
+  var bufferMg = Math.round(dose * opt.multiplier);
+  var mineralMg = Math.round(bufferMg * opt.mineralPercent);
+  var tspEstimate = bufferMg / 1200;
+  var tspLabel = '';
+  if (tspEstimate < 0.15)      tspLabel = '< 1/8 tsp';
+  else if (tspEstimate < 0.3)  tspLabel = '~1/4 tsp';
+  else if (tspEstimate < 0.4)  tspLabel = '~1/3 tsp';
+  else if (tspEstimate < 0.6)  tspLabel = '~1/2 tsp';
+  else if (tspEstimate < 0.85) tspLabel = '~3/4 tsp';
+  else if (tspEstimate < 1.15) tspLabel = '~1 tsp';
+  else                          tspLabel = '~' + tspEstimate.toFixed(1) + ' tsp';
+  var html = '';
+  if (dose < 150) {
+    html += '<div class="buffer-calc-note buffer-calc-note-mild">Buffering is generally not necessary for doses under 150mg.</div>';
+  }
+  html +=
+    '<div class="buffer-calc-output">' +
+      '<div class="buffer-calc-output-row buffer-calc-output-main">' +
+        '<span class="buffer-calc-output-label">Buffer needed</span>' +
+        '<span class="buffer-calc-output-value">' + bufferMg + ' mg</span>' +
+      '</div>' +
+      '<div class="buffer-calc-output-row">' +
+        '<span class="buffer-calc-output-label">Approximate volume</span>' +
+        '<span class="buffer-calc-output-value-sub">' + tspLabel + '</span>' +
+      '</div>' +
+      '<div class="buffer-calc-output-row">' +
+        '<span class="buffer-calc-output-label">Delivers ' + opt.mineral + '</span>' +
+        '<span class="buffer-calc-output-value-sub">' + mineralMg + ' mg</span>' +
+      '</div>' +
+    '</div>';
+  if (opt.warning === 'potassium') {
+    html += '<div class="buffer-calc-note buffer-calc-note-warn"><strong>Caution:</strong> Potassium supplementation requires care. Read the potassium dosing article before regular use, especially if increasing dose.</div>';
+  } else if (opt.warning === 'mg_water') {
+    html += '<div class="buffer-calc-note">Add a small amount of warm water first, swirl, and let it bubble until clear before adding full water volume.</div>';
+  } else if (opt.warning === 'mg_hydrox') {
+    html += '<div class="buffer-calc-note">Add a small amount of warm water first and swirl. Magnesium hydroxide will not bubble — it will dissolve into a clearer solution.</div>';
+  }
+  html += '<div class="buffer-calc-note buffer-calc-note-mild">Slight under-buffering is preferable to over-buffering. A milligram-accurate scale gives the best result.</div>';
+  resultEl.innerHTML = html;
+}
 function renderBrowse(){const grouped={};allEntries.forEach(e=>{if(!grouped[e.category])grouped[e.category]=[];grouped[e.category].push(e);});document.getElementById('browse-content').innerHTML=Object.entries(grouped).map(([cat,entries])=>`<div class="category-section"><div class="category-title">${prettify(cat)}</div><div class="entry-grid">${entries.map(e=>`<div class="entry-card" data-id="${e.entry_id}" onclick="viewEntry(this.dataset.id,'browse')"><div class="entry-card-title">${e.title}</div><div class="entry-card-sub">${prettify(e.subcategory||'')}</div></div>`).join('')}</div></div>`).join('');}
 
 // ENTRY VIEW
-async function viewEntry(entryId,from){previousPanel=from||'search';showPanel('entry');const container=document.getElementById('entry-content');container.innerHTML='<div class="loading">Loading...</div>';try{const res=await fetch(SUPABASE_URL+'/rest/v1/knowledge_base?entry_id=eq.'+entryId+'&select=*',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});const data=await res.json();if(!data||data.length===0)throw new Error('Entry not found');const entry=data[0];const crossRefsHtml=(entry.cross_refs||[]).length>0?`<div class="cross-refs"><div class="cross-refs-label">Related topics</div><div class="cross-ref-pills">${entry.cross_refs.map(ref=>{const related=allEntries.find(e=>e.entry_id===ref);return related?`<button class="cross-ref-pill" onclick="viewEntry('${related.entry_id}','${from}')">${ref}</button>`:`<span class="cross-ref-pill" style="opacity:.5;cursor:default">${ref}</span>`;}).join('')}</div></div>`:'';const appNoteHtml=entry.app_note?`<div class="app-note"><div class="app-note-label">Clinical note</div><div class="app-note-text">${entry.app_note}</div></div>`:'';container.innerHTML=`<div class="entry-category">${prettify(entry.category)}${entry.subcategory?' &rsaquo; '+prettify(entry.subcategory):''}</div><div class="entry-title">${entry.title}</div><div class="entry-content">${formatContent(entry.content)}</div>${appNoteHtml}${crossRefsHtml}`;}catch(err){container.innerHTML=`<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;}}
+async function viewEntry(entryId,from){previousPanel=from||'search';showPanel('entry');const container=document.getElementById('entry-content');container.innerHTML='<div class="loading">Loading...</div>';try{const res=await fetch(SUPABASE_URL+'/rest/v1/knowledge_base?entry_id=eq.'+entryId+'&select=*',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});const data=await res.json();if(!data||data.length===0)throw new Error('Entry not found');const entry=data[0];const crossRefsHtml=(entry.cross_refs||[]).length>0?`<div class="cross-refs"><div class="cross-refs-label">Related topics</div><div class="cross-ref-pills">${entry.cross_refs.map(ref=>{const related=allEntries.find(e=>e.entry_id===ref);return related?`<button class="cross-ref-pill" onclick="viewEntry('${related.entry_id}','${from}')">${ref}</button>`:`<span class="cross-ref-pill" style="opacity:.5;cursor:default">${ref}</span>`;}).join('')}</div></div>`:'';const appNoteHtml=entry.app_note?`<div class="app-note"><div class="app-note-label">Clinical note</div><div class="app-note-text">${entry.app_note}</div></div>`:'';const calculatorHtml = entry.entry_id === 'nia_004' ? renderBufferCalculator() : '';
+    container.innerHTML=`<div class="entry-category">${prettify(entry.category)}${entry.subcategory?' &rsaquo; '+prettify(entry.subcategory):''}</div><div class="entry-title">${entry.title}</div>${calculatorHtml}<div class="entry-content">${formatContent(entry.content)}</div>${appNoteHtml}${crossRefsHtml}`;}catch(err){container.innerHTML=`<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;}}
 
 function formatContent(content){if(!content)return'';if(typeof content==='string'){const lines=content.split('\n').filter(Boolean);let html='',inList=false;lines.forEach(line=>{if(line.startsWith('## ')||line.startsWith('# ')){if(inList){html+='</ul>';inList=false;}html+=`<h3>${line.replace(/^#+\s/,'')}</h3>`;}else if(line.match(/^[-*]\s/)){if(!inList){html+='<ul>';inList=true;}html+=`<li>${line.slice(2)}</li>`;}else{if(inList){html+='</ul>';inList=false;}const m=line.match(/^([A-Za-z][A-Za-z0-9_]*?):\s*(.*)$/);if(m){html+=`<p><strong>${prettify(m[1])}:</strong> ${m[2]}</p>`;}else{html+=`<p>${line}</p>`;}}}); if(inList)html+='</ul>';return html;}if(typeof content==='object'&&content!==null){return Object.entries(content).map(([key,val])=>{const label=key.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());if(Array.isArray(val)&&val.length>0)return`<h3>${label}</h3><ul>${val.map(v=>`<li>${typeof v==='object'?Object.entries(v).map(([k,v2])=>`<strong>${prettify(k)}:</strong> ${v2}`).join(' — '):v}</li>`).join('')}</ul>`;if(typeof val==='string'&&val.length>0)return`<h3>${label}</h3><p>${val}</p>`;if(typeof val==='object'&&val!==null)return`<h3>${label}</h3>${formatContent(val)}`;return'';}).filter(Boolean).join('');}return`<p>${String(content)}</p>`;}
 
