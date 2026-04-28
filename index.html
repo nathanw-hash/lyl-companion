@@ -1648,7 +1648,7 @@ async function exportClientPDF() {
       doc.setFontSize(7);
       doc.setTextColor(c[0], c[1], c[2]);
       doc.text(String(cat).toUpperCase(), MARGIN_X + 14, y);
-      y += 4;
+      y += 10;
       // Description
       if (ev.description) {
         doc.setFont('helvetica', 'normal');
