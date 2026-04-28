@@ -12,6 +12,8 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root {
@@ -1315,6 +1317,139 @@ async function loadClients() {
   }
 }
 
+let clientTrendChart = null;
+let clientLabResults = [];
+let clientEvents = [];
+
+function renderClientTrend() {
+  const sel = document.getElementById('client-trend-marker');
+  if (!sel) return;
+  const marker = sel.value;
+  const sexVal = window._clientTrendSex || 'female';
+
+  const ALL_MARKERS_KIND = {
+    ferritin: 'blood', serum_retinol: 'blood', blood_zinc: 'blood', blood_copper: 'blood',
+    hair_zinc: 'hair', hair_copper: 'hair', hair_selenium: 'hair', hair_molybdenum: 'hair'
+  };
+  const kind = ALL_MARKERS_KIND[marker];
+  const filtered = clientLabResults
+    .filter(r => r._kind === kind && r[marker] !== null && r[marker] !== undefined)
+    .slice()
+    .sort((a,b) => new Date(a.test_date) - new Date(b.test_date));
+
+  const labels = filtered.map(r => r.test_date);
+  const values = filtered.map(r => r[marker]);
+
+  const RANGES = {
+    serum_retinol:   { low: 0,     high: 20    },
+    ferritin:        sexVal === 'male' ? { low: 30, high: 70 } : { low: 50, high: 100 },
+    blood_copper:    { low: 0,     high: 90    },
+    blood_zinc:      { low: 100,   high: 135   },
+    hair_copper:     { low: 0.5,   high: 1.5   },
+    hair_selenium:   { low: 0.10,  high: 0.15  },
+    hair_molybdenum: { low: 0.004, high: 0.008 }
+  };
+  const range = RANGES[marker];
+  const datasets = [];
+
+  if (range) {
+    datasets.push({
+      label: 'Optimal max', data: labels.map((_, i) => ({x: i, y: range.high})),
+      borderColor: 'rgba(45,106,79,0.25)', backgroundColor: 'rgba(45,106,79,0.10)',
+      borderWidth: 1, borderDash: [4,4], pointRadius: 0, fill: '+1', tension: 0, order: 2
+    });
+    datasets.push({
+      label: 'Optimal min', data: labels.map((_, i) => ({x: i, y: range.low})),
+      borderColor: 'rgba(45,106,79,0.25)', borderWidth: 1, borderDash: [4,4],
+      pointRadius: 0, fill: false, tension: 0, order: 2
+    });
+  }
+
+  datasets.push({
+    label: marker.replace(/_/g,' '),
+    data: values.map((v, i) => ({x: i, y: v})),
+    borderColor: '#2d6a4f',
+    backgroundColor: 'rgba(45,106,79,0.08)',
+    borderWidth: 2.5, tension: 0.3,
+    pointBackgroundColor: '#2d6a4f', pointRadius: 5,
+    fill: false, showLine: true, spanGaps: true, order: 1
+  });
+
+  const eventAnnotations = {};
+  if (Array.isArray(clientEvents) && clientEvents.length > 0 && labels.length > 0) {
+    const CATEGORY_COLORS = {
+      protocol:   '#2d6a4f',
+      supplement: '#1d4ed8',
+      lifestyle:  '#7c3aed',
+      symptom:    '#c2410c',
+      other:      '#6b7280'
+    };
+    function dateToPosition(eventDate) {
+      const t = new Date(eventDate).getTime();
+      const dates = labels.map(d => new Date(d).getTime());
+      if (t <= dates[0]) return 0;
+      if (t >= dates[dates.length - 1]) return dates.length - 1;
+      for (let i = 0; i < dates.length - 1; i++) {
+        if (t >= dates[i] && t <= dates[i+1]) {
+          const frac = (t - dates[i]) / (dates[i+1] - dates[i]);
+          return i + frac;
+        }
+      }
+      return 0;
+    }
+    clientEvents.forEach((ev, idx) => {
+      const color = CATEGORY_COLORS[ev.category] || CATEGORY_COLORS.other;
+      eventAnnotations['ev_' + idx] = {
+        type: 'line',
+        xMin: dateToPosition(ev.event_date),
+        xMax: dateToPosition(ev.event_date),
+        borderColor: color, borderWidth: 2, borderDash: [5,4],
+        label: {
+          display: true,
+          content: ev.title.length > 25 ? ev.title.slice(0, 24) + '…' : ev.title,
+          position: 'center',
+          backgroundColor: color, color: '#fff',
+          font: { family: 'DM Sans', size: 10, weight: '600' },
+          padding: { top: 4, bottom: 4, left: 6, right: 6 },
+          borderRadius: 4, rotation: -90, xAdjust: 8
+        }
+      };
+    });
+  }
+
+  const canvas = document.getElementById('client-trend-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (clientTrendChart) clientTrendChart.destroy();
+  clientTrendChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        annotation: { annotations: eventAnnotations }
+      },
+      scales: {
+        x: {
+          type: 'linear', min: 0, max: Math.max(0, labels.length - 1),
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          ticks: {
+            font: { family: 'DM Sans', size: 12 },
+            stepSize: 1,
+            callback: v => labels[Math.round(v)] || ''
+          }
+        },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          ticks: { font: { family: 'DM Sans', size: 12 } }
+        }
+      }
+    }
+  });
+}
+
 async function viewClient(userId) {
   currentClient = userId;
   document.getElementById('provider-list-view').style.display = 'none';
@@ -1324,8 +1459,8 @@ async function viewClient(userId) {
   try {
     const [profileRes, bloodRes, hairRes, phasesRes, journalRes, eventsRes] = await Promise.all([
       fetch(SUPABASE_URL+'/rest/v1/profiles?user_id=eq.'+userId+'&select=*', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
-      fetch(SUPABASE_URL+'/rest/v1/blood_tests?user_id=eq.'+userId+'&select=*&order=test_date.desc&limit=1', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
-      fetch(SUPABASE_URL+'/rest/v1/hair_tests?user_id=eq.'+userId+'&select=*&order=test_date.desc&limit=1', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
+      fetch(SUPABASE_URL+'/rest/v1/blood_tests?user_id=eq.'+userId+'&select=*&order=test_date.desc', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
+      fetch(SUPABASE_URL+'/rest/v1/hair_tests?user_id=eq.'+userId+'&select=*&order=test_date.desc', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
       fetch(SUPABASE_URL+'/rest/v1/phase_progress?user_id=eq.'+userId+'&select=*&order=phase_number', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
       fetch(SUPABASE_URL+'/rest/v1/journal_entries?user_id=eq.'+userId+'&select=*&order=entry_date.desc&limit=10', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}),
       fetch(SUPABASE_URL+'/rest/v1/events?user_id=eq.'+userId+'&select=*&order=event_date.desc', {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}})
@@ -1338,8 +1473,16 @@ async function viewClient(userId) {
     const journals = await journalRes.json();
     const events   = await eventsRes.json();
     const profile  = profiles[0] || {};
-    const blood    = Array.isArray(bloodArr) && bloodArr[0] ? bloodArr[0] : null;
-    const hair     = Array.isArray(hairArr)  && hairArr[0]  ? hairArr[0]  : null;
+    const blood     = Array.isArray(bloodArr) && bloodArr[0] ? bloodArr[0] : null;
+    const hair      = Array.isArray(hairArr)  && hairArr[0]  ? hairArr[0]  : null;
+
+    // Stash full datasets for the trend chart
+    clientEvents = Array.isArray(events) ? events : [];
+    const _taggedTests = [
+      ...(Array.isArray(bloodArr) ? bloodArr.map(r => ({...r, _kind: 'blood'})) : []),
+      ...(Array.isArray(hairArr)  ? hairArr.map(r  => ({...r, _kind: 'hair'}))  : [])
+    ];
+    clientLabResults = _taggedTests.sort((a,b) => new Date(b.test_date) - new Date(a.test_date));
 
     // Generate report from blood + hair
     let reportHtml = '';
@@ -1446,6 +1589,37 @@ async function viewClient(userId) {
       '</div>';
     }).join('') : '<p style="color:var(--text3);font-size:14px">No timeline events recorded.</p>';
 
+    // Build trend dropdown — only markers with 2+ data points appear
+    const ALL_MARKERS = [
+      { value: 'ferritin',         label: 'Ferritin',         kind: 'blood' },
+      { value: 'serum_retinol',    label: 'Serum retinol',    kind: 'blood' },
+      { value: 'blood_zinc',       label: 'Blood zinc',       kind: 'blood' },
+      { value: 'blood_copper',     label: 'Blood copper',     kind: 'blood' },
+      { value: 'hair_zinc',        label: 'Hair zinc',        kind: 'hair'  },
+      { value: 'hair_copper',      label: 'Hair copper',      kind: 'hair'  },
+      { value: 'hair_selenium',    label: 'Hair selenium',    kind: 'hair'  },
+      { value: 'hair_molybdenum',  label: 'Hair molybdenum',  kind: 'hair'  }
+    ];
+    const validMarkers = ALL_MARKERS.filter(m => {
+      const count = clientLabResults.filter(r => r._kind === m.kind && r[m.value] !== null && r[m.value] !== undefined).length;
+      return count >= 2;
+    });
+    let trendHtml = '';
+    if (validMarkers.length > 0) {
+      const optionsHtml = validMarkers.map(m => `<option value="${m.value}">${m.label}</option>`).join('');
+      trendHtml = `
+        <div class="provider-section">
+          <div class="provider-section-title">Trends over time</div>
+          <div style="margin-bottom:12px">
+            <select id="client-trend-marker" onchange="renderClientTrend()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;">
+              ${optionsHtml}
+            </select>
+          </div>
+          <div style="position:relative;height:320px;width:100%"><canvas id="client-trend-chart"></canvas></div>
+        </div>`;
+      window._clientTrendSex = profile.sex || 'female';
+    }
+
     const name = profile.display_name || 'Client';
     document.getElementById('provider-detail-content').innerHTML = `
       <div style="margin-bottom:28px;">
@@ -1460,6 +1634,8 @@ async function viewClient(userId) {
         ${phaseRowsHtml}
       </div>
 
+      ${trendHtml}
+
       <div class="provider-section">
         <div class="provider-section-title">Timeline</div>
         ${eventsHtml}
@@ -1470,6 +1646,10 @@ async function viewClient(userId) {
         ${journalRowsHtml}
       </div>
     `;
+
+    if (validMarkers.length > 0) {
+      setTimeout(() => renderClientTrend(), 0);
+    }
   } catch(err) {
     document.getElementById('provider-detail-content').innerHTML = `<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;
   }
