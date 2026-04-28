@@ -14,6 +14,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root {
@@ -1321,6 +1322,416 @@ let clientTrendChart = null;
 let clientLabResults = [];
 let clientEvents = [];
 
+async function exportClientPDF() {
+  if (!window._pdfExportData) { alert('No client data loaded.'); return; }
+  if (!window.jspdf) { alert('PDF library not loaded — refresh the page.'); return; }
+
+  const { name, profile, blood, hair, phases, journals, events, rec } = window._pdfExportData;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+
+  // Page geometry (in points: 1pt = 1/72 inch, letter = 612x792)
+  const PAGE_W = 612, PAGE_H = 792;
+  const MARGIN_X = 48, MARGIN_TOP = 56, MARGIN_BOTTOM = 56;
+  const CONTENT_W = PAGE_W - MARGIN_X * 2;
+  let y = MARGIN_TOP;
+  let pageNum = 1;
+
+  // ─── Helpers ──────────────────────────────────────────────────
+  function addHeader() {
+    // Logo
+    try {
+      const img = window._pdfLogoData;
+      if (img) doc.addImage(img, 'PNG', MARGIN_X, MARGIN_TOP - 28, 28, 28);
+    } catch (e) { /* logo failed, skip */ }
+    // Brand text
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(45, 106, 79);
+    doc.text('Love Your Liver Program Report', MARGIN_X + 36, MARGIN_TOP - 10);
+    // Right-side: client + date
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(110, 110, 110);
+    const today = new Date().toISOString().slice(0, 10);
+    doc.text(name + '  ·  Generated ' + today, PAGE_W - MARGIN_X, MARGIN_TOP - 10, { align: 'right' });
+    // Divider
+    doc.setDrawColor(220, 217, 210);
+    doc.setLineWidth(0.5);
+    doc.line(MARGIN_X, MARGIN_TOP, PAGE_W - MARGIN_X, MARGIN_TOP);
+  }
+
+  function addFooter() {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text('Page ' + pageNum, PAGE_W / 2, PAGE_H - 24, { align: 'center' });
+  }
+
+  function newPage() {
+    addFooter();
+    doc.addPage();
+    pageNum++;
+    y = MARGIN_TOP + 16;
+    addHeader();
+  }
+
+  function ensureSpace(needed) {
+    if (y + needed > PAGE_H - MARGIN_BOTTOM) newPage();
+  }
+
+  function sectionTitle(label) {
+    ensureSpace(40);
+    y += 18;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(26, 24, 21);
+    doc.text(label, MARGIN_X, y);
+    y += 6;
+    doc.setDrawColor(45, 106, 79);
+    doc.setLineWidth(1);
+    doc.line(MARGIN_X, y, MARGIN_X + 36, y);
+    y += 14;
+  }
+
+  function drawText(txt, opts) {
+    opts = opts || {};
+    const size = opts.size || 10;
+    const style = opts.style || 'normal';
+    const color = opts.color || [40, 40, 40];
+    const indent = opts.indent || 0;
+    const maxW = opts.width || (CONTENT_W - indent);
+    doc.setFont('helvetica', style);
+    doc.setFontSize(size);
+    doc.setTextColor(color[0], color[1], color[2]);
+    const lines = doc.splitTextToSize(String(txt), maxW);
+    for (const line of lines) {
+      ensureSpace(size + 4);
+      doc.text(line, MARGIN_X + indent, y);
+      y += size + 3;
+    }
+  }
+
+  function statusColor(status) {
+    if (status === 'high')    return [185, 28, 28];   // red
+    if (status === 'low')     return [181, 86, 10];   // amber
+    if (status === 'watch')   return [133, 77, 14];   // yellow
+    return [21, 128, 61]; // optimal — green
+  }
+
+  function priorityColor(p) {
+    if (p === 'urgent') return [185, 28, 28];
+    if (p === 'action') return [29, 78, 216];
+    if (p === 'watch')  return [133, 77, 14];
+    return [110, 110, 110];
+  }
+
+  // ─── Preload logo ─────────────────────────────────────────────
+  try {
+    const logoBlob = await fetch('/icon-192.png').then(r => r.blob());
+    const logoData = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onloadend = () => res(reader.result);
+      reader.onerror = rej;
+      reader.readAsDataURL(logoBlob);
+    });
+    window._pdfLogoData = logoData;
+  } catch (e) {
+    window._pdfLogoData = null;
+  }
+
+  // ─── Page 1: header + client info ─────────────────────────────
+  addHeader();
+  y = MARGIN_TOP + 24;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.setTextColor(26, 24, 21);
+  doc.text(name, MARGIN_X, y);
+  y += 22;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(110, 110, 110);
+  const sexLine = (profile.sex || 'Sex not specified') + '  ·  ' + (profile.weight_lbs ? profile.weight_lbs + ' lbs' : 'Weight not specified');
+  doc.text(sexLine, MARGIN_X, y);
+  y += 8;
+
+  // ─── Lab findings ─────────────────────────────────────────────
+  if (rec && rec.findings.length > 0) {
+    let dateHeader = '';
+    if (blood && hair) dateHeader = 'Blood: ' + blood.test_date + '  ·  Hair: ' + hair.test_date;
+    else if (blood) dateHeader = 'Blood test: ' + blood.test_date;
+    else if (hair)  dateHeader = 'Hair test: ' + hair.test_date;
+
+    sectionTitle('Latest Lab Results');
+    drawText(dateHeader, { size: 9, color: [110, 110, 110] });
+    y += 6;
+
+    // Two-column grid of findings
+    const colW = (CONTENT_W - 12) / 2;
+    const rowH = 36;
+    let col = 0;
+    let rowStartY = y;
+    rec.findings.forEach((f, i) => {
+      if (col === 0) {
+        ensureSpace(rowH + 4);
+        rowStartY = y;
+      }
+      const x = MARGIN_X + col * (colW + 12);
+      const c = statusColor(f.status);
+      // Border-left accent
+      doc.setDrawColor(c[0], c[1], c[2]);
+      doc.setLineWidth(2);
+      doc.line(x, rowStartY, x, rowStartY + rowH - 4);
+      // Marker label
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(110, 110, 110);
+      doc.text(String(f.marker || '').toUpperCase(), x + 8, rowStartY + 10);
+      // Value
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(26, 24, 21);
+      const valStr = String(f.value) + (f.unit ? '  ' + f.unit : '');
+      doc.text(valStr, x + 8, rowStartY + 24);
+      // Status pill text
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(c[0], c[1], c[2]);
+      doc.text(String(f.status || '').toUpperCase(), x + 8, rowStartY + 34);
+
+      col = (col + 1) % 2;
+      if (col === 0) y = rowStartY + rowH;
+    });
+    if (col !== 0) y = rowStartY + rowH;
+    y += 6;
+  } else {
+    sectionTitle('Lab Results');
+    drawText('No lab results on file.', { color: [150, 150, 150] });
+  }
+
+  // ─── Recommendations ──────────────────────────────────────────
+  if (rec && rec.priority_actions.length > 0) {
+    sectionTitle('Recommendations');
+    rec.priority_actions.forEach(a => {
+      ensureSpace(50);
+      const c = priorityColor(a.priority);
+      // Priority tag
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(c[0], c[1], c[2]);
+      doc.text(String(a.priority || '').toUpperCase(), MARGIN_X, y);
+      y += 11;
+      // Title
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(26, 24, 21);
+      const titleLines = doc.splitTextToSize(a.title || '', CONTENT_W);
+      titleLines.forEach(line => {
+        ensureSpace(13);
+        doc.text(line, MARGIN_X, y);
+        y += 13;
+      });
+      // Body — handle \n line breaks
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(80, 80, 80);
+      const paragraphs = String(a.body || '').split('\n');
+      paragraphs.forEach(p => {
+        if (!p.trim()) return;
+        const lines = doc.splitTextToSize(p, CONTENT_W);
+        lines.forEach(line => {
+          ensureSpace(11);
+          doc.text(line, MARGIN_X, y);
+          y += 11;
+        });
+      });
+      y += 8;
+    });
+  }
+
+  // ─── Supplement doses ─────────────────────────────────────────
+  if (rec && rec.supplement_doses.length > 0) {
+    sectionTitle('Personalized Supplement Doses');
+    rec.supplement_doses.forEach(d => {
+      ensureSpace(36);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(45, 106, 79);
+      doc.text((d.supplement || '') + '  —  ' + (d.dose || ''), MARGIN_X, y);
+      y += 12;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(80, 80, 80);
+      const lines = doc.splitTextToSize(d.instructions || '', CONTENT_W);
+      lines.forEach(line => {
+        ensureSpace(11);
+        doc.text(line, MARGIN_X, y);
+        y += 11;
+      });
+      y += 6;
+    });
+  }
+
+  // ─── Phase progress ───────────────────────────────────────────
+  const phaseNames = ['Hydration & Movement','Bowels, Biome, Bile','Electrolytes','Big Minerals','B-Vitamins','Lactoferrin'];
+  if (Array.isArray(phases) && phases.length > 0) {
+    sectionTitle('Program Progress');
+    phases.forEach(p => {
+      ensureSpace(20);
+      const steps = p.completed_steps || [];
+      const done = steps.filter(s => s.status === 'done').length;
+      const skipped = steps.filter(s => s.status === 'skipped').length;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(26, 24, 21);
+      doc.text('Phase ' + p.phase_number + ' — ' + (phaseNames[p.phase_number] || ''), MARGIN_X, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(110, 110, 110);
+      const meta = String(p.status || '').replace('_', ' ') + '  ·  ' + done + ' done' + (skipped ? '  ·  ' + skipped + ' skipped' : '');
+      doc.text(meta, PAGE_W - MARGIN_X, y, { align: 'right' });
+      y += 16;
+    });
+  }
+
+  // ─── Trend chart (current canvas snapshot) ────────────────────
+  const canvas = document.getElementById('client-trend-chart');
+  if (canvas && clientTrendChart) {
+    sectionTitle('Trends Over Time');
+    const sel = document.getElementById('client-trend-marker');
+    const markerLabel = sel ? sel.options[sel.selectedIndex].text : '';
+    drawText('Currently showing: ' + markerLabel, { size: 9, color: [110, 110, 110] });
+    y += 6;
+    try {
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const imgW = CONTENT_W;
+      const imgH = imgW * (canvas.height / canvas.width);
+      ensureSpace(imgH + 8);
+      doc.addImage(imgData, 'PNG', MARGIN_X, y, imgW, imgH);
+      y += imgH + 8;
+    } catch (e) {
+      drawText('(Chart could not be exported)', { color: [150, 150, 150] });
+    }
+  }
+
+  // ─── Timeline ─────────────────────────────────────────────────
+  if (Array.isArray(events) && events.length > 0) {
+    sectionTitle('Timeline');
+    const CATEGORY_COLORS = {
+      protocol:   [45, 106, 79],
+      supplement: [29, 78, 216],
+      lifestyle:  [124, 58, 237],
+      symptom:    [194, 65, 12],
+      other:      [107, 114, 128]
+    };
+    events.forEach(ev => {
+      ensureSpace(34);
+      const cat = ev.category || 'other';
+      const c = CATEGORY_COLORS[cat] || CATEGORY_COLORS.other;
+      // Dot
+      doc.setFillColor(c[0], c[1], c[2]);
+      doc.circle(MARGIN_X + 4, y - 3, 3, 'F');
+      // Title
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(26, 24, 21);
+      doc.text(ev.title || '', MARGIN_X + 14, y);
+      // Date right-aligned
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(110, 110, 110);
+      doc.text(ev.event_date || '', PAGE_W - MARGIN_X, y, { align: 'right' });
+      // Category tag (small caps under title)
+      y += 11;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(c[0], c[1], c[2]);
+      doc.text(String(cat).toUpperCase(), MARGIN_X + 14, y);
+      y += 4;
+      // Description
+      if (ev.description) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
+        const lines = doc.splitTextToSize(ev.description, CONTENT_W - 14);
+        lines.forEach(line => {
+          ensureSpace(11);
+          doc.text(line, MARGIN_X + 14, y);
+          y += 11;
+        });
+      }
+      y += 8;
+    });
+  }
+
+  // ─── Journal ──────────────────────────────────────────────────
+  if (Array.isArray(journals) && journals.length > 0) {
+    sectionTitle('Journal — Last 7 Entries');
+    journals.slice(0, 7).forEach(j => {
+      ensureSpace(40);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(26, 24, 21);
+      doc.text(j.entry_date || '', MARGIN_X, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(110, 110, 110);
+      const energy = j.energy_level != null ? j.energy_level + '/10' : '—';
+      const sym = j.symptom_severity != null ? j.symptom_severity + '/5' : '—';
+      doc.text('Energy ' + energy + '  ·  Symptoms ' + sym, PAGE_W - MARGIN_X, y, { align: 'right' });
+      y += 12;
+      // Symptoms chips
+      const symptoms = j.symptoms ? (Array.isArray(j.symptoms) ? j.symptoms : Object.keys(j.symptoms).filter(k => j.symptoms[k])) : [];
+      if (symptoms.length > 0) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(110, 110, 110);
+        const symLines = doc.splitTextToSize(symptoms.join(' · '), CONTENT_W);
+        symLines.forEach(line => {
+          ensureSpace(10);
+          doc.text(line, MARGIN_X, y);
+          y += 10;
+        });
+      }
+      if (j.supplements_taken) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
+        ensureSpace(11);
+        doc.text('Supplements: ', MARGIN_X, y);
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(j.supplements_taken, CONTENT_W - 70);
+        lines.forEach((line, i) => {
+          ensureSpace(11);
+          doc.text(line, MARGIN_X + (i === 0 ? 70 : 0), y);
+          y += 11;
+        });
+      }
+      if (j.notes) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(60, 60, 60);
+        const lines = doc.splitTextToSize(j.notes, CONTENT_W);
+        lines.forEach(line => {
+          ensureSpace(11);
+          doc.text(line, MARGIN_X, y);
+          y += 11;
+        });
+      }
+      y += 8;
+    });
+  }
+
+  // Final footer
+  addFooter();
+
+  // ─── Save ─────────────────────────────────────────────────────
+  const today = new Date().toISOString().slice(0, 10);
+  const safeName = String(name).replace(/[^a-z0-9 \-]/gi, '').trim();
+  doc.save(safeName + ' - Lab Report - ' + today + '.pdf');
+}
+
 function renderClientTrend() {
   const sel = document.getElementById('client-trend-marker');
   if (!sel) return;
@@ -1621,10 +2032,23 @@ async function viewClient(userId) {
     }
 
     const name = profile.display_name || 'Client';
+    // Stash everything the PDF export will need
+    window._pdfExportData = {
+      name, profile, blood, hair,
+      bloodArr: Array.isArray(bloodArr) ? bloodArr : [],
+      hairArr: Array.isArray(hairArr) ? hairArr : [],
+      phases, journals, events,
+      rec: (blood || hair) ? generateRecommendations(combineLabs(blood, hair), profile) : null
+    };
     document.getElementById('provider-detail-content').innerHTML = `
-      <div style="margin-bottom:28px;">
-        <div style="font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:6px;">${name}</div>
-        <div style="font-size:13px;color:var(--text3)">${profile.sex||'Sex not specified'} · ${profile.weight_lbs?profile.weight_lbs+'lbs':'Weight not specified'}</div>
+      <div style="margin-bottom:28px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:6px;">${name}</div>
+          <div style="font-size:13px;color:var(--text3)">${profile.sex||'Sex not specified'} · ${profile.weight_lbs?profile.weight_lbs+'lbs':'Weight not specified'}</div>
+        </div>
+        <button onclick="exportClientPDF()" style="padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;">
+          <span style="font-size:16px;">⬇</span> Download PDF
+        </button>
       </div>
 
       ${reportHtml}
