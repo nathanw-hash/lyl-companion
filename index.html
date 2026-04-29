@@ -620,6 +620,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <h1 style="font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px;">Clients</h1>
           <p style="font-size:14px;color:var(--text2);">Clients who have enabled provider sharing. Click a client to view their full record.</p>
         </div>
+        <div id="client-search-bar" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0 14px;margin-bottom:8px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="text" id="client-search-input" placeholder="Search clients by name..." oninput="onClientSearchInput(this.value)" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;">
+          <select id="client-sort-select" onchange="onClientSortChange(this.value)" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;cursor:pointer;">
+            <option value="alphabetical">Sort: Alphabetical</option>
+            <option value="recent">Sort: Recent activity</option>
+            <option value="phase">Sort: By phase</option>
+          </select>
+          <span id="client-result-count" style="font-size:12px;color:var(--text3);white-space:nowrap;"></span>
+        </div>
         <div id="provider-clients-list"><div class="loading">Loading clients...</div></div>
       </div>
       <div id="provider-detail-view" style="display:none">
@@ -1271,6 +1280,88 @@ async function loadMyResults() {
   }
 }
 
+let allClientsData = [];
+let clientSearchQuery = '';
+let clientSortMode = 'alphabetical';
+
+function onClientSearchInput(val) {
+  clientSearchQuery = (val || '').toLowerCase().trim();
+  renderClientsList();
+}
+
+function onClientSortChange(val) {
+  clientSortMode = val || 'alphabetical';
+  renderClientsList();
+}
+
+function renderClientsList() {
+  const listEl = document.getElementById('provider-clients-list');
+  const countEl = document.getElementById('client-result-count');
+  if (!listEl) return;
+
+  // Filter by search query (name only)
+  let filtered = allClientsData;
+  if (clientSearchQuery) {
+    filtered = allClientsData.filter(pt => (pt.name || '').toLowerCase().includes(clientSearchQuery));
+  }
+
+  // Sort
+  const sorted = filtered.slice();
+  if (clientSortMode === 'alphabetical') {
+    sorted.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  } else if (clientSortMode === 'recent') {
+    // Most recent of journal/blood/hair, descending. Clients with no activity last.
+    function lastActivity(pt) {
+      const dates = [
+        pt.latestJournal && pt.latestJournal.entry_date,
+        pt.latestBlood && pt.latestBlood.test_date,
+        pt.latestHair && pt.latestHair.test_date
+      ].filter(Boolean).map(d => new Date(d).getTime());
+      return dates.length ? Math.max.apply(null, dates) : 0;
+    }
+    sorted.sort((a, b) => lastActivity(b) - lastActivity(a));
+  } else if (clientSortMode === 'phase') {
+    // Higher phase number first; clients with no phase data last
+    sorted.sort((a, b) => {
+      const pa = a.currentPhase ? a.currentPhase.phase_number : -1;
+      const pb = b.currentPhase ? b.currentPhase.phase_number : -1;
+      return pb - pa;
+    });
+  }
+
+  // Result count
+  if (countEl) {
+    if (clientSearchQuery) {
+      countEl.textContent = sorted.length + ' of ' + allClientsData.length;
+    } else {
+      countEl.textContent = allClientsData.length + (allClientsData.length === 1 ? ' client' : ' clients');
+    }
+  }
+
+  // Empty state for search-with-no-results
+  if (sorted.length === 0 && clientSearchQuery) {
+    listEl.innerHTML = '<div class="empty-state" style="padding:40px 20px;"><h3 style="margin-bottom:8px;">No matches</h3><p style="color:var(--text3);font-size:14px;">No clients match "' + clientSearchQuery.replace(/[<>&"]/g, '') + '". Try a different search.</p></div>';
+    return;
+  }
+
+  // Render
+  listEl.innerHTML = sorted.map(pt => `
+    <div class="client-card" onclick="viewClient('${pt.profile.user_id}')">
+      <div class="client-avatar">${pt.initials}</div>
+      <div class="client-info">
+        <div class="client-name">${pt.name}</div>
+        <div class="client-email">${pt.profile.user_id}</div>
+        <div class="client-badges">
+          ${pt.currentPhase ? `<span class="client-badge phase">Phase ${pt.currentPhase.phase_number} — ${pt.currentPhase.status.replace('_',' ')}</span>` : '<span class="client-badge phase">No phase data</span>'}
+          ${pt.latestBlood ? `<span class="client-badge labs">Blood: ${pt.latestBlood.test_date}</span>` : '<span class="client-badge labs">No blood test</span>'}
+          ${pt.latestHair ? `<span class="client-badge labs">Hair: ${pt.latestHair.test_date}</span>` : '<span class="client-badge labs">No hair test</span>'}
+          ${pt.latestJournal ? `<span class="client-badge journal">Journal: ${pt.latestJournal.entry_date} · Energy ${pt.latestJournal.energy_level}/10</span>` : '<span class="client-badge journal">No journal</span>'}
+        </div>
+      </div>
+      <div style="color:var(--text3);font-size:20px;">&#8250;</div>
+    </div>`).join('');
+}
+
 async function loadClients() {
   try {
     // Get all profiles with share_with_provider = true
@@ -1303,21 +1394,8 @@ async function loadClients() {
       return {profile:p, latestBlood, latestHair, latestJournal, currentPhase, initials, name};
     }));
 
-    document.getElementById('provider-clients-list').innerHTML = clientCards.map(pt => `
-      <div class="client-card" onclick="viewClient('${pt.profile.user_id}')">
-        <div class="client-avatar">${pt.initials}</div>
-        <div class="client-info">
-          <div class="client-name">${pt.name}</div>
-          <div class="client-email">${pt.profile.user_id}</div>
-          <div class="client-badges">
-            ${pt.currentPhase ? `<span class="client-badge phase">Phase ${pt.currentPhase.phase_number} — ${pt.currentPhase.status.replace('_',' ')}</span>` : '<span class="client-badge phase">No phase data</span>'}
-            ${pt.latestBlood ? `<span class="client-badge labs">Blood: ${pt.latestBlood.test_date}</span>` : '<span class="client-badge labs">No blood test</span>'}
-            ${pt.latestHair ? `<span class="client-badge labs">Hair: ${pt.latestHair.test_date}</span>` : '<span class="client-badge labs">No hair test</span>'}
-            ${pt.latestJournal ? `<span class="client-badge journal">Journal: ${pt.latestJournal.entry_date} · Energy ${pt.latestJournal.energy_level}/10</span>` : '<span class="client-badge journal">No journal</span>'}
-          </div>
-        </div>
-        <div style="color:var(--text3);font-size:20px;">&#8250;</div>
-      </div>`).join('');
+    allClientsData = clientCards;
+    renderClientsList();
   } catch(err) {
     document.getElementById('provider-clients-list').innerHTML = '<div class="loading">Error loading clients.</div>';
   }
@@ -1870,6 +1948,8 @@ async function viewClient(userId) {
   currentClient = userId;
   document.getElementById('provider-list-view').style.display = 'none';
   document.getElementById('provider-detail-view').style.display = 'block';
+  const sb = document.getElementById('client-search-bar');
+  if (sb) sb.style.display = 'none';
   document.getElementById('provider-detail-content').innerHTML = '<div class="loading">Loading client data...</div>';
 
   try {
@@ -2087,6 +2167,8 @@ async function viewClient(userId) {
 function hideProviderDetail() {
   document.getElementById('provider-detail-view').style.display = 'none';
   document.getElementById('provider-list-view').style.display = 'block';
+  const sb = document.getElementById('client-search-bar');
+  if (sb) sb.style.display = 'flex';
 }
 
 (async()=>{const{data:{session}}=await sb.auth.getSession();if(!session)document.getElementById('auth-screen').style.display='flex';})();
