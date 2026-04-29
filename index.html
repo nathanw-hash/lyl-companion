@@ -429,6 +429,41 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   .phase-mini-progress{display:none;}
   .food-controls{flex-direction:column;}
 }
+/* Mobile sub-tabs for Learn (Knowledge Base + Food Guide) — only visible on mobile */
+.learn-subtabs { display: none; }
+@media (max-width: 768px) {
+  .learn-subtabs {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    background: var(--bg);
+    padding: 12px 0;
+    margin: -16px -16px 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+  .learn-subtab-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--surface);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .learn-subtab-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+}
 </style>
 </head>
 <body>
@@ -477,6 +512,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
     <!-- SEARCH -->
     <div class="panel active" id="panel-search">
+      <div class="learn-subtabs">
+        <button class="learn-subtab-btn active" onclick="showLearnSubtab('search')">Knowledge Base</button>
+        <button class="learn-subtab-btn" onclick="showLearnSubtab('foods')">Food Guide</button>
+      </div>
       <div class="search-hero">
         <h1>What would you like to know?</h1>
         <p>Search the Love Your Liver knowledge base by asking a question in plain language.</p>
@@ -589,6 +628,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
     <!-- FOOD GUIDE -->
     <div class="panel" id="panel-foods">
+      <div class="learn-subtabs">
+        <button class="learn-subtab-btn" onclick="showLearnSubtab('search')">Knowledge Base</button>
+        <button class="learn-subtab-btn active" onclick="showLearnSubtab('foods')">Food Guide</button>
+      </div>
       <div class="food-header">
         <h1>Food Guide</h1>
         <p>Traffic light reference for Vitamin A, copper, and nickel content — the three dietary factors most relevant to the LYL program.</p>
@@ -641,9 +684,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
   <!-- BOTTOM NAV — mobile only -->
   <nav class="bottom-nav" id="bottom-nav">
-    <button class="bottom-nav-btn active" id="bnav-search" onclick="showPanel('search')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      Search
+    <button class="bottom-nav-btn active" id="bnav-learn" onclick="showLearnFromBottomNav()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Learn
     </button>
     
     <button class="bottom-nav-btn" id="bnav-tracker" onclick="showPanel('tracker')">
@@ -654,10 +697,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Journal
     </button>
-    <button class="bottom-nav-btn" id="bnav-foods" onclick="showPanel('foods')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-      Foods
-    </button>
+    
     <button class="bottom-nav-btn" id="bnav-myresults" onclick="showPanel('myresults')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11V6a3 3 0 016 0v5"/><path d="M5 11h14v9a2 2 0 01-2 2H7a2 2 0 01-2-2v-9z"/><circle cx="12" cy="16" r="1"/></svg>
       Results
@@ -817,6 +857,28 @@ async function signOut(){await sb.auth.signOut();document.getElementById('app').
 function showMsg(msg,ok){const el=document.getElementById('auth-msg');el.textContent=msg;el.style.display='block';el.style.background=ok?'var(--accent-light)':'#fef2f2';el.style.color=ok?'var(--accent)':'#b91c1c';}
 
 sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();renderFoodList();checkProviderStatus();}});
+
+function showLearnFromBottomNav() {
+  // Tapping "Learn" from the bottom nav shows whichever sub-panel was last active.
+  // Default to Knowledge Base on first tap.
+  const lastSub = window._learnLastSubtab || 'search';
+  showLearnSubtab(lastSub);
+}
+
+function showLearnSubtab(which) {
+  // Switch between Knowledge Base (panel-search) and Food Guide (panel-foods)
+  window._learnLastSubtab = which;
+  showPanel(which);
+  // Update sub-tab active states across both panels (since both have the bar)
+  document.querySelectorAll('.learn-subtab-btn').forEach(btn => {
+    const isActive = btn.textContent.trim() === (which === 'search' ? 'Knowledge Base' : 'Food Guide');
+    btn.classList.toggle('active', isActive);
+  });
+  // showPanel already cleared all bottom-nav active states, so re-set Learn to active
+  document.querySelectorAll('.bottom-nav-btn').forEach(btn => btn.classList.remove('active'));
+  const learnBtn = document.getElementById('bnav-learn');
+  if (learnBtn) learnBtn.classList.add('active');
+}
 
 function showPanel(name){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
