@@ -1235,6 +1235,7 @@ let _kbAllArticles = [];           // all articles from DB
 let _kbSearchQuery = '';           // current search filter
 let _kbCurrentEditId = null;       // entry_id of article being edited
 let _kbOriginalContent = null;     // snapshot for change detection { title, summary, content }
+let _kbEasyMDE = null;             // EasyMDE instance for the content textarea
 
 async function loadKnowledgeBaseList() {
   const listEl = document.getElementById('kb-articles-list');
