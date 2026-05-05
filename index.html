@@ -473,6 +473,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .kb-row-edit-btn{padding:8px 16px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;transition:background 0.15s,color 0.15s;}
 .kb-row-edit-btn:hover{background:var(--accent);color:#fff;}
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+<script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
 </head>
 <body>
 
@@ -916,7 +918,7 @@ async function saveArticleContent() {
 
   const newTitle = titleEl.value.trim();
   const newSummary = summaryEl.value.trim();
-  const newContent = contentEl.value;  // don't trim content — leading whitespace can matter in markdown
+  const newContent = getKbContentValue();  // don't trim content — leading whitespace can matter in markdown
 
   if (!newTitle) { alert('Title cannot be empty.'); return; }
   if (!newContent.trim()) { alert('Content cannot be empty.'); return; }
@@ -1321,6 +1323,8 @@ async function openArticleEditor(entryId) {
     document.getElementById('manage-content-list-view').style.display = 'none';
     document.getElementById('manage-content-edit-view').style.display = 'block';
     window.scrollTo(0, 0);
+    // Initialize EasyMDE on the content textarea — give the DOM a tick to render the panel first
+    setTimeout(() => initKbEasyMDE(), 0);
   } catch(err) {
     alert('Error opening article: ' + err.message);
   }
@@ -1331,8 +1335,49 @@ function closeArticleEditor() {
   if (hasKbUnsavedChanges() && !confirm('Discard unsaved changes?')) return;
   _kbCurrentEditId = null;
   _kbOriginalContent = null;
+  // Destroy EasyMDE so the next openArticleEditor call gets a clean instance
+  if (_kbEasyMDE) {
+    try { _kbEasyMDE.toTextArea(); } catch(e) { console.warn('EasyMDE teardown error', e); }
+    _kbEasyMDE = null;
+  }
   document.getElementById('manage-content-edit-view').style.display = 'none';
   document.getElementById('manage-content-list-view').style.display = 'block';
+}
+
+function initKbEasyMDE() {
+  // Tear down any previous instance — defensive, in case openArticleEditor is called twice rapidly
+  if (_kbEasyMDE) {
+    try { _kbEasyMDE.toTextArea(); } catch(e) {}
+    _kbEasyMDE = null;
+  }
+  if (typeof EasyMDE === 'undefined') {
+    console.warn('EasyMDE library not loaded — falling back to plain textarea');
+    return;
+  }
+  const textarea = document.getElementById('kb-edit-content');
+  if (!textarea) return;
+  _kbEasyMDE = new EasyMDE({
+    element: textarea,
+    autofocus: false,
+    autosave: { enabled: false },
+    spellChecker: true,
+    status: ['lines', 'words'],
+    minHeight: '420px',
+    toolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', '|', 'link', 'quote', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide'],
+    // CommonMark-only renderer; we don't need to match the patient-side prettify rendering exactly
+    previewClass: ['editor-preview', 'kb-preview']
+  });
+  // Bridge EasyMDE 'change' events into our existing change-detection
+  _kbEasyMDE.codemirror.on('change', () => {
+    onKbEditChange();
+  });
+}
+
+function getKbContentValue() {
+  // Read content from EasyMDE if active, otherwise from the underlying textarea
+  if (_kbEasyMDE) return _kbEasyMDE.value();
+  const el = document.getElementById('kb-edit-content');
+  return el ? el.value : '';
 }
 
 function hasKbUnsavedChanges() {
@@ -1340,7 +1385,7 @@ function hasKbUnsavedChanges() {
   return (
     document.getElementById('kb-edit-title').value !== _kbOriginalContent.title ||
     document.getElementById('kb-edit-summary').value !== _kbOriginalContent.summary ||
-    document.getElementById('kb-edit-content').value !== _kbOriginalContent.content
+    getKbContentValue() !== _kbOriginalContent.content
   );
 }
 
