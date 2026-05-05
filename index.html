@@ -464,6 +464,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     border-color: var(--accent);
   }
 }
+.kb-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:8px;transition:border-color 0.15s,box-shadow 0.15s;}
+.kb-row:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.kb-row-info{flex:1;min-width:0;}
+.kb-row-title{font-weight:600;color:var(--text);margin-bottom:4px;}
+.kb-row-meta{font-size:12px;color:var(--text3);}
+.kb-row-cat{display:inline-block;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-right:8px;}
+.kb-row-edit-btn{padding:8px 16px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;transition:background 0.15s,color 0.15s;}
+.kb-row-edit-btn:hover{background:var(--accent);color:#fff;}
 </style>
 </head>
 <body>
@@ -674,14 +682,53 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         </div>
         <div id="provider-clients-list"><div class="loading">Loading clients...</div></div>
       </div>
-      <div id="provider-detail-view" style="display:none">
+<div id="provider-detail-view" style="display:none">
         <button class="entry-back" onclick="hideProviderDetail()">&#8592; Back to clients</button>
         <div id="provider-detail-content"></div>
       </div>
     </div>
-
+    <!-- MANAGE CONTENT — providers only -->
+    <div class="panel" id="panel-manage-content">
+      <div id="manage-content-list-view">
+        <div style="margin-bottom:28px;">
+          <h1 style="font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px;">Manage content</h1>
+          <p style="font-size:14px;color:var(--text2);">Edit knowledge base articles. Changes are live immediately for all users.</p>
+        </div>
+        <div id="kb-search-bar" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0 14px;margin-bottom:8px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="text" id="kb-search-input" placeholder="Search articles by title..." oninput="onKbSearchInput(this.value)" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;">
+          <span id="kb-result-count" style="font-size:12px;color:var(--text3);white-space:nowrap;"></span>
+        </div>
+        <div id="kb-articles-list"><div class="loading">Loading articles...</div></div>
+      </div>
+      <div id="manage-content-edit-view" style="display:none">
+        <button class="entry-back" onclick="closeArticleEditor()">&#8592; Back to articles</button>
+        <div style="margin-bottom:24px;">
+          <h2 id="kb-edit-heading" style="font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:6px;">Edit article</h2>
+          <p style="font-size:13px;color:var(--text3);"><span id="kb-edit-category"></span> &middot; <span id="kb-edit-id" style="font-family:monospace;"></span></p>
+        </div>
+        <div style="display:grid;gap:18px;max-width:860px;">
+          <div>
+            <label for="kb-edit-title" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Title</label>
+            <input type="text" id="kb-edit-title" oninput="onKbEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;">
+          </div>
+          <div>
+            <label for="kb-edit-summary" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Summary</label>
+            <textarea id="kb-edit-summary" rows="2" oninput="onKbEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;resize:vertical;"></textarea>
+          </div>
+          <div>
+            <label for="kb-edit-content" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Content (markdown)</label>
+            <p style="font-size:12px;color:var(--text3);margin-bottom:6px;line-height:1.5;">Use <code>## Header</code> for section headers, <code>**bold**</code>, <code>*italic*</code>, and <code>- item</code> for bullets. Acronyms like HTMA, LYL, GERD render correctly automatically.</p>
+            <textarea id="kb-edit-content" rows="22" oninput="onKbEditChange()" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;font-size:13px;line-height:1.6;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;resize:vertical;"></textarea>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-accent" id="kb-edit-save" onclick="saveArticleContent()" disabled style="opacity:0.5;cursor:not-allowed;">Save changes</button>
+            <button class="btn btn-outline" onclick="closeArticleEditor()">Cancel</button>
+            <span id="kb-edit-status" style="font-size:13px;color:var(--text3);"></span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div><!-- end .main -->
-
   <!-- BOTTOM NAV — mobile only -->
   <nav class="bottom-nav" id="bottom-nav">
     <button class="bottom-nav-btn active" id="bnav-learn" onclick="showLearnFromBottomNav()">
@@ -858,6 +905,77 @@ function showMsg(msg,ok){const el=document.getElementById('auth-msg');el.textCon
 
 sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();renderFoodList();checkProviderStatus();}});
 
+async function saveArticleContent() {
+  if (!_kbCurrentEditId) return;
+  const titleEl = document.getElementById('kb-edit-title');
+  const summaryEl = document.getElementById('kb-edit-summary');
+  const contentEl = document.getElementById('kb-edit-content');
+  const statusEl = document.getElementById('kb-edit-status');
+  const saveBtn = document.getElementById('kb-edit-save');
+
+  const newTitle = titleEl.value.trim();
+  const newSummary = summaryEl.value.trim();
+  const newContent = contentEl.value;  // don't trim content — leading whitespace can matter in markdown
+
+  if (!newTitle) { alert('Title cannot be empty.'); return; }
+  if (!newContent.trim()) { alert('Content cannot be empty.'); return; }
+
+  saveBtn.disabled = true;
+  saveBtn.style.opacity = '0.5';
+  statusEl.textContent = 'Saving...';
+  statusEl.style.color = 'var(--text3)';
+
+  try {
+    const res = await fetch(
+      SUPABASE_URL+'/rest/v1/knowledge_base?entry_id=eq.'+encodeURIComponent(_kbCurrentEditId),
+      {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer '+getToken(),
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          title: newTitle,
+          summary: newSummary,
+          content: newContent
+        })
+      }
+    );
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error('Save failed ('+res.status+'): '+errText);
+    }
+    const data = await res.json();
+    if (!data || !data[0]) throw new Error('Save returned no data — your changes may not have been written. Check provider permissions.');
+
+    // Update snapshot so unsaved-change detection works correctly after save
+    _kbOriginalContent = {
+      title: newTitle,
+      summary: newSummary,
+      content: newContent
+    };
+    setKbSaveButtonEnabled(false);
+    statusEl.textContent = 'Saved.';
+    statusEl.style.color = 'var(--accent)';
+    setTimeout(() => { statusEl.textContent = ''; }, 3000);
+
+    // Refresh the in-memory list so the row reflects the new title/summary on back
+    const idx = _kbAllArticles.findIndex(a => a.entry_id === _kbCurrentEditId);
+    if (idx !== -1) {
+      _kbAllArticles[idx].title = newTitle;
+      _kbAllArticles[idx].summary = newSummary;
+    }
+    // Also refresh the cached allEntries used by the patient knowledge base view, so edits show immediately without re-login
+    if (typeof loadAllEntries === 'function') loadAllEntries();
+  } catch(err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    statusEl.style.color = '#b91c1c';
+    setKbSaveButtonEnabled(true);  // re-enable so user can retry
+  }
+}
+
 function showLearnFromBottomNav() {
   // Tapping "Learn" from the bottom nav shows whichever sub-panel was last active.
   // Default to Knowledge Base on first tap.
@@ -888,6 +1006,7 @@ function showPanel(name){
   const tabEl=document.getElementById('tab-'+name);if(tabEl)tabEl.classList.add('active');
   const bnavEl=document.getElementById('bnav-'+name);if(bnavEl)bnavEl.classList.add('active');
   if(name==='myresults'&&currentUser)loadMyResults();
+  if(name==='manage-content'&&currentUser&&isProvider)loadKnowledgeBaseList();
 }
 function goBack(){showPanel(previousPanel==='browse'?'search':previousPanel);}
 
@@ -1096,12 +1215,143 @@ async function checkProviderStatus() {
       if (isProvider) {
         document.getElementById('tab-provider').style.display = '';
         document.getElementById('bnav-provider').style.display = '';
+        document.getElementById('manage-content-link').style.display = '';
         loadClients();
       }
       // Show share toggle in journal or settings area
       renderShareToggle(data[0].share_with_provider === true);
     }
   } catch(err) { console.error('Provider check failed', err); }
+}
+
+// ====================================================================
+// MANAGE CONTENT (CMS) — providers only
+// ====================================================================
+
+let _kbAllArticles = [];           // all articles from DB
+let _kbSearchQuery = '';           // current search filter
+let _kbCurrentEditId = null;       // entry_id of article being edited
+let _kbOriginalContent = null;     // snapshot for change detection { title, summary, content }
+
+async function loadKnowledgeBaseList() {
+  const listEl = document.getElementById('kb-articles-list');
+  listEl.innerHTML = '<div class="loading">Loading articles...</div>';
+  try {
+    const res = await fetch(
+      SUPABASE_URL+'/rest/v1/knowledge_base?select=entry_id,title,category,subcategory,summary,updated_at&order=category.asc,title.asc',
+      {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}
+    );
+    if (!res.ok) throw new Error('Failed to load articles ('+res.status+')');
+    _kbAllArticles = await res.json();
+    renderKbList();
+  } catch(err) {
+    listEl.innerHTML = '<div style="color:#b91c1c;padding:14px;">Error loading articles: '+err.message+'</div>';
+  }
+}
+
+function renderKbList() {
+  const listEl = document.getElementById('kb-articles-list');
+  const countEl = document.getElementById('kb-result-count');
+  const q = _kbSearchQuery.trim().toLowerCase();
+  const filtered = q
+    ? _kbAllArticles.filter(a => (a.title||'').toLowerCase().includes(q))
+    : _kbAllArticles;
+
+  countEl.textContent = filtered.length === _kbAllArticles.length
+    ? _kbAllArticles.length + ' articles'
+    : filtered.length + ' of ' + _kbAllArticles.length + ' articles';
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text3);">No articles match your search.</div>';
+    return;
+  }
+
+  let html = '';
+  filtered.forEach(a => {
+    const cat = (a.category || 'general').replace(/_/g,' ');
+    const summary = (a.summary || '').slice(0, 120) + ((a.summary||'').length > 120 ? '...' : '');
+    html += '<div class="kb-row">'
+      + '<div class="kb-row-info">'
+      +   '<div class="kb-row-title">'+escapeHtml(a.title || '(untitled)')+'</div>'
+      +   '<div class="kb-row-meta"><span class="kb-row-cat">'+escapeHtml(cat)+'</span>'+escapeHtml(summary)+'</div>'
+      + '</div>'
+      + '<button class="kb-row-edit-btn" onclick="openArticleEditor(\''+a.entry_id+'\')">Edit</button>'
+      + '</div>';
+  });
+  listEl.innerHTML = html;
+}
+
+function onKbSearchInput(value) {
+  _kbSearchQuery = value || '';
+  renderKbList();
+}
+
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = String(s == null ? '' : s);
+  return div.innerHTML;
+}
+
+async function openArticleEditor(entryId) {
+  // Fetch the full article (including content) and populate the form
+  try {
+    const res = await fetch(
+      SUPABASE_URL+'/rest/v1/knowledge_base?entry_id=eq.'+encodeURIComponent(entryId)+'&select=entry_id,title,category,subcategory,summary,content',
+      {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}
+    );
+    if (!res.ok) throw new Error('Failed to load article ('+res.status+')');
+    const data = await res.json();
+    if (!data || !data[0]) throw new Error('Article not found');
+    const article = data[0];
+    _kbCurrentEditId = entryId;
+    _kbOriginalContent = {
+      title: article.title || '',
+      summary: article.summary || '',
+      content: article.content || ''
+    };
+    document.getElementById('kb-edit-heading').textContent = 'Edit: ' + article.title;
+    document.getElementById('kb-edit-category').textContent = (article.category||'').replace(/_/g,' ') + (article.subcategory ? ' / ' + article.subcategory.replace(/_/g,' ') : '');
+    document.getElementById('kb-edit-id').textContent = article.entry_id;
+    document.getElementById('kb-edit-title').value = _kbOriginalContent.title;
+    document.getElementById('kb-edit-summary').value = _kbOriginalContent.summary;
+    document.getElementById('kb-edit-content').value = _kbOriginalContent.content;
+    document.getElementById('kb-edit-status').textContent = '';
+    setKbSaveButtonEnabled(false);
+    document.getElementById('manage-content-list-view').style.display = 'none';
+    document.getElementById('manage-content-edit-view').style.display = 'block';
+    window.scrollTo(0, 0);
+  } catch(err) {
+    alert('Error opening article: ' + err.message);
+  }
+}
+
+function closeArticleEditor() {
+  // Confirm if there are unsaved changes
+  if (hasKbUnsavedChanges() && !confirm('Discard unsaved changes?')) return;
+  _kbCurrentEditId = null;
+  _kbOriginalContent = null;
+  document.getElementById('manage-content-edit-view').style.display = 'none';
+  document.getElementById('manage-content-list-view').style.display = 'block';
+}
+
+function hasKbUnsavedChanges() {
+  if (!_kbOriginalContent) return false;
+  return (
+    document.getElementById('kb-edit-title').value !== _kbOriginalContent.title ||
+    document.getElementById('kb-edit-summary').value !== _kbOriginalContent.summary ||
+    document.getElementById('kb-edit-content').value !== _kbOriginalContent.content
+  );
+}
+
+function onKbEditChange() {
+  setKbSaveButtonEnabled(hasKbUnsavedChanges());
+}
+
+function setKbSaveButtonEnabled(enabled) {
+  const btn = document.getElementById('kb-edit-save');
+  btn.disabled = !enabled;
+  btn.style.opacity = enabled ? '1' : '0.5';
+  btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
 }
 
 function renderShareToggle(isShared) {
