@@ -769,10 +769,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{storageKey:'
 let currentUser=null,allEntries=[],previousPanel='search',phaseProgress={},journalEntries=[],calendarDate=new Date(),editingJournalId=null,foodFilter='all';
 const SYMPTOM_LIST=['Fatigue','Brain fog','Nausea','Headache','Skin issues','Digestive issues','Joint pain','Mood changes','Sleep issues','Supplement reaction','Bile dumping','Heart palpitations','Foot/leg cramps','Chemical sensitivity'];
 
-// FOOD DATA
+// FOOD DATA — fetched from Supabase via loadFoods() at sign-in
 // Traffic: green=safe, yellow=caution, red=avoid
 // Flags: va=high vitamin A, cu=high copper, ni=high nickel
-const FOODS = [
+let FOODS = [
   // PROTEINS
   {name:'Chicken (white meat)',category:'Proteins',traffic:'green',serving:'Unlimited',reason:'Low VA, low copper, low nickel. Best everyday protein on LYL.',flags:['ok']},
   {name:'Chicken (dark meat)',category:'Proteins',traffic:'green',serving:'Freely',reason:'Higher in zinc than white meat. Excellent everyday protein.',flags:['ok']},
@@ -884,8 +884,7 @@ const FOODS = [
   {name:'Soy sauce / tamari',category:'Condiments',traffic:'red',serving:'Avoid',reason:'High copper from soy base. Also high sodium from non-salt sources.',flags:['cu']},
   {name:'Nutritional yeast',category:'Condiments',traffic:'red',serving:'Avoid',reason:'High copper. Commonly used as a "superfood" but problematic on LYL.',flags:['cu']},
   {name:'Multivitamins',category:'Condiments',traffic:'red',serving:'Avoid',reason:'Almost universally contain vitamin A (retinol or beta-carotene) and often copper. Eliminate all multivitamins.',flags:['va','cu']},
-  {name:'Fortified cereals',category:'Condiments',traffic:'red',serving:'Avoid',reason:'Heavily fortified with vitamin A. Read all labels.',flags:['va']},
-];
+  ];
 
 function getToken(){const s=JSON.parse(localStorage.getItem('lyl-companion-auth')||'null');return s?s.access_token:null;}
 
@@ -906,7 +905,7 @@ async function signUp(){const email=document.getElementById('signup-email').valu
 async function signOut(){await sb.auth.signOut();document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';currentUser=null;}
 function showMsg(msg,ok){const el=document.getElementById('auth-msg');el.textContent=msg;el.style.display='block';el.style.background=ok?'var(--accent-light)':'#fef2f2';el.style.color=ok?'var(--accent)':'#b91c1c';}
 
-sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();renderFoodList();checkProviderStatus();}});
+sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();await loadFoods();renderFoodList();checkProviderStatus();}});
 
 async function saveArticleContent() {
   if (!_kbCurrentEditId) return;
@@ -1174,6 +1173,31 @@ function hideJournalDetail(){document.getElementById('journal-detail-view').styl
 
 // FOOD LIST
 function setFoodFilter(f){foodFilter=f;document.querySelectorAll('.food-filter-btn').forEach(b=>b.classList.remove('active'));document.getElementById('filter-'+f).classList.add('active');renderFoodList();}
+
+async function loadFoods() {
+  // Fetch all foods from Supabase, ordered by category then sort_order.
+  // Populates the FOODS array used by renderFoodList().
+  try {
+    const res = await fetch(
+      SUPABASE_URL+'/rest/v1/foods?select=name,category,traffic,serving,reason,flags,sort_order&order=sort_order.asc',
+      {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}
+    );
+    if (!res.ok) throw new Error('Failed to load foods ('+res.status+')');
+    const data = await res.json();
+    // Map DB rows into the same shape renderFoodList expects: ensure flags is always an array
+    FOODS = (data || []).map(f => ({
+      name: f.name || '',
+      category: f.category || 'Other',
+      traffic: f.traffic || 'green',
+      serving: f.serving || '',
+      reason: f.reason || '',
+      flags: Array.isArray(f.flags) ? f.flags : []
+    }));
+  } catch(err) {
+    console.error('Failed to load foods:', err);
+    FOODS = [];
+  }
+}
 
 function renderFoodList(){
   const query=(document.getElementById('food-search')?.value||'').toLowerCase();
