@@ -1435,12 +1435,14 @@ async function loadFoods() {
     const data = await res.json();
     // Map DB rows into the same shape renderFoodList expects: ensure flags is always an array
     FOODS = (data || []).map(f => ({
+      id: f.id,
       name: f.name || '',
       category: f.category || 'Other',
       traffic: f.traffic || 'green',
       serving: f.serving || '',
       reason: f.reason || '',
-      flags: Array.isArray(f.flags) ? f.flags : []
+      flags: Array.isArray(f.flags) ? f.flags : [],
+      sort_order: Number(f.sort_order) || 0
     }));
   } catch(err) {
     console.error('Failed to load foods:', err);
