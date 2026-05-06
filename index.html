@@ -464,6 +464,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     border-color: var(--accent);
   }
 }
+.mc-tab{padding:10px 18px;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:-1.5px;transition:color 0.15s,border-color 0.15s;}
+.mc-tab:hover{color:var(--text);}
+.mc-tab-active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+.food-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:6px;transition:border-color 0.15s;}
+.food-row:hover{border-color:var(--accent);}
+.food-row-info{flex:1;min-width:0;display:flex;align-items:center;gap:12px;}
+.food-row-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.food-row-dot.green{background:#16a34a;}
+.food-row-dot.yellow{background:#ca8a04;}
+.food-row-dot.red{background:#dc2626;}
+.food-row-name{font-weight:600;color:var(--text);}
+.food-row-cat{display:inline-block;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-left:8px;}
+.food-row-edit-btn{padding:6px 14px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;}
+.food-row-edit-btn:hover{background:var(--accent);color:#fff;}
 .kb-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:8px;transition:border-color 0.15s,box-shadow 0.15s;}
 .kb-row:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
 .kb-row-info{flex:1;min-width:0;}
@@ -693,15 +707,96 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <!-- MANAGE CONTENT — providers only -->
     <div class="panel" id="panel-manage-content">
       <div id="manage-content-list-view">
-        <div style="margin-bottom:28px;">
+        <div style="margin-bottom:20px;">
           <h1 style="font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px;">Manage content</h1>
-          <p style="font-size:14px;color:var(--text2);">Edit knowledge base articles. Changes are live immediately for all users.</p>
+          <p style="font-size:14px;color:var(--text2);">Edit content. Changes are live immediately for all users.</p>
         </div>
+        <div id="mc-tabs" style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1.5px solid var(--border);">
+          <button id="mc-tab-kb" class="mc-tab mc-tab-active" onclick="switchMcTab('kb')">Articles</button>
+          <button id="mc-tab-foods" class="mc-tab" onclick="switchMcTab('foods')">Foods</button>
+        </div>
+
+        <div id="mc-section-kb">
         <div id="kb-search-bar" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0 14px;margin-bottom:8px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <input type="text" id="kb-search-input" placeholder="Search articles by title..." oninput="onKbSearchInput(this.value)" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;">
           <span id="kb-result-count" style="font-size:12px;color:var(--text3);white-space:nowrap;"></span>
         </div>
         <div id="kb-articles-list"><div class="loading">Loading articles...</div></div>
+        </div><!-- end mc-section-kb -->
+
+        <div id="mc-section-foods" style="display:none;">
+          <div id="foods-toolbar" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0 14px;margin-bottom:8px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <input type="text" id="foods-search-input" placeholder="Search foods by name..." oninput="onFoodsSearchInput(this.value)" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;">
+            <span id="foods-result-count" style="font-size:12px;color:var(--text3);white-space:nowrap;"></span>
+            <button class="btn btn-accent" onclick="openFoodEditor(null)" style="padding:10px 16px;font-size:13px;">+ Add new food</button>
+          </div>
+          <div id="foods-admin-list"><div class="loading">Loading foods...</div></div>
+        </div>
+      </div>
+      <div id="manage-content-food-edit-view" style="display:none">
+        <button class="entry-back" onclick="closeFoodEditor()">&#8592; Back to foods</button>
+        <div style="margin-bottom:24px;">
+          <h2 id="food-edit-heading" style="font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:6px;">Edit food</h2>
+          <p style="font-size:13px;color:var(--text3);" id="food-edit-id-display"></p>
+        </div>
+        <div style="display:grid;gap:18px;max-width:720px;">
+          <div>
+            <label for="food-edit-name" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Name</label>
+            <input type="text" id="food-edit-name" oninput="onFoodEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+            <div>
+              <label for="food-edit-category" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Category</label>
+              <select id="food-edit-category" onchange="onFoodEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;cursor:pointer;box-sizing:border-box;">
+                <option value="Proteins">Proteins</option>
+                <option value="Vegetables">Vegetables</option>
+                <option value="Grains">Grains</option>
+                <option value="Fats &amp; Oils">Fats &amp; Oils</option>
+                <option value="Fruits">Fruits</option>
+                <option value="Nuts &amp; Seeds">Nuts &amp; Seeds</option>
+                <option value="Sweeteners">Sweeteners</option>
+                <option value="Beverages">Beverages</option>
+                <option value="Condiments">Condiments</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Traffic light</label>
+              <div style="display:flex;gap:14px;align-items:center;padding:10px 0;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="radio" name="food-edit-traffic" value="green" onchange="onFoodEditChange()"> <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#16a34a;"></span> Green</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="radio" name="food-edit-traffic" value="yellow" onchange="onFoodEditChange()"> <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ca8a04;"></span> Yellow</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="radio" name="food-edit-traffic" value="red" onchange="onFoodEditChange()"> <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#dc2626;"></span> Red</label>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label for="food-edit-serving" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Serving guidance</label>
+            <input type="text" id="food-edit-serving" oninput="onFoodEditChange()" placeholder="e.g. Freely, Moderate, Up to 2 tbsp/day, Avoid" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;">
+          </div>
+          <div>
+            <label for="food-edit-reason" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Reason / explanation</label>
+            <textarea id="food-edit-reason" rows="4" oninput="onFoodEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;resize:vertical;line-height:1.5;"></textarea>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Flags</label>
+            <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:6px 0;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="checkbox" id="food-edit-flag-va" onchange="onFoodEditChange()"> Vit A (va)</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="checkbox" id="food-edit-flag-cu" onchange="onFoodEditChange()"> Copper (cu)</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="checkbox" id="food-edit-flag-ni" onchange="onFoodEditChange()"> Nickel (ni)</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="checkbox" id="food-edit-flag-ok" onchange="onFoodEditChange()"> LYL safe (ok)</label>
+            </div>
+          </div>
+          <div>
+            <label for="food-edit-sort-order" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Sort order <span style="font-weight:400;color:var(--text3);">(lower = appears earlier within category)</span></label>
+            <input type="number" id="food-edit-sort-order" oninput="onFoodEditChange()" style="width:120px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;">
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:18px;margin-top:6px;">
+            <button class="btn btn-accent" id="food-edit-save" onclick="saveFood()" disabled style="opacity:0.5;cursor:not-allowed;">Save</button>
+            <button class="btn btn-outline" onclick="closeFoodEditor()">Cancel</button>
+            <span style="flex:1;"></span>
+            <button class="btn btn-outline" id="food-edit-delete" onclick="deleteFood()" style="color:#b91c1c;border-color:#b91c1c;display:none;">Delete</button>
+          </div>
+          <div id="food-edit-status" style="font-size:13px;color:var(--text3);"></div>
+        </div>
       </div>
       <div id="manage-content-edit-view" style="display:none">
         <button class="entry-back" onclick="closeArticleEditor()">&#8592; Back to articles</button>
@@ -794,6 +889,272 @@ async function signOut(){await sb.auth.signOut();document.getElementById('app').
 function showMsg(msg,ok){const el=document.getElementById('auth-msg');el.textContent=msg;el.style.display='block';el.style.background=ok?'var(--accent-light)':'#fef2f2';el.style.color=ok?'var(--accent)':'#b91c1c';}
 
 sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();await loadFoods();renderFoodList();checkProviderStatus();}});
+
+// ====================================================================
+// FOODS ADMIN — providers only
+// ====================================================================
+
+let _foodsCurrentTab = 'kb';            // which Manage Content tab is active
+let _foodsSearchQuery = '';
+let _foodsCurrentEditId = null;         // null = adding new, otherwise UUID
+let _foodsOriginalSnapshot = null;      // for change detection
+
+function switchMcTab(tab) {
+  _foodsCurrentTab = tab;
+  document.getElementById('mc-tab-kb').classList.toggle('mc-tab-active', tab === 'kb');
+  document.getElementById('mc-tab-foods').classList.toggle('mc-tab-active', tab === 'foods');
+  document.getElementById('mc-section-kb').style.display = tab === 'kb' ? 'block' : 'none';
+  document.getElementById('mc-section-foods').style.display = tab === 'foods' ? 'block' : 'none';
+  if (tab === 'foods') renderFoodsAdminList();
+}
+
+function renderFoodsAdminList() {
+  // Use the FOODS array already loaded by loadFoods() at sign-in.
+  // We don't re-fetch here; saves explicitly call refreshFoodsAfterEdit() to keep FOODS current.
+  const listEl = document.getElementById('foods-admin-list');
+  const countEl = document.getElementById('foods-result-count');
+  const q = _foodsSearchQuery.trim().toLowerCase();
+  const filtered = q
+    ? FOODS.filter(f => (f.name || '').toLowerCase().includes(q))
+    : FOODS;
+  countEl.textContent = filtered.length === FOODS.length
+    ? FOODS.length + ' foods'
+    : filtered.length + ' of ' + FOODS.length + ' foods';
+  if (!FOODS.length) {
+    listEl.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text3);">No foods loaded yet.</div>';
+    return;
+  }
+  if (!filtered.length) {
+    listEl.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text3);">No foods match your search.</div>';
+    return;
+  }
+  // Group by category to mirror the public Food Guide structure
+  const grouped = {};
+  filtered.forEach(f => {
+    const cat = f.category || 'Other';
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(f);
+  });
+  let html = '';
+  Object.entries(grouped).forEach(([cat, foods]) => {
+    html += '<div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin:18px 0 8px 0;">' + escapeHtml(cat) + '</div>';
+    foods.forEach(f => {
+      html += '<div class="food-row" onclick="openFoodEditor(\'' + (f.id || '') + '\')" style="cursor:pointer;">'
+        + '<div class="food-row-info">'
+        +   '<div class="food-row-dot ' + escapeHtml(f.traffic || 'green') + '"></div>'
+        +   '<div><span class="food-row-name">' + escapeHtml(f.name || '(unnamed)') + '</span></div>'
+        + '</div>'
+        + '<button class="food-row-edit-btn" onclick="event.stopPropagation();openFoodEditor(\'' + (f.id || '') + '\')">Edit</button>'
+        + '</div>';
+    });
+  });
+  listEl.innerHTML = html;
+}
+
+function onFoodsSearchInput(value) {
+  _foodsSearchQuery = value || '';
+  renderFoodsAdminList();
+}
+
+async function openFoodEditor(foodId) {
+  // Hide list view, show edit view; populate fields
+  let food;
+  if (foodId) {
+    // Fetch full row by ID — FOODS in memory might not have id field, so go to DB
+    try {
+      const res = await fetch(
+        SUPABASE_URL+'/rest/v1/foods?id=eq.'+encodeURIComponent(foodId)+'&select=id,name,category,traffic,serving,reason,flags,sort_order',
+        {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}
+      );
+      const data = await res.json();
+      if (!data || !data[0]) { alert('Could not load food. It may have been deleted.'); return; }
+      food = data[0];
+    } catch(err) { alert('Error loading food: ' + err.message); return; }
+    document.getElementById('food-edit-heading').textContent = 'Edit food';
+    document.getElementById('food-edit-id-display').textContent = food.category;
+    document.getElementById('food-edit-delete').style.display = '';
+  } else {
+    // Adding new food — auto-set sort_order to max+10
+    const maxSort = FOODS.reduce((m, f) => Math.max(m, Number(f.sort_order) || 0), 0);
+    food = { id: null, name: '', category: 'Proteins', traffic: 'green', serving: '', reason: '', flags: [], sort_order: maxSort + 10 };
+    document.getElementById('food-edit-heading').textContent = 'Add new food';
+    document.getElementById('food-edit-id-display').textContent = '';
+    document.getElementById('food-edit-delete').style.display = 'none';
+  }
+  _foodsCurrentEditId = food.id;
+  _foodsOriginalSnapshot = {
+    name: food.name || '',
+    category: food.category || 'Proteins',
+    traffic: food.traffic || 'green',
+    serving: food.serving || '',
+    reason: food.reason || '',
+    flags: Array.isArray(food.flags) ? [...food.flags].sort() : [],
+    sort_order: Number(food.sort_order) || 0
+  };
+  document.getElementById('food-edit-name').value = _foodsOriginalSnapshot.name;
+  document.getElementById('food-edit-category').value = _foodsOriginalSnapshot.category;
+  document.getElementById('food-edit-serving').value = _foodsOriginalSnapshot.serving;
+  document.getElementById('food-edit-reason').value = _foodsOriginalSnapshot.reason;
+  document.getElementById('food-edit-sort-order').value = _foodsOriginalSnapshot.sort_order;
+  document.querySelectorAll('input[name="food-edit-traffic"]').forEach(r => {
+    r.checked = (r.value === _foodsOriginalSnapshot.traffic);
+  });
+  ['va','cu','ni','ok'].forEach(flag => {
+    document.getElementById('food-edit-flag-' + flag).checked = _foodsOriginalSnapshot.flags.includes(flag);
+  });
+  document.getElementById('food-edit-status').textContent = '';
+  setFoodSaveButtonEnabled(foodId ? false : true);  // for add, save is enabled immediately
+  document.getElementById('manage-content-list-view').style.display = 'none';
+  document.getElementById('manage-content-food-edit-view').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function closeFoodEditor() {
+  if (hasFoodUnsavedChanges() && !confirm('Discard unsaved changes?')) return;
+  _foodsCurrentEditId = null;
+  _foodsOriginalSnapshot = null;
+  document.getElementById('manage-content-food-edit-view').style.display = 'none';
+  document.getElementById('manage-content-list-view').style.display = 'block';
+}
+
+function getCurrentFoodFormValues() {
+  const trafficEl = document.querySelector('input[name="food-edit-traffic"]:checked');
+  const flags = ['va','cu','ni','ok'].filter(flag => document.getElementById('food-edit-flag-' + flag).checked);
+  return {
+    name: document.getElementById('food-edit-name').value.trim(),
+    category: document.getElementById('food-edit-category').value,
+    traffic: trafficEl ? trafficEl.value : 'green',
+    serving: document.getElementById('food-edit-serving').value.trim(),
+    reason: document.getElementById('food-edit-reason').value.trim(),
+    flags: flags.sort(),
+    sort_order: parseInt(document.getElementById('food-edit-sort-order').value) || 0
+  };
+}
+
+function hasFoodUnsavedChanges() {
+  if (!_foodsOriginalSnapshot) return false;
+  const cur = getCurrentFoodFormValues();
+  return (
+    cur.name !== _foodsOriginalSnapshot.name ||
+    cur.category !== _foodsOriginalSnapshot.category ||
+    cur.traffic !== _foodsOriginalSnapshot.traffic ||
+    cur.serving !== _foodsOriginalSnapshot.serving ||
+    cur.reason !== _foodsOriginalSnapshot.reason ||
+    JSON.stringify(cur.flags) !== JSON.stringify(_foodsOriginalSnapshot.flags) ||
+    cur.sort_order !== _foodsOriginalSnapshot.sort_order
+  );
+}
+
+function onFoodEditChange() {
+  setFoodSaveButtonEnabled(hasFoodUnsavedChanges() || _foodsCurrentEditId === null);
+}
+
+function setFoodSaveButtonEnabled(enabled) {
+  const btn = document.getElementById('food-edit-save');
+  btn.disabled = !enabled;
+  btn.style.opacity = enabled ? '1' : '0.5';
+  btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+}
+
+async function saveFood() {
+  const v = getCurrentFoodFormValues();
+  const statusEl = document.getElementById('food-edit-status');
+  if (!v.name) { alert('Name cannot be empty.'); return; }
+  setFoodSaveButtonEnabled(false);
+  statusEl.textContent = 'Saving...';
+  statusEl.style.color = 'var(--text3)';
+  try {
+    let res;
+    if (_foodsCurrentEditId) {
+      // Update existing
+      const payload = { ...v, updated_by: currentUser.id };
+      res = await fetch(
+        SUPABASE_URL+'/rest/v1/foods?id=eq.'+encodeURIComponent(_foodsCurrentEditId),
+        {
+          method: 'PATCH',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+getToken(), 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload)
+        }
+      );
+    } else {
+      // Insert new
+      const payload = { ...v, created_by: currentUser.id, updated_by: currentUser.id };
+      res = await fetch(
+        SUPABASE_URL+'/rest/v1/foods',
+        {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+getToken(), 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload)
+        }
+      );
+    }
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error('Save failed (' + res.status + '): ' + errText);
+    }
+    const data = await res.json();
+    if (!data || !data[0]) throw new Error('Save returned no data — your changes may not have been written. Check provider permissions.');
+    // If insert, capture the new ID so subsequent saves on this same form become updates
+    if (!_foodsCurrentEditId) {
+      _foodsCurrentEditId = data[0].id;
+      document.getElementById('food-edit-heading').textContent = 'Edit food';
+      document.getElementById('food-edit-delete').style.display = '';
+    }
+    _foodsOriginalSnapshot = {
+      name: v.name, category: v.category, traffic: v.traffic,
+      serving: v.serving, reason: v.reason, flags: [...v.flags].sort(),
+      sort_order: v.sort_order
+    };
+    setFoodSaveButtonEnabled(false);
+    statusEl.textContent = 'Saved.';
+    statusEl.style.color = 'var(--accent)';
+    setTimeout(() => { statusEl.textContent = ''; }, 3000);
+    await refreshFoodsAfterEdit();
+  } catch(err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    statusEl.style.color = '#b91c1c';
+    setFoodSaveButtonEnabled(true);
+  }
+}
+
+async function deleteFood() {
+  if (!_foodsCurrentEditId) return;
+  if (!confirm('Delete this food? This cannot be undone.')) return;
+  const statusEl = document.getElementById('food-edit-status');
+  statusEl.textContent = 'Deleting...';
+  statusEl.style.color = 'var(--text3)';
+  try {
+    const res = await fetch(
+      SUPABASE_URL+'/rest/v1/foods?id=eq.'+encodeURIComponent(_foodsCurrentEditId),
+      {
+        method: 'DELETE',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+getToken(), 'Prefer': 'return=representation' }
+      }
+    );
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error('Delete failed (' + res.status + '): ' + errText);
+    }
+    const data = await res.json();
+    if (!data || !data.length) throw new Error('Delete returned no data — the food may not have been removed. Check provider permissions.');
+    await refreshFoodsAfterEdit();
+    _foodsCurrentEditId = null;
+    _foodsOriginalSnapshot = null;
+    document.getElementById('manage-content-food-edit-view').style.display = 'none';
+    document.getElementById('manage-content-list-view').style.display = 'block';
+    toast('Food deleted.');
+  } catch(err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    statusEl.style.color = '#b91c1c';
+  }
+}
+
+async function refreshFoodsAfterEdit() {
+  // Re-pull foods from DB so both the public Food Guide and the admin list are current
+  await loadFoods();
+  if (typeof renderFoodList === 'function') renderFoodList();
+  renderFoodsAdminList();
+}
 
 async function saveArticleContent() {
   if (!_kbCurrentEditId) return;
@@ -1067,7 +1428,7 @@ async function loadFoods() {
   // Populates the FOODS array used by renderFoodList().
   try {
     const res = await fetch(
-      SUPABASE_URL+'/rest/v1/foods?select=name,category,traffic,serving,reason,flags,sort_order&order=sort_order.asc',
+      SUPABASE_URL+'/rest/v1/foods?select=id,name,category,traffic,serving,reason,flags,sort_order&order=sort_order.asc,name.asc',
       {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}}
     );
     if (!res.ok) throw new Error('Failed to load foods ('+res.status+')');
