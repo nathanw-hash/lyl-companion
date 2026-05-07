@@ -486,6 +486,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .kb-row-cat{display:inline-block;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-right:8px;}
 .kb-row-edit-btn{padding:8px 16px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;transition:background 0.15s,color 0.15s;}
 .kb-row-edit-btn:hover{background:var(--accent);color:#fff;}
+.toast{position:fixed;bottom:24px;right:24px;z-index:1000;background:var(--text);color:var(--bg);padding:14px 20px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.18);opacity:0;transform:translateY(12px);transition:opacity 0.2s,transform 0.2s;pointer-events:none;max-width:360px;}
+.toast.show{opacity:1;transform:translateY(0);}
+@media (max-width:600px){.toast{left:16px;right:16px;bottom:16px;max-width:none;}}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
 <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
@@ -1416,7 +1419,46 @@ function renderJournalList(){if(!journalEntries.length){document.getElementById(
 function formatDate(dateStr){if(!dateStr)return'';const d=new Date(dateStr+'T12:00:00');return d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
 function showJournalForm(entryId){editingJournalId=entryId||null;document.getElementById('journal-list-view').style.display='none';document.getElementById('journal-detail-view').style.display='none';document.getElementById('journal-form-view').style.display='block';document.getElementById('journal-form-title').textContent=entryId?'Edit journal entry':'New journal entry';document.getElementById('symptom-checkboxes').innerHTML=SYMPTOM_LIST.map(s=>`<label class="symptom-cb"><input type="checkbox" value="${s}" id="sym-${s.replace(/\s/g,'-')}"> ${s}</label>`).join('');if(entryId){const entry=journalEntries.find(e=>e.id===entryId);if(entry){document.getElementById('journal-date').value=entry.entry_date||'';document.getElementById('journal-energy').value=entry.energy_level||5;document.getElementById('energy-val').textContent=entry.energy_level||5;document.getElementById('journal-severity').value=entry.symptom_severity||3;document.getElementById('symptom-val').textContent=entry.symptom_severity||3;document.getElementById('journal-supplements').value=entry.supplements_taken||'';document.getElementById('journal-foods').value=entry.foods_eaten||'';document.getElementById('journal-notes').value=entry.notes||'';document.getElementById('journal-phase').value=entry.current_phase!=null?entry.current_phase:'';const symptoms=entry.symptoms?(Array.isArray(entry.symptoms)?entry.symptoms:Object.keys(entry.symptoms).filter(k=>entry.symptoms[k])):[];symptoms.forEach(s=>{const el=document.getElementById('sym-'+s.replace(/\s/g,'-'));if(el)el.checked=true;});}}else{document.getElementById('journal-date').value=new Date().toISOString().split('T')[0];document.getElementById('journal-energy').value=5;document.getElementById('energy-val').textContent=5;document.getElementById('journal-severity').value=3;document.getElementById('symptom-val').textContent=3;document.getElementById('journal-supplements').value='';document.getElementById('journal-foods').value='';document.getElementById('journal-notes').value='';const activePhase=Object.entries(phaseProgress).find(([n,p])=>p.status==='in_progress');document.getElementById('journal-phase').value=activePhase?activePhase[0]:'';}}
 function hideJournalForm(){document.getElementById('journal-form-view').style.display='none';document.getElementById('journal-list-view').style.display='block';}
-async function saveJournalEntry(){const date=document.getElementById('journal-date').value;if(!date){toast('Please select a date');return;}const energy=parseInt(document.getElementById('journal-energy').value);const severity=parseInt(document.getElementById('journal-severity').value);const symptoms=Array.from(document.querySelectorAll('#symptom-checkboxes input:checked')).map(el=>el.value);const supplements=document.getElementById('journal-supplements').value.trim();const foods=document.getElementById('journal-foods').value.trim();const notes=document.getElementById('journal-notes').value.trim();const phase=document.getElementById('journal-phase').value;const payload={user_id:currentUser.id,entry_date:date,energy_level:energy,symptom_severity:severity,symptoms:symptoms,supplements_taken:supplements,foods_eaten:foods,notes:notes,current_phase:phase!==''?parseInt(phase):null,updated_at:new Date().toISOString()};try{if(editingJournalId){await fetch(SUPABASE_URL+'/rest/v1/journal_entries?id=eq.'+editingJournalId,{method:'PATCH',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=minimal'},body:JSON.stringify(payload)});}else{await fetch(SUPABASE_URL+'/rest/v1/journal_entries',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=minimal'},body:JSON.stringify(payload)});}toast('Journal entry saved');hideJournalForm();await loadJournalEntries();}catch(err){toast('Error saving entry');}}
+async function saveJournalEntry(){
+  const date=document.getElementById('journal-date').value;
+  if(!date){toast('Please select a date');return;}
+  const energy=parseInt(document.getElementById('journal-energy').value);
+  const severity=parseInt(document.getElementById('journal-severity').value);
+  const symptoms=Array.from(document.querySelectorAll('#symptom-checkboxes input:checked')).map(el=>el.value);
+  const supplements=document.getElementById('journal-supplements').value.trim();
+  const foods=document.getElementById('journal-foods').value.trim();
+  const notes=document.getElementById('journal-notes').value.trim();
+  const phase=document.getElementById('journal-phase').value;
+  const payload={user_id:currentUser.id,entry_date:date,energy_level:energy,symptom_severity:severity,symptoms:symptoms,supplements_taken:supplements,foods_eaten:foods,notes:notes,current_phase:phase!==''?parseInt(phase):null,updated_at:new Date().toISOString()};
+  const headers={'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=minimal'};
+  try{
+    let targetId=editingJournalId;
+    // If not explicitly editing, check whether an entry already exists for this date.
+    // Same-date saves should update the existing row, not create a duplicate (which would 409).
+    if(!targetId){
+      const lookup=await fetch(SUPABASE_URL+'/rest/v1/journal_entries?user_id=eq.'+currentUser.id+'&entry_date=eq.'+encodeURIComponent(date)+'&select=id',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
+      if(!lookup.ok)throw new Error('Failed to check for existing entry ('+lookup.status+')');
+      const existing=await lookup.json();
+      if(existing && existing[0])targetId=existing[0].id;
+    }
+    let res;
+    if(targetId){
+      res=await fetch(SUPABASE_URL+'/rest/v1/journal_entries?id=eq.'+targetId,{method:'PATCH',headers,body:JSON.stringify(payload)});
+    }else{
+      res=await fetch(SUPABASE_URL+'/rest/v1/journal_entries',{method:'POST',headers,body:JSON.stringify(payload)});
+    }
+    if(!res.ok){
+      const errText=await res.text();
+      throw new Error('Save failed ('+res.status+'): '+errText);
+    }
+    toast('Journal entry saved');
+    hideJournalForm();
+    await loadJournalEntries();
+  }catch(err){
+    console.error('saveJournalEntry error:',err);
+    toast('Error saving entry: '+(err.message||'unknown'));
+  }
+}
 function viewJournalEntry(id){const entry=journalEntries.find(e=>e.id===id);if(!entry)return;document.getElementById('journal-list-view').style.display='none';document.getElementById('journal-form-view').style.display='none';document.getElementById('journal-detail-view').style.display='block';const symptoms=entry.symptoms?(Array.isArray(entry.symptoms)?entry.symptoms:Object.keys(entry.symptoms).filter(k=>entry.symptoms[k])):[];const phaseName=entry.current_phase!=null?PHASES.find(p=>p.number===entry.current_phase)?.subtitle:null;document.getElementById('journal-detail-content').innerHTML=`<div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;"><div style="font-family:'DM Serif Display',serif;font-size:26px;">${formatDate(entry.entry_date)}</div><button class="btn-new-entry" onclick="showJournalForm('${entry.id}')">Edit</button></div><div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">${energyBadge(entry.energy_level||5)}${symptomBadge(entry.symptom_severity||3)}${phaseName?`<span class="badge" style="background:var(--accent-light);color:var(--accent)">Phase: ${phaseName}</span>`:''}</div>${symptoms.length?`<div class="journal-detail-section"><div class="journal-detail-label">Symptoms</div><div class="journal-entry-symptoms">${symptoms.map(s=>`<span class="symptom-chip">${s}</span>`).join('')}</div></div>`:''}${entry.supplements_taken?`<div class="journal-detail-section"><div class="journal-detail-label">Supplements taken</div><div class="journal-detail-value">${entry.supplements_taken}</div></div>`:''}${entry.foods_eaten?`<div class="journal-detail-section"><div class="journal-detail-label">Foods eaten</div><div class="journal-detail-value">${entry.foods_eaten}</div></div>`:''}${entry.notes?`<div class="journal-detail-section"><div class="journal-detail-label">Notes</div><div class="journal-detail-value">${entry.notes}</div></div>`:''}<div class="journal-detail-section"><div class="journal-detail-label">Related</div><div class="journal-links"><button class="journal-link-pill" onclick="showPanel('tracker')">View phase progress</button><a class="journal-link-pill" href="https://love-your-liver.vercel.app" target="_blank" style="text-decoration:none">View lab results</a></div></div>`;}
 function hideJournalDetail(){document.getElementById('journal-detail-view').style.display='none';document.getElementById('journal-list-view').style.display='block';}
 
@@ -1478,7 +1520,7 @@ function renderFoodList(){
   document.getElementById('food-list-content').innerHTML=html||'<div class="empty-state"><h3>No foods found</h3><p>Try adjusting your search or filter.</p></div>';
 }
 
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
+function toast(msg){const el=document.getElementById('toast');if(!el){console.warn('toast() called but #toast element missing. Message was:',msg);return;}el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
 
 // PROVIDER
 let isProvider = false;
@@ -2819,5 +2861,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<div id="toast" class="toast"></div>
 </body>
 </html>
