@@ -950,6 +950,9 @@ let _foodsCurrentTab = 'kb';            // which Manage Content tab is active
 let _foodsSearchQuery = '';
 let _foodsCurrentEditId = null;         // null = adding new, otherwise UUID
 let _foodsOriginalSnapshot = null;      // for change detection
+let _phasesCurrentEditId = null;        // phase.id (uuid) when editing existing, null when adding new
+let _phasesOriginalSnapshot = null;     // JSON snapshot for dirty/cancel detection
+let _phasesEditDraft = null;            // working copy: {number, title, subtitle, description, steps:[], kb_links:[]}
 
 function switchMcTab(tab) {
   _foodsCurrentTab = tab;
@@ -961,6 +964,41 @@ function switchMcTab(tab) {
   document.getElementById('mc-section-phases').style.display = tab === 'phases' ? 'block' : 'none';
   if (tab === 'foods') renderFoodsAdminList();
   if (tab === 'phases') renderPhasesAdminList();
+}
+
+// ===== PHASES ADMIN =====
+function renderPhasesAdminList() {
+  const listEl = document.getElementById('phases-admin-list');
+  if (!Array.isArray(PHASES) || PHASES.length === 0) {
+    listEl.innerHTML = '<div style="padding:20px;color:var(--text3);font-size:14px;">No phases found. Click "+ Add new phase" to create one.</div>';
+    return;
+  }
+  const rows = PHASES
+    .slice()
+    .sort((a,b) => (a.number||0) - (b.number||0))
+    .map(p => {
+      const stepCount = (p.steps || []).length;
+      const linkCount = (p.kb_links || []).length;
+      return `
+        <div class="phase-admin-row" data-phase-number="${p.number}" style="display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:var(--surface);cursor:pointer;">
+          <div style="width:42px;height:42px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">${p.number}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;font-size:15px;color:var(--text);">${escapeHtml(p.title || 'Untitled')} — <span style="font-weight:400;color:var(--text2);">${escapeHtml(p.subtitle || '')}</span></div>
+            <div style="font-size:12px;color:var(--text3);margin-top:3px;">${stepCount} step${stepCount===1?'':'s'} · ${linkCount} related article${linkCount===1?'':'s'}</div>
+          </div>
+          <div style="font-size:12px;color:var(--text3);">Edit ›</div>
+        </div>
+      `;
+    }).join('');
+  listEl.innerHTML = rows;
+  // Wire up row clicks with addEventListener (per Part B convention)
+  listEl.querySelectorAll('.phase-admin-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const num = parseInt(row.getAttribute('data-phase-number'), 10);
+      const phase = PHASES.find(p => p.number === num);
+      if (phase) openPhaseEditor(phase);
+    });
+  });
 }
 
 function renderFoodsAdminList() {
