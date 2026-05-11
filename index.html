@@ -711,6 +711,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div id="mc-tabs" style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1.5px solid var(--border);">
           <button id="mc-tab-kb" class="mc-tab mc-tab-active" onclick="switchMcTab('kb')">Articles</button>
           <button id="mc-tab-foods" class="mc-tab" onclick="switchMcTab('foods')">Foods</button>
+          <button id="mc-tab-phases" class="mc-tab" onclick="switchMcTab('phases')">Phases</button>
         </div>
 
         <div id="mc-section-kb">
@@ -728,6 +729,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
             <button class="btn btn-accent" onclick="openFoodEditor(null)" style="padding:10px 16px;font-size:13px;">+ Add new food</button>
           </div>
           <div id="foods-admin-list"><div class="loading">Loading foods...</div></div>
+        </div>
+
+        <div id="mc-section-phases" style="display:none;">
+          <div id="phases-toolbar" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0 14px;margin-bottom:8px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:13px;color:var(--text3);flex:1;">Phases are ordered by phase number. Edit a phase to change its title, description, steps, and related articles.</span>
+            <button class="btn btn-accent" onclick="openPhaseEditor(null)" style="padding:10px 16px;font-size:13px;">+ Add new phase</button>
+          </div>
+          <div id="phases-admin-list"><div class="loading">Loading phases...</div></div>
         </div>
       </div>
       <div id="manage-content-food-edit-view" style="display:none">
@@ -893,9 +902,12 @@ function switchMcTab(tab) {
   _foodsCurrentTab = tab;
   document.getElementById('mc-tab-kb').classList.toggle('mc-tab-active', tab === 'kb');
   document.getElementById('mc-tab-foods').classList.toggle('mc-tab-active', tab === 'foods');
+  document.getElementById('mc-tab-phases').classList.toggle('mc-tab-active', tab === 'phases');
   document.getElementById('mc-section-kb').style.display = tab === 'kb' ? 'block' : 'none';
   document.getElementById('mc-section-foods').style.display = tab === 'foods' ? 'block' : 'none';
+  document.getElementById('mc-section-phases').style.display = tab === 'phases' ? 'block' : 'none';
   if (tab === 'foods') renderFoodsAdminList();
+  if (tab === 'phases') renderPhasesAdminList();
 }
 
 function renderFoodsAdminList() {
