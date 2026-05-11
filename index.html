@@ -1093,18 +1093,182 @@ function populatePhaseEditorForm() {
   document.getElementById('phase-edit-description').value = d.description;
   renderStepsSubEditor();
   renderKbLinksSubEditor();
+  wirePhaseEditorAddButtons();
 }
 
-// Placeholders for Chunk 6 — show a stub so the editor is usable for text fields now
+let _phaseAddButtonsWired = false;
+function wirePhaseEditorAddButtons() {
+  if (_phaseAddButtonsWired) return;
+  _phaseAddButtonsWired = true;
+  document.getElementById('phase-edit-add-step-btn').addEventListener('click', () => {
+    _phasesEditDraft.steps.push({db_id: null, step_id: '', name: '', description: ''});
+    renderStepsSubEditor();
+    onPhaseEditChange();
+  });
+  document.getElementById('phase-edit-add-kblink-btn').addEventListener('click', () => {
+    _phasesEditDraft.kb_links.push({db_id: null, label: '', kb_entry_id: ''});
+    renderKbLinksSubEditor();
+    onPhaseEditChange();
+  });
+}
+
 function renderStepsSubEditor() {
   const el = document.getElementById('phase-edit-steps-list');
-  const count = (_phasesEditDraft.steps || []).length;
-  el.innerHTML = '<div style="padding:14px;border:1px dashed var(--border);border-radius:8px;color:var(--text3);font-size:13px;">Steps editor coming in next chunk. Current: ' + count + ' step' + (count===1?'':'s') + '.</div>';
+  const steps = _phasesEditDraft.steps || [];
+  if (!steps.length) {
+    el.innerHTML = '<div style="padding:14px;border:1px dashed var(--border);border-radius:8px;color:var(--text3);font-size:13px;">No steps yet. Click "+ Add step" to create one.</div>';
+    return;
+  }
+  el.innerHTML = steps.map((s, i) => `
+    <div class="step-edit-row" data-idx="${i}" style="border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;background:var(--surface);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:12px;color:var(--text3);font-weight:600;">Step ${i+1}</span>
+        <span style="flex:1;"></span>
+        <button class="btn-step-move-up" data-idx="${i}" title="Move up" ${i===0?'disabled':''} style="padding:4px 8px;font-size:12px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:${i===0?'not-allowed':'pointer'};opacity:${i===0?'0.4':'1'};">↑</button>
+        <button class="btn-step-move-down" data-idx="${i}" title="Move down" ${i===steps.length-1?'disabled':''} style="padding:4px 8px;font-size:12px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:${i===steps.length-1?'not-allowed':'pointer'};opacity:${i===steps.length-1?'0.4':'1'};">↓</button>
+        <button class="btn-step-delete" data-idx="${i}" title="Delete step" style="padding:4px 8px;font-size:12px;background:transparent;border:1px solid #b91c1c;color:#b91c1c;border-radius:6px;cursor:pointer;">Delete</button>
+      </div>
+      <div style="display:grid;grid-template-columns:180px 1fr;gap:10px;margin-bottom:8px;">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;">Step ID</label>
+          <input type="text" class="step-edit-step_id" data-idx="${i}" value="${escapeHtml(s.step_id)}" placeholder="e.g. hydration" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;background:var(--bg);color:var(--text);outline:none;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;">Name</label>
+          <input type="text" class="step-edit-name" data-idx="${i}" value="${escapeHtml(s.name)}" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;box-sizing:border-box;">
+        </div>
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;">Description</label>
+        <textarea class="step-edit-description" data-idx="${i}" rows="2" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;box-sizing:border-box;resize:vertical;line-height:1.5;">${escapeHtml(s.description)}</textarea>
+      </div>
+    </div>
+  `).join('');
+  // Wire up inputs (sync into draft on change)
+  el.querySelectorAll('.step-edit-step_id, .step-edit-name, .step-edit-description').forEach(input => {
+    input.addEventListener('input', (ev) => {
+      const idx = parseInt(ev.target.getAttribute('data-idx'), 10);
+      const field = ev.target.className.replace('step-edit-', '');
+      _phasesEditDraft.steps[idx][field] = ev.target.value;
+      onPhaseEditChange();
+    });
+  });
+  // Wire up move/delete buttons
+  el.querySelectorAll('.btn-step-move-up').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      if (idx > 0) {
+        const arr = _phasesEditDraft.steps;
+        [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
+        renderStepsSubEditor();
+        onPhaseEditChange();
+      }
+    });
+  });
+  el.querySelectorAll('.btn-step-move-down').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      const arr = _phasesEditDraft.steps;
+      if (idx < arr.length - 1) {
+        [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
+        renderStepsSubEditor();
+        onPhaseEditChange();
+      }
+    });
+  });
+  el.querySelectorAll('.btn-step-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      const stepName = _phasesEditDraft.steps[idx].name || '(unnamed)';
+      if (!confirm('Delete step "' + stepName + '"? This will also delete patient completion records for this step.')) return;
+      _phasesEditDraft.steps.splice(idx, 1);
+      renderStepsSubEditor();
+      onPhaseEditChange();
+    });
+  });
 }
+
 function renderKbLinksSubEditor() {
   const el = document.getElementById('phase-edit-kblinks-list');
-  const count = (_phasesEditDraft.kb_links || []).length;
-  el.innerHTML = '<div style="padding:14px;border:1px dashed var(--border);border-radius:8px;color:var(--text3);font-size:13px;">Article links editor coming in next chunk. Current: ' + count + ' link' + (count===1?'':'s') + '.</div>';
+  const links = _phasesEditDraft.kb_links || [];
+  // Build article options HTML once — used in every dropdown
+  const articles = (typeof _kbAllArticles !== 'undefined' && Array.isArray(_kbAllArticles))
+    ? _kbAllArticles.slice().sort((a,b) => (a.title||'').localeCompare(b.title||''))
+    : [];
+  const articleOptions = '<option value="">— Choose an article —</option>' +
+    articles.map(a => `<option value="${escapeHtml(a.entry_id)}">${escapeHtml(a.title || a.entry_id)}</option>`).join('');
+  if (!links.length) {
+    el.innerHTML = '<div style="padding:14px;border:1px dashed var(--border);border-radius:8px;color:var(--text3);font-size:13px;">No related articles yet. Click "+ Add article link" to create one.</div>';
+    return;
+  }
+  el.innerHTML = links.map((l, i) => `
+    <div class="kblink-edit-row" data-idx="${i}" style="border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;background:var(--surface);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:12px;color:var(--text3);font-weight:600;">Link ${i+1}</span>
+        <span style="flex:1;"></span>
+        <button class="btn-kblink-move-up" data-idx="${i}" title="Move up" ${i===0?'disabled':''} style="padding:4px 8px;font-size:12px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:${i===0?'not-allowed':'pointer'};opacity:${i===0?'0.4':'1'};">↑</button>
+        <button class="btn-kblink-move-down" data-idx="${i}" title="Move down" ${i===links.length-1?'disabled':''} style="padding:4px 8px;font-size:12px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:${i===links.length-1?'not-allowed':'pointer'};opacity:${i===links.length-1?'0.4':'1'};">↓</button>
+        <button class="btn-kblink-delete" data-idx="${i}" title="Delete link" style="padding:4px 8px;font-size:12px;background:transparent;border:1px solid #b91c1c;color:#b91c1c;border-radius:6px;cursor:pointer;">Delete</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;">Button label</label>
+          <input type="text" class="kblink-edit-label" data-idx="${i}" value="${escapeHtml(l.label)}" placeholder="What patients see on the button" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;">Article</label>
+          <select class="kblink-edit-kb_entry_id" data-idx="${i}" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;cursor:pointer;box-sizing:border-box;">
+            ${articleOptions}
+          </select>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  // Set dropdown selected values (can't do via template string because of escaping)
+  el.querySelectorAll('.kblink-edit-kb_entry_id').forEach(select => {
+    const idx = parseInt(select.getAttribute('data-idx'), 10);
+    select.value = links[idx].kb_entry_id || '';
+  });
+  // Wire up inputs
+  el.querySelectorAll('.kblink-edit-label, .kblink-edit-kb_entry_id').forEach(input => {
+    input.addEventListener(input.tagName === 'SELECT' ? 'change' : 'input', (ev) => {
+      const idx = parseInt(ev.target.getAttribute('data-idx'), 10);
+      const field = ev.target.className.replace('kblink-edit-', '');
+      _phasesEditDraft.kb_links[idx][field] = ev.target.value;
+      onPhaseEditChange();
+    });
+  });
+  // Wire up move/delete
+  el.querySelectorAll('.btn-kblink-move-up').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      if (idx > 0) {
+        const arr = _phasesEditDraft.kb_links;
+        [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
+        renderKbLinksSubEditor();
+        onPhaseEditChange();
+      }
+    });
+  });
+  el.querySelectorAll('.btn-kblink-move-down').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      const arr = _phasesEditDraft.kb_links;
+      if (idx < arr.length - 1) {
+        [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
+        renderKbLinksSubEditor();
+        onPhaseEditChange();
+      }
+    });
+  });
+  el.querySelectorAll('.btn-kblink-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      _phasesEditDraft.kb_links.splice(idx, 1);
+      renderKbLinksSubEditor();
+      onPhaseEditChange();
+    });
+  });
 }
 
 function closePhaseEditor() {
