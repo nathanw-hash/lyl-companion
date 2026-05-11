@@ -1001,6 +1001,160 @@ function renderPhasesAdminList() {
   });
 }
 
+function openPhaseEditor(phase) {
+  // phase = null when adding new, or a PHASES entry (in-memory shape) when editing
+  if (phase) {
+    // Editing existing — need to fetch the DB id (uuid) since in-memory PHASES doesn't carry it
+    // We fetch fresh from Supabase to be safe (in case someone else edited) and to get phase.id
+    fetchPhaseFullForEdit(phase.number);
+  } else {
+    // Adding new
+    _phasesCurrentEditId = null;
+    _phasesEditDraft = {
+      number: nextAvailablePhaseNumber(),
+      title: '',
+      subtitle: '',
+      description: '',
+      steps: [],
+      kb_links: []
+    };
+    _phasesOriginalSnapshot = JSON.stringify(_phasesEditDraft);
+    populatePhaseEditorForm();
+    showPhaseEditorView('Add new phase', null);
+    document.getElementById('phase-edit-delete').style.display = 'none';
+    setPhaseSaveButtonEnabled(false);
+  }
+}
+
+async function fetchPhaseFullForEdit(phaseNumber) {
+  const statusEl = document.getElementById('phase-edit-status');
+  try {
+    const url = SUPABASE_URL + '/rest/v1/phases?number=eq.' + encodeURIComponent(phaseNumber) +
+      '&select=id,number,title,subtitle,description,phase_steps(id,step_id,name,description,sort_order),phase_kb_links(id,label,kb_entry_id,sort_order)';
+    const res = await fetch(url, {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
+    if (!res.ok) throw new Error('Failed to load phase ('+res.status+')');
+    const arr = await res.json();
+    if (!arr.length) throw new Error('Phase not found.');
+    const p = arr[0];
+    _phasesCurrentEditId = p.id;
+    _phasesEditDraft = {
+      number: p.number,
+      title: p.title || '',
+      subtitle: p.subtitle || '',
+      description: p.description || '',
+      // Keep DB shape inside the draft so save handler can map cleanly
+      steps: (p.phase_steps || [])
+        .slice()
+        .sort((a,b) => (a.sort_order||0) - (b.sort_order||0))
+        .map(s => ({
+          db_id: s.id,              // uuid for PATCH/DELETE, null for new
+          step_id: s.step_id || '',
+          name: s.name || '',
+          description: s.description || ''
+        })),
+      kb_links: (p.phase_kb_links || [])
+        .slice()
+        .sort((a,b) => (a.sort_order||0) - (b.sort_order||0))
+        .map(l => ({
+          db_id: l.id,
+          label: l.label || '',
+          kb_entry_id: l.kb_entry_id || ''
+        }))
+    };
+    _phasesOriginalSnapshot = JSON.stringify(_phasesEditDraft);
+    populatePhaseEditorForm();
+    showPhaseEditorView('Edit phase ' + p.number, p.number);
+    document.getElementById('phase-edit-delete').style.display = 'inline-block';
+    setPhaseSaveButtonEnabled(false);
+  } catch(err) {
+    alert('Could not open phase editor: ' + err.message);
+  }
+}
+
+function nextAvailablePhaseNumber() {
+  if (!PHASES.length) return 0;
+  return Math.max(...PHASES.map(p => p.number || 0)) + 1;
+}
+
+function showPhaseEditorView(headingText, phaseNumber) {
+  document.getElementById('manage-content-list-view').style.display = 'none';
+  document.getElementById('manage-content-phase-edit-view').style.display = 'block';
+  document.getElementById('phase-edit-heading').textContent = headingText;
+  document.getElementById('phase-edit-number-display').textContent =
+    phaseNumber == null ? 'New phase' : ('Phase number ' + phaseNumber);
+  document.getElementById('phase-edit-status').textContent = '';
+}
+
+function populatePhaseEditorForm() {
+  const d = _phasesEditDraft;
+  document.getElementById('phase-edit-number').value = d.number;
+  document.getElementById('phase-edit-title').value = d.title;
+  document.getElementById('phase-edit-subtitle').value = d.subtitle;
+  document.getElementById('phase-edit-description').value = d.description;
+  renderStepsSubEditor();
+  renderKbLinksSubEditor();
+}
+
+// Placeholders for Chunk 6 — show a stub so the editor is usable for text fields now
+function renderStepsSubEditor() {
+  const el = document.getElementById('phase-edit-steps-list');
+  const count = (_phasesEditDraft.steps || []).length;
+  el.innerHTML = '<div style="padding:14px;border:1px dashed var(--border);border-radius:8px;color:var(--text3);font-size:13px;">Steps editor coming in next chunk. Current: ' + count + ' step' + (count===1?'':'s') + '.</div>';
+}
+function renderKbLinksSubEditor() {
+  const el = document.getElementById('phase-edit-kblinks-list');
+  const count = (_phasesEditDraft.kb_links || []).length;
+  el.innerHTML = '<div style="padding:14px;border:1px dashed var(--border);border-radius:8px;color:var(--text3);font-size:13px;">Article links editor coming in next chunk. Current: ' + count + ' link' + (count===1?'':'s') + '.</div>';
+}
+
+function closePhaseEditor() {
+  // Dirty check
+  const current = JSON.stringify(getCurrentPhaseFormDraft());
+  if (current !== _phasesOriginalSnapshot) {
+    if (!confirm('You have unsaved changes. Discard them?')) return;
+  }
+  document.getElementById('manage-content-phase-edit-view').style.display = 'none';
+  document.getElementById('manage-content-list-view').style.display = 'block';
+  _phasesCurrentEditId = null;
+  _phasesEditDraft = null;
+  _phasesOriginalSnapshot = null;
+}
+
+function getCurrentPhaseFormDraft() {
+  // Reads current text-field values and merges with draft's steps/kb_links (which are managed by sub-editors)
+  if (!_phasesEditDraft) return null;
+  return {
+    number: parseInt(document.getElementById('phase-edit-number').value, 10) || 0,
+    title: document.getElementById('phase-edit-title').value || '',
+    subtitle: document.getElementById('phase-edit-subtitle').value || '',
+    description: document.getElementById('phase-edit-description').value || '',
+    steps: _phasesEditDraft.steps || [],
+    kb_links: _phasesEditDraft.kb_links || []
+  };
+}
+
+function onPhaseEditChange() {
+  const current = JSON.stringify(getCurrentPhaseFormDraft());
+  const dirty = current !== _phasesOriginalSnapshot;
+  setPhaseSaveButtonEnabled(dirty);
+}
+
+function setPhaseSaveButtonEnabled(enabled) {
+  const btn = document.getElementById('phase-edit-save');
+  btn.disabled = !enabled;
+  btn.style.opacity = enabled ? '1' : '0.5';
+  btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+}
+
+// Stubs for next chunks — referenced by inline onclick in the editor shell.
+// Defined here so the buttons don't throw ReferenceError before Chunks 5/6 land.
+function savePhase() {
+  alert('Save handler coming in Chunk 5.');
+}
+function deletePhase() {
+  alert('Delete handler coming in Chunk 5.');
+}
+
 function renderFoodsAdminList() {
   // Use the FOODS array already loaded by loadFoods() at sign-in.
   // We don't re-fetch here; saves explicitly call refreshFoodsAfterEdit() to keep FOODS current.
