@@ -634,12 +634,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <div class="field"><label>Current phase</label>
             <select id="journal-phase">
               <option value="">Not specified</option>
-              <option value="0">Phase 0 — Hydration, Breathing, Light, Movement</option>
-              <option value="1">Phase 1 — Bowels, Biome, Bile</option>
-              <option value="2">Phase 2 — Electrolytes</option>
-              <option value="3">Phase 3 — Big Minerals</option>
-              <option value="4">Phase 4 — Antidotes &amp; B-Vitamins</option>
-              <option value="5">Phase 5 — Lactoferrin</option>
             </select>
           </div>
           <div class="form-actions">
@@ -874,15 +868,8 @@ let FOODS = []
 
 function getToken(){const s=JSON.parse(localStorage.getItem('lyl-companion-auth')||'null');return s?s.access_token:null;}
 
-// PHASE DATA
-const PHASES=[
-  {number:0,title:'Phase 0',subtitle:'Hydration, Breathing, Light, Movement',description:'The true foundation of the LYL program — before any supplements or dietary changes. These practices support detox gently around the clock without triggering bile-dumping symptoms, making them appropriate even for very sensitive individuals.',kb_links:[{label:'Breathwork basics',id:'life_003'},{label:'Big 6 Lymph Drainage',id:'life_001'}],steps:[{id:'hydration',name:'Establish adequate hydration',desc:'Use filtered, RO, or distilled water. Increase intake gradually.'},{id:'breathing',name:'Begin breathwork practice',desc:'Better breathing increases toxin elimination through breath all day.'},{id:'sunlight',name:'Daily sunlight / UVB exposure',desc:'Bare skin exposure — not so much that symptoms worsen. This is your source of vitamin D.'},{id:'big6',name:'Big 6 Lymph Drainage — daily',desc:'Gentle massage of neck, armpits, and groin to keep lymph moving.'},{id:'movement',name:'Start easy movement',desc:'10,000 steps/day is a good goal. Never push to the point of feeling worse.'}]},
-  {number:1,title:'Phase 1',subtitle:'Bowels, Biome, Bile',description:'Fix elimination before anything else. Toxins get reabsorbed instead of eliminated when the gut is not working well.',kb_links:[{label:'Gut biome & dysbiosis',id:'gut_001'},{label:'Activated charcoal',id:'spc_002'}],steps:[{id:'constipation',name:'Address constipation if present',desc:'Goal: at least 1–2 bowel movements per day before adding charcoal.'},{id:'diarrhea',name:'Address diarrhea if present',desc:'Activated charcoal orally and/or topically over gut and liver. Lactospore probiotic.'},{id:'probiotics',name:'Add probiotics',desc:'Women: always start with Lactobacillus first.'},{id:'soluble_fiber',name:'Increase soluble fiber',desc:'Binds toxic bile in the gut. Start low and increase slowly.'},{id:'insoluble_fiber',name:'Add insoluble fiber',desc:'Feeds putrefactive bacteria, improves bulk and motility.'},{id:'charcoal',name:'Add activated charcoal (once regular)',desc:'Only after achieving 2+ bowel movements per day. Start at 1/4 tsp.'}]},
-  {number:2,title:'Phase 2',subtitle:'Electrolytes',description:'Establish a mineral foundation before adding detox minerals.',kb_links:[{label:'Sodium basics',id:'min_004'},{label:'Potassium basics',id:'min_005'},{label:'Topical magnesium',id:'top_001'}],steps:[{id:'magnesium',name:'Magnesium — topical and/or oral',desc:'Topical magnesium is ~10x more effective than oral.'},{id:'potassium',name:'Potassium — topical and/or dietary',desc:'Watch for foot/leg cramps, fatigue after eating, and heart palpitations as deficiency signs.'},{id:'sodium',name:'Sodium — salt your food to taste',desc:'Use bright white single-ingredient sea salt.'}]},
-  {number:3,title:'Phase 3',subtitle:'Big Minerals',description:'The three minerals most critical to vitamin A and copper detox pathways.',kb_links:[{label:'Selenium basics',id:'min_002'},{label:'Molybdenum basics',id:'min_003'},{label:'Zinc basics',id:'min_001'}],steps:[{id:'selenium',name:'Selenium (start here)',desc:'Selenium glycinate 150mcg/day.'},{id:'molybdenum',name:'Molybdenum (second)',desc:'Molybdenum glycinate 150mcg/day.'},{id:'zinc',name:'Zinc (third)',desc:'Zinc picolinate — 40% of body weight in lbs, capped at 60mg/day.'}]},
-  {number:4,title:'Phase 4',subtitle:'Antidotes & B-Vitamins',description:'These B vitamins directly counter the damage caused by vitamin A and copper toxicity.',kb_links:[{label:'B vitamins as antidotes',id:'bvit_001'}],steps:[{id:'k2',name:'Vitamin K2 — MK-4 form only',desc:'NOT MK-7. Standard dose 3–5mg/day.'},{id:'folate',name:'Folinic acid (calcium folinate)',desc:'NOT folic acid or methylfolate. Standard 400mcg/day.'},{id:'b1',name:'Thiamine B1 — thiamine HCl preferred',desc:'NOT thiamine mononitrate. Start 25–50mg/day.'},{id:'b12',name:'B12 — adenosylcobalamin or hydroxocobalamin',desc:'NOT cyanocobalamin or methylcobalamin. Standard 500–1000mcg/day.'}]},
-  {number:5,title:'Phase 5',subtitle:'Lactoferrin',description:'Lactoferrin repairs bile duct cells damaged by vitamin A toxicity.',kb_links:[{label:'Lactoferrin FAQ',id:'spc_001'}],steps:[{id:'lactoferrin',name:'Bovine lactoferrin',desc:'Use purified bovine lactoferrin powder. Start at a dose that does not cause negative reactions.'}]}
-];
+// PHASE DATA — fetched from Supabase via loadPhases() at sign-in
+let PHASES=[];
 
 // AUTH
 function switchAuthTab(tab){document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='signup')));document.getElementById('login-form').style.display=tab==='login'?'':'none';document.getElementById('signup-form').style.display=tab==='signup'?'':'none';document.getElementById('auth-msg').style.display='none';}
@@ -891,7 +878,7 @@ async function signUp(){const email=document.getElementById('signup-email').valu
 async function signOut(){await sb.auth.signOut();document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';currentUser=null;}
 function showMsg(msg,ok){const el=document.getElementById('auth-msg');el.textContent=msg;el.style.display='block';el.style.background=ok?'var(--accent-light)':'#fef2f2';el.style.color=ok?'var(--accent)':'#b91c1c';}
 
-sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();loadPhaseProgress();loadJournalEntries();await loadFoods();renderFoodList();checkProviderStatus();}});
+sb.auth.onAuthStateChange(async(event,session)=>{if(session&&session.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email-display').textContent=currentUser.email;loadAllEntries();await loadPhases();loadPhaseProgress();loadJournalEntries();await loadFoods();renderFoodList();checkProviderStatus();}});
 
 // ====================================================================
 // FOODS ADMIN — providers only
@@ -1389,6 +1376,42 @@ async function viewEntry(entryId,from){previousPanel=from||'search';showPanel('e
 function formatContent(content){if(!content)return'';if(typeof content==='string'){const lines=content.split('\n').filter(Boolean);let html='',inList=false;lines.forEach(line=>{if(line.startsWith('## ')||line.startsWith('# ')){if(inList){html+='</ul>';inList=false;}html+=`<h3>${prettify(line.replace(/^#+\s/,''))}</h3>`;}else if(line.match(/^[-*]\s/)){if(!inList){html+='<ul>';inList=true;}html+=`<li>${line.slice(2)}</li>`;}else{if(inList){html+='</ul>';inList=false;}const m=line.match(/^([A-Za-z][A-Za-z0-9_]*?):\s*(.*)$/);if(m){html+=`<p><strong>${prettify(m[1])}:</strong> ${m[2]}</p>`;}else{html+=`<p>${line}</p>`;}}}); if(inList)html+='</ul>';return html;}if(typeof content==='object'&&content!==null){return Object.entries(content).map(([key,val])=>{const label=prettify(key);if(Array.isArray(val)&&val.length>0)return`<h3>${label}</h3><ul>${val.map(v=>`<li>${typeof v==='object'?Object.entries(v).map(([k,v2])=>`<strong>${prettify(k)}:</strong> ${v2}`).join(' — '):v}</li>`).join('')}</ul>`;if(typeof val==='string'&&val.length>0)return`<h3>${label}</h3><p>${val}</p>`;if(typeof val==='object'&&val!==null)return`<h3>${label}</h3>${formatContent(val)}`;return'';}).filter(Boolean).join('');}return`<p>${String(content)}</p>`;}
 
 // PHASE TRACKER
+async function loadPhases() {
+  // Fetch phase definitions plus nested steps and kb_links from Supabase.
+  // Normalizes the response into the same shape the hardcoded PHASES array used,
+  // so all downstream rendering and journal code keeps working unchanged.
+  try {
+    const url = SUPABASE_URL + '/rest/v1/phases?select=number,title,subtitle,description,phase_steps(step_id,name,description,sort_order),phase_kb_links(label,kb_entry_id,sort_order)&order=sort_order.asc';
+    const res = await fetch(url, {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});
+    if (!res.ok) throw new Error('Failed to load phases ('+res.status+')');
+    const data = await res.json();
+    PHASES = (data || []).map(p => ({
+      number: p.number,
+      title: p.title || '',
+      subtitle: p.subtitle || '',
+      description: p.description || '',
+      steps: (p.phase_steps || [])
+        .slice()
+        .sort((a,b) => (a.sort_order||0) - (b.sort_order||0))
+        .map(s => ({
+          id: s.step_id,
+          name: s.name || '',
+          desc: s.description || ''
+        })),
+      kb_links: (p.phase_kb_links || [])
+        .slice()
+        .sort((a,b) => (a.sort_order||0) - (b.sort_order||0))
+        .map(l => ({
+          label: l.label || '',
+          id: l.kb_entry_id || ''
+        }))
+    }));
+  } catch(err) {
+    console.error('Failed to load phases:', err);
+    PHASES = [];
+  }
+}
+
 async function loadPhaseProgress(){try{const res=await fetch(SUPABASE_URL+'/rest/v1/phase_progress?user_id=eq.'+currentUser.id+'&select=*',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken()}});const rows=await res.json();phaseProgress={};rows.forEach(r=>{phaseProgress[r.phase_number]=r;});renderPhaseTracker();}catch(err){document.getElementById('phases-list').innerHTML='<div class="loading">Error loading progress.</div>';}}
 async function savePhaseProgress(phaseNum){const p=phaseProgress[phaseNum]||{phase_number:phaseNum,status:'not_started',completed_steps:[],notes:''};const payload={user_id:currentUser.id,phase_number:p.phase_number,status:p.status,completed_steps:p.completed_steps,notes:p.notes||'',updated_at:new Date().toISOString()};await fetch(SUPABASE_URL+'/rest/v1/phase_progress?on_conflict=user_id,phase_number',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(payload)});}
 function getPhaseStatus(n){const p=phaseProgress[n];return p?p.status||'not_started':'not_started';}
@@ -1417,7 +1440,7 @@ function energyBadge(v){const cls=v>=7?'high':v>=4?'mid':'low';return`<span clas
 function symptomBadge(v){const cls=v>=7?'high':v>=4?'mid':'low';return`<span class="badge symptom-${cls}">Symptoms ${v}/10</span>`;}
 function renderJournalList(){if(!journalEntries.length){document.getElementById('journal-entries-list').innerHTML='<div class="empty-state"><h3>No entries yet</h3><p>Start tracking your daily progress with your first journal entry.</p></div>';return;}document.getElementById('journal-entries-list').innerHTML=journalEntries.slice(0,20).map(e=>{const symptoms=e.symptoms?(Array.isArray(e.symptoms)?e.symptoms:Object.keys(e.symptoms).filter(k=>e.symptoms[k])):[];const preview=e.notes?e.notes.substring(0,100)+(e.notes.length>100?'...':''):'';return`<div class="journal-entry-card" onclick="viewJournalEntry('${e.id}')"><div class="journal-entry-header"><div class="journal-entry-date">${formatDate(e.entry_date)}</div><div class="journal-entry-badges">${energyBadge(e.energy_level||5)}${symptomBadge(e.symptom_severity||3)}</div></div>${symptoms.length?`<div class="journal-entry-symptoms">${symptoms.slice(0,5).map(s=>`<span class="symptom-chip">${s}</span>`).join('')}${symptoms.length>5?`<span class="symptom-chip">+${symptoms.length-5} more</span>`:''}</div>`:''}${preview?`<div class="journal-entry-preview">${preview}</div>`:''}</div>`;}).join('');}
 function formatDate(dateStr){if(!dateStr)return'';const d=new Date(dateStr+'T12:00:00');return d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
-function showJournalForm(entryId){editingJournalId=entryId||null;document.getElementById('journal-list-view').style.display='none';document.getElementById('journal-detail-view').style.display='none';document.getElementById('journal-form-view').style.display='block';document.getElementById('journal-form-title').textContent=entryId?'Edit journal entry':'New journal entry';document.getElementById('symptom-checkboxes').innerHTML=SYMPTOM_LIST.map(s=>`<label class="symptom-cb"><input type="checkbox" value="${s}" id="sym-${s.replace(/\s/g,'-')}"> ${s}</label>`).join('');if(entryId){const entry=journalEntries.find(e=>e.id===entryId);if(entry){document.getElementById('journal-date').value=entry.entry_date||'';document.getElementById('journal-energy').value=entry.energy_level||5;document.getElementById('energy-val').textContent=entry.energy_level||5;document.getElementById('journal-severity').value=entry.symptom_severity||3;document.getElementById('symptom-val').textContent=entry.symptom_severity||3;document.getElementById('journal-supplements').value=entry.supplements_taken||'';document.getElementById('journal-foods').value=entry.foods_eaten||'';document.getElementById('journal-notes').value=entry.notes||'';document.getElementById('journal-phase').value=entry.current_phase!=null?entry.current_phase:'';const symptoms=entry.symptoms?(Array.isArray(entry.symptoms)?entry.symptoms:Object.keys(entry.symptoms).filter(k=>entry.symptoms[k])):[];symptoms.forEach(s=>{const el=document.getElementById('sym-'+s.replace(/\s/g,'-'));if(el)el.checked=true;});}}else{document.getElementById('journal-date').value=new Date().toISOString().split('T')[0];document.getElementById('journal-energy').value=5;document.getElementById('energy-val').textContent=5;document.getElementById('journal-severity').value=3;document.getElementById('symptom-val').textContent=3;document.getElementById('journal-supplements').value='';document.getElementById('journal-foods').value='';document.getElementById('journal-notes').value='';const activePhase=Object.entries(phaseProgress).find(([n,p])=>p.status==='in_progress');document.getElementById('journal-phase').value=activePhase?activePhase[0]:'';}}
+function showJournalForm(entryId){editingJournalId=entryId||null;document.getElementById('journal-list-view').style.display='none';document.getElementById('journal-detail-view').style.display='none';document.getElementById('journal-form-view').style.display='block';document.getElementById('journal-form-title').textContent=entryId?'Edit journal entry':'New journal entry';document.getElementById('symptom-checkboxes').innerHTML=SYMPTOM_LIST.map(s=>`<label class="symptom-cb"><input type="checkbox" value="${s}" id="sym-${s.replace(/\s/g,'-')}"> ${s}</label>`).join('');const phaseSelect=document.getElementById('journal-phase');phaseSelect.innerHTML='<option value="">Not specified</option>'+PHASES.map(p=>`<option value="${p.number}">Phase ${p.number} — ${p.subtitle.replace(/&/g,'&amp;')}</option>`).join('');if(entryId){const entry=journalEntries.find(e=>e.id===entryId);if(entry){document.getElementById('journal-date').value=entry.entry_date||'';document.getElementById('journal-energy').value=entry.energy_level||5;document.getElementById('energy-val').textContent=entry.energy_level||5;document.getElementById('journal-severity').value=entry.symptom_severity||3;document.getElementById('symptom-val').textContent=entry.symptom_severity||3;document.getElementById('journal-supplements').value=entry.supplements_taken||'';document.getElementById('journal-foods').value=entry.foods_eaten||'';document.getElementById('journal-notes').value=entry.notes||'';document.getElementById('journal-phase').value=entry.current_phase!=null?entry.current_phase:'';const symptoms=entry.symptoms?(Array.isArray(entry.symptoms)?entry.symptoms:Object.keys(entry.symptoms).filter(k=>entry.symptoms[k])):[];symptoms.forEach(s=>{const el=document.getElementById('sym-'+s.replace(/\s/g,'-'));if(el)el.checked=true;});}}else{document.getElementById('journal-date').value=new Date().toISOString().split('T')[0];document.getElementById('journal-energy').value=5;document.getElementById('energy-val').textContent=5;document.getElementById('journal-severity').value=3;document.getElementById('symptom-val').textContent=3;document.getElementById('journal-supplements').value='';document.getElementById('journal-foods').value='';document.getElementById('journal-notes').value='';const activePhase=Object.entries(phaseProgress).find(([n,p])=>p.status==='in_progress');document.getElementById('journal-phase').value=activePhase?activePhase[0]:'';}}
 function hideJournalForm(){document.getElementById('journal-form-view').style.display='none';document.getElementById('journal-list-view').style.display='block';}
 async function saveJournalEntry(){
   const date=document.getElementById('journal-date').value;
@@ -2339,7 +2362,6 @@ async function exportClientPDF() {
   }
 
   // ─── Phase progress ───────────────────────────────────────────
-  const phaseNames = ['Hydration & Movement','Bowels, Biome, Bile','Electrolytes','Big Minerals','B-Vitamins','Lactoferrin'];
   if (Array.isArray(phases) && phases.length > 0) {
     sectionTitle('Program Progress');
     phases.forEach(p => {
@@ -2347,10 +2369,13 @@ async function exportClientPDF() {
       const steps = p.completed_steps || [];
       const done = steps.filter(s => s.status === 'done').length;
       const skipped = steps.filter(s => s.status === 'skipped').length;
+      // Look up the phase subtitle from the live PHASES array (loaded from Supabase)
+      const phaseObj = PHASES.find(ph => ph.number === p.phase_number);
+      const phaseSubtitle = phaseObj ? phaseObj.subtitle : '';
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(26, 24, 21);
-      doc.text('Phase ' + p.phase_number + ' — ' + (phaseNames[p.phase_number] || ''), MARGIN_X, y);
+      doc.text('Phase ' + p.phase_number + ' — ' + phaseSubtitle, MARGIN_X, y);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(110, 110, 110);
@@ -2725,14 +2750,16 @@ async function viewClient(userId) {
     }
 
     // Build phase summary
-    const phaseNames = ['Hydration & Movement','Bowels, Biome, Bile','Electrolytes','Big Minerals','B-Vitamins','Lactoferrin'];
     const phaseRowsHtml = phases.map(p => {
       const steps = p.completed_steps || [];
       const done = steps.filter(s=>s.status==='done').length;
       const skipped = steps.filter(s=>s.status==='skipped').length;
+      // Look up phase subtitle from the live PHASES array (loaded from Supabase)
+      const phaseObj = PHASES.find(ph => ph.number === p.phase_number);
+      const phaseSubtitle = phaseObj ? phaseObj.subtitle : '';
       return `<div class="provider-phase-row">
         <div class="provider-phase-num ${p.status}">${p.phase_number}</div>
-        <div style="flex:1"><strong>Phase ${p.phase_number}</strong> — ${phaseNames[p.phase_number]||''}</div>
+        <div style="flex:1"><strong>Phase ${p.phase_number}</strong> — ${phaseSubtitle}</div>
         <div style="font-size:12px;color:var(--text3)">${p.status.replace('_',' ')} · ${done} done${skipped?' · '+skipped+' skipped':''}</div>
       </div>`;
     }).join('') || '<p style="color:var(--text3);font-size:14px">No phase data recorded yet.</p>';
