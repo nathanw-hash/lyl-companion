@@ -1500,7 +1500,9 @@ async function deletePhase() {
 async function refreshPhasesAfterEdit() {
   // Re-pull phases from DB so public phase tracker AND admin list are current
   await loadPhases();
-  if (typeof renderPhases === 'function') renderPhases();
+  if (typeof renderPhaseTracker === 'function') renderPhaseTracker();
+  // Also refresh the journal dropdown if visible — it reads PHASES via .find() on render
+  if (typeof renderJournal === 'function') renderJournal();
   renderPhasesAdminList();
 }
 
