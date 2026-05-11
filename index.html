@@ -1146,13 +1146,198 @@ function setPhaseSaveButtonEnabled(enabled) {
   btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
 }
 
-// Stubs for next chunks — referenced by inline onclick in the editor shell.
-// Defined here so the buttons don't throw ReferenceError before Chunks 5/6 land.
-function savePhase() {
-  alert('Save handler coming in Chunk 5.');
+async function savePhase() {
+  const statusEl = document.getElementById('phase-edit-status');
+  const draft = getCurrentPhaseFormDraft();
+
+  // Validation
+  if (!Number.isInteger(draft.number) || draft.number < 0) {
+    alert('Phase number must be a non-negative integer.'); return;
+  }
+  if (!draft.title.trim()) {
+    alert('Title cannot be empty.'); return;
+  }
+  // Check for duplicate phase number (other than the one being edited)
+  const conflict = PHASES.find(p => p.number === draft.number);
+  if (conflict && (!_phasesCurrentEditId || conflict.number !== JSON.parse(_phasesOriginalSnapshot).number)) {
+    if (!confirm('Phase number ' + draft.number + ' is already used by "' + conflict.title + '". Continue anyway? (This will likely fail at the database level due to unique constraint.)')) return;
+  }
+  // Validate step IDs unique within phase, and non-empty
+  const stepIds = (draft.steps || []).map(s => (s.step_id || '').trim());
+  if (stepIds.some(id => !id)) {
+    alert('Every step must have a step ID.'); return;
+  }
+  if (new Set(stepIds).size !== stepIds.length) {
+    alert('Step IDs must be unique within a phase.'); return;
+  }
+
+  setPhaseSaveButtonEnabled(false);
+  statusEl.textContent = 'Saving...';
+  statusEl.style.color = 'var(--text3)';
+
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer '+getToken(),
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+
+  try {
+    let phaseId = _phasesCurrentEditId;
+
+    if (phaseId) {
+      // === UPDATE EXISTING PHASE ===
+      const phasePayload = {
+        number: draft.number,
+        title: draft.title,
+        subtitle: draft.subtitle,
+        description: draft.description
+      };
+      const phRes = await fetch(
+        SUPABASE_URL+'/rest/v1/phases?id=eq.'+encodeURIComponent(phaseId),
+        {method:'PATCH', headers, body: JSON.stringify(phasePayload)}
+      );
+      if (!phRes.ok) throw new Error('Phase update failed ('+phRes.status+'): '+await phRes.text());
+    } else {
+      // === INSERT NEW PHASE ===
+      const phasePayload = {
+        number: draft.number,
+        title: draft.title,
+        subtitle: draft.subtitle,
+        description: draft.description,
+        sort_order: draft.number
+      };
+      const phRes = await fetch(
+        SUPABASE_URL+'/rest/v1/phases',
+        {method:'POST', headers, body: JSON.stringify(phasePayload)}
+      );
+      if (!phRes.ok) throw new Error('Phase insert failed ('+phRes.status+'): '+await phRes.text());
+      const newPhase = (await phRes.json())[0];
+      phaseId = newPhase.id;
+    }
+
+    // === RECONCILE STEPS ===
+    const origSnap = _phasesOriginalSnapshot ? JSON.parse(_phasesOriginalSnapshot) : {steps:[], kb_links:[]};
+    const origStepIds = (origSnap.steps || []).map(s => s.db_id).filter(Boolean);
+    const draftStepDbIds = (draft.steps || []).map(s => s.db_id).filter(Boolean);
+    const deletedStepIds = origStepIds.filter(id => !draftStepDbIds.includes(id));
+
+    for (let i = 0; i < draft.steps.length; i++) {
+      const s = draft.steps[i];
+      const payload = {
+        step_id: s.step_id.trim(),
+        name: s.name || '',
+        description: s.description || '',
+        sort_order: i
+      };
+      if (s.db_id) {
+        const r = await fetch(
+          SUPABASE_URL+'/rest/v1/phase_steps?id=eq.'+encodeURIComponent(s.db_id),
+          {method:'PATCH', headers, body: JSON.stringify(payload)}
+        );
+        if (!r.ok) throw new Error('Step update failed ('+r.status+'): '+await r.text());
+      } else {
+        const r = await fetch(
+          SUPABASE_URL+'/rest/v1/phase_steps',
+          {method:'POST', headers, body: JSON.stringify({...payload, phase_id: phaseId})}
+        );
+        if (!r.ok) throw new Error('Step insert failed ('+r.status+'): '+await r.text());
+      }
+    }
+    for (const delId of deletedStepIds) {
+      const r = await fetch(
+        SUPABASE_URL+'/rest/v1/phase_steps?id=eq.'+encodeURIComponent(delId),
+        {method:'DELETE', headers}
+      );
+      if (!r.ok) throw new Error('Step delete failed ('+r.status+'): '+await r.text());
+    }
+
+    // === RECONCILE KB LINKS ===
+    const origLinkIds = (origSnap.kb_links || []).map(l => l.db_id).filter(Boolean);
+    const draftLinkDbIds = (draft.kb_links || []).map(l => l.db_id).filter(Boolean);
+    const deletedLinkIds = origLinkIds.filter(id => !draftLinkDbIds.includes(id));
+
+    for (let i = 0; i < draft.kb_links.length; i++) {
+      const l = draft.kb_links[i];
+      const payload = {
+        label: l.label || '',
+        kb_entry_id: l.kb_entry_id || '',
+        sort_order: i
+      };
+      if (l.db_id) {
+        const r = await fetch(
+          SUPABASE_URL+'/rest/v1/phase_kb_links?id=eq.'+encodeURIComponent(l.db_id),
+          {method:'PATCH', headers, body: JSON.stringify(payload)}
+        );
+        if (!r.ok) throw new Error('Link update failed ('+r.status+'): '+await r.text());
+      } else {
+        const r = await fetch(
+          SUPABASE_URL+'/rest/v1/phase_kb_links',
+          {method:'POST', headers, body: JSON.stringify({...payload, phase_id: phaseId})}
+        );
+        if (!r.ok) throw new Error('Link insert failed ('+r.status+'): '+await r.text());
+      }
+    }
+    for (const delId of deletedLinkIds) {
+      const r = await fetch(
+        SUPABASE_URL+'/rest/v1/phase_kb_links?id=eq.'+encodeURIComponent(delId),
+        {method:'DELETE', headers}
+      );
+      if (!r.ok) throw new Error('Link delete failed ('+r.status+'): '+await r.text());
+    }
+
+    // === SUCCESS ===
+    await refreshPhasesAfterEdit();
+    _phasesCurrentEditId = null;
+    _phasesEditDraft = null;
+    _phasesOriginalSnapshot = null;
+    document.getElementById('manage-content-phase-edit-view').style.display = 'none';
+    document.getElementById('manage-content-list-view').style.display = 'block';
+    toast('Phase saved.');
+
+  } catch(err) {
+    console.error('Phase save error:', err);
+    statusEl.textContent = 'Error: ' + err.message + ' — reloading phases to recover.';
+    statusEl.style.color = '#b91c1c';
+    // Reload-on-failure: get fresh state so any partial saves are visible
+    try { await refreshPhasesAfterEdit(); } catch(_) {}
+    setPhaseSaveButtonEnabled(true);
+  }
 }
-function deletePhase() {
-  alert('Delete handler coming in Chunk 5.');
+
+async function deletePhase() {
+  if (!_phasesCurrentEditId) return;
+  const draftNum = _phasesEditDraft ? _phasesEditDraft.number : '?';
+  if (!confirm('Delete Phase ' + draftNum + ' and all its steps and article links? This cannot be undone.')) return;
+  const statusEl = document.getElementById('phase-edit-status');
+  statusEl.textContent = 'Deleting...';
+  statusEl.style.color = 'var(--text3)';
+  try {
+    const res = await fetch(
+      SUPABASE_URL+'/rest/v1/phases?id=eq.'+encodeURIComponent(_phasesCurrentEditId),
+      {method:'DELETE', headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+getToken(),'Prefer':'return=representation'}}
+    );
+    if (!res.ok) throw new Error('Delete failed ('+res.status+'): '+await res.text());
+    const data = await res.json();
+    if (!data || !data.length) throw new Error('Delete returned no data — phase may not have been removed. Check provider permissions.');
+    await refreshPhasesAfterEdit();
+    _phasesCurrentEditId = null;
+    _phasesEditDraft = null;
+    _phasesOriginalSnapshot = null;
+    document.getElementById('manage-content-phase-edit-view').style.display = 'none';
+    document.getElementById('manage-content-list-view').style.display = 'block';
+    toast('Phase deleted.');
+  } catch(err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    statusEl.style.color = '#b91c1c';
+  }
+}
+
+async function refreshPhasesAfterEdit() {
+  // Re-pull phases from DB so public phase tracker AND admin list are current
+  await loadPhases();
+  if (typeof renderPhases === 'function') renderPhases();
+  renderPhasesAdminList();
 }
 
 function renderFoodsAdminList() {
