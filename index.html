@@ -804,6 +804,59 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <div id="food-edit-status" style="font-size:13px;color:var(--text3);"></div>
         </div>
       </div>
+      <div id="manage-content-phase-edit-view" style="display:none">
+        <button class="entry-back" onclick="closePhaseEditor()">&#8592; Back to phases</button>
+        <div style="margin-bottom:24px;">
+          <h2 id="phase-edit-heading" style="font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:6px;">Edit phase</h2>
+          <p style="font-size:13px;color:var(--text3);" id="phase-edit-number-display"></p>
+        </div>
+        <div style="display:grid;gap:18px;max-width:860px;">
+          <div style="display:grid;grid-template-columns:140px 1fr;gap:18px;">
+            <div>
+              <label for="phase-edit-number" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Phase number</label>
+              <input type="number" id="phase-edit-number" oninput="onPhaseEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;">
+            </div>
+            <div>
+              <label for="phase-edit-title" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Title</label>
+              <input type="text" id="phase-edit-title" oninput="onPhaseEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;">
+            </div>
+          </div>
+          <div>
+            <label for="phase-edit-subtitle" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Subtitle</label>
+            <input type="text" id="phase-edit-subtitle" oninput="onPhaseEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;">
+          </div>
+          <div>
+            <label for="phase-edit-description" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Description</label>
+            <textarea id="phase-edit-description" rows="4" oninput="onPhaseEditChange()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;resize:vertical;line-height:1.5;"></textarea>
+          </div>
+
+          <div style="border-top:1px solid var(--border);padding-top:18px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <label style="font-size:13px;font-weight:600;color:var(--text);">Steps</label>
+              <button class="btn btn-outline" id="phase-edit-add-step-btn" style="padding:6px 12px;font-size:12px;">+ Add step</button>
+            </div>
+            <p style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Each step has a short ID (used internally to track completion — don't change once patients have used it), a name, and a description.</p>
+            <div id="phase-edit-steps-list"></div>
+          </div>
+
+          <div style="border-top:1px solid var(--border);padding-top:18px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <label style="font-size:13px;font-weight:600;color:var(--text);">Related articles</label>
+              <button class="btn btn-outline" id="phase-edit-add-kblink-btn" style="padding:6px 12px;font-size:12px;">+ Add article link</button>
+            </div>
+            <p style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Buttons that appear at the top of the phase, linking to knowledge base articles. The label is what patients see on the button.</p>
+            <div id="phase-edit-kblinks-list"></div>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:18px;margin-top:6px;">
+            <button class="btn btn-accent" id="phase-edit-save" onclick="savePhase()" disabled style="opacity:0.5;cursor:not-allowed;">Save</button>
+            <button class="btn btn-outline" onclick="closePhaseEditor()">Cancel</button>
+            <span style="flex:1;"></span>
+            <button class="btn btn-outline" id="phase-edit-delete" onclick="deletePhase()" style="color:#b91c1c;border-color:#b91c1c;display:none;">Delete phase</button>
+          </div>
+          <div id="phase-edit-status" style="font-size:13px;color:var(--text3);"></div>
+        </div>
+      </div>
       <div id="manage-content-edit-view" style="display:none">
         <button class="entry-back" onclick="closeArticleEditor()">&#8592; Back to articles</button>
         <div style="margin-bottom:24px;">
